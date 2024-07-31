@@ -8,7 +8,7 @@ public class menu : MonoBehaviour
     [SerializeField] private Sprite curseBg;
     [SerializeField] private TextMeshProUGUI textPlay, textPref, textExit;
 
-    public void Play() => SceneManager.LoadScene("step1");
+    public void Play() => SceneManager.LoadScene("prehistory");
     //public void Preferens() =>
     //public void Exit()
 

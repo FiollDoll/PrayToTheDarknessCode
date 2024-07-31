@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 
 public class quests : MonoBehaviour
 {
@@ -39,9 +40,17 @@ public class quests : MonoBehaviour
 
     public void NextStep()
     {
-        scripts.quests.totalStep++;
-        scripts.quests.UpdateQuestUI();
-        UpdateQuestUI();
+        totalStep++;
+        Sequence sequence = DOTween.Sequence();
+
+        Tween fadeAnimation = textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-600, 0.5f).SetEase(Ease.InQuart);
+        fadeAnimation.OnComplete(() =>
+        {
+            UpdateQuestUI();
+        });
+        sequence.Append(fadeAnimation);
+        sequence.Append(textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-340, 0.5f).SetEase(Ease.OutQuart));
+        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
     }
 
     private void UpdateQuestUI()

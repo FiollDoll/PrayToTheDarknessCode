@@ -8,9 +8,12 @@ public class notebook : MonoBehaviour
 {
     [SerializeField] private GameObject noteMenu, pageNote, pageQuest, pageReadNote, pageChoiceNote, pageChoiceQuest;
     [SerializeField] private GameObject buttonNotePrefab;
+    [SerializeField] private GameObject newNoteNotify;
     [SerializeField] private note[] gameNotes = new note[0];
     [SerializeField] private List<note> playerNotes = new List<note>();
     [SerializeField] private allScripts scripts;
+
+    private void Start() => AddNote("Я устал...");
 
     public void AddNote(string name)
     {
@@ -19,6 +22,7 @@ public class notebook : MonoBehaviour
             if (name == note.nameEn)
             {
                 playerNotes.Add(note);
+                StartCoroutine(ActivateNotify());
                 break;
             }
         }
@@ -78,10 +82,13 @@ public class notebook : MonoBehaviour
             pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text = "";
             for (int i = 0; i < (scripts.quests.totalStep + 1); i++)
             {
-                if (i == scripts.quests.totalStep)
-                    pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -<b>" + scripts.quests.totalQuest.steps[i].name + "</b>";
-                else
-                    pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -" + scripts.quests.totalQuest.steps[i].name;
+                if (scripts.quests.totalQuest.steps[i].name != "")
+                {
+                    if (i == scripts.quests.totalStep)
+                        pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -<b>" + scripts.quests.totalQuest.steps[i].name + "</b>";
+                    else
+                        pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -" + scripts.quests.totalQuest.steps[i].name;
+                }
             }
         }
     }
@@ -90,6 +97,13 @@ public class notebook : MonoBehaviour
     {
         noteMenu.gameObject.SetActive(!noteMenu.gameObject.activeSelf);
         scripts.player.canMove = !noteMenu.gameObject.activeSelf;
+    }
+
+    private IEnumerator ActivateNotify()
+    {
+        newNoteNotify.gameObject.SetActive(true);
+        yield return new WaitForSeconds(3);
+        newNoteNotify.gameObject.SetActive(false);
     }
 }
 

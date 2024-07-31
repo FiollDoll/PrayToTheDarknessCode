@@ -8,7 +8,9 @@ using DG.Tweening;
 public class dialogsManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI textName, textDialog;
-    [SerializeField] private Image iconImage;
+    [SerializeField] private Image iconImage, bigPicture;
+    [SerializeField] private Image noViewPanel;
+
     private bool animatingText;
     public dialog[] dialogs = new dialog[0];
     private dialog activatedDialog;
@@ -25,8 +27,16 @@ public class dialogsManager : MonoBehaviour
             if (totalDialog.nameDialog == name && !totalDialog.readed)
             {
                 dialogMenu.gameObject.SetActive(true);
+                if (totalDialog.bigPicture != null)
+                {
+                    noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+                    bigPicture.sprite = totalDialog.bigPicture;
+                    bigPicture.DOFade(100f, 1f).SetEase(Ease.InQuart);
+                }
                 Sequence sequence = DOTween.Sequence();
                 sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart));
+                if (totalDialog.bigPicture != null)
+                    sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
                 sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
 
                 if (!totalDialog.moreRead)
@@ -45,11 +55,30 @@ public class dialogsManager : MonoBehaviour
     {
         if ((totalStep + 1) == activatedDialog.steps.Length)
         {
-            dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f);
-            activatedDialog = null;
             totalStep = 0;
-            scripts.player.canMove = true;
-            dialogMenu.gameObject.SetActive(false);
+            Sequence sequence = DOTween.Sequence();
+            if (activatedDialog.bigPicture != null)
+            {
+                sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
+                sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.1f));
+                sequence.Append(bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
+                sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+            }
+            else
+                sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f));
+
+            if (activatedDialog.startNewDialogAfterEnd == null)
+            {
+                sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+                sequence.OnComplete(() =>
+                {
+                    dialogMenu.gameObject.SetActive(false);
+                });
+                scripts.player.canMove = true;
+            }
+            else
+                ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
+
         }
         else
         {
@@ -103,6 +132,8 @@ public class dialog
 {
     public string nameDialog;
     public dialogStep[] steps = new dialogStep[0];
+    public dialog startNewDialogAfterEnd;
+    public Sprite bigPicture;
     public bool readed, moreRead;
 }
 
