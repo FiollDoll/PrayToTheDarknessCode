@@ -12,14 +12,25 @@ public class interactions : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "dialog")
-        {
             scripts.dialogsManager.ActivateDialog(other.gameObject.name);
-        }
         else if (other.gameObject.tag == "interact" || other.gameObject.tag == "item")
         {
-            iconInteraction.gameObject.SetActive(true);
-            totalColliderName = other.gameObject.name;
-            totalColliderMode = other.gameObject.tag;
+            if (other.gameObject.GetComponent<extraInteraction>() != null)
+            {
+                if (other.gameObject.GetComponent<extraInteraction>().stageInter == scripts.quests.totalStep)
+                {
+                    iconInteraction.gameObject.SetActive(true);
+                    totalColliderName = other.gameObject.name;
+                    totalColliderMode = other.gameObject.tag;
+                }
+            }
+            else
+            {
+                iconInteraction.gameObject.SetActive(true);
+                totalColliderName = other.gameObject.name;
+                totalColliderMode = other.gameObject.tag;
+            }
+
         }
         else if (other.gameObject.tag == "location")
         {
@@ -39,7 +50,7 @@ public class interactions : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.tag == "interact")
+        if (other.gameObject.tag == "interact" || other.gameObject.tag == "item")
             iconInteraction.gameObject.SetActive(false);
     }
 
@@ -58,11 +69,20 @@ public class interactions : MonoBehaviour
                 iconInteraction.gameObject.SetActive(false);
                 scripts.inventory.AddItem(totalColliderName, true);// Переделать потом на questItem
             }
+
+            if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>() != null)
+            {
+                extraInteraction EI = GameObject.Find(totalColliderName).GetComponent<extraInteraction>();
+                if (EI.NextStep && EI.stageInter == scripts.quests.totalStep)
+                    scripts.quests.NextStep();
+                if (EI.swapPlayerVisual)
+                    scripts.player.ChangeVisual(EI.playerVisual);
+                if (EI.destroyAfterInter)
+                    Destroy(GameObject.Find(totalColliderName));
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))
-        {
             scripts.notebook.ManageNotePanel();
-        }
     }
 }

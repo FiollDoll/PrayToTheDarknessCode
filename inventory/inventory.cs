@@ -32,7 +32,8 @@ public class inventory : MonoBehaviour
         {
             if (playerItems[slot].nameEn == "Cigarette")
             {
-                scripts.quests.NextStep();
+                if (scripts.quests.totalQuest.questId == 0)
+                    scripts.quests.NextStep();
                 scripts.dialogsManager.ActivateDialog("CigaretteActivate");
             }
             playerItems.RemoveAt(slot);

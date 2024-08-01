@@ -64,6 +64,7 @@ public class quests : MonoBehaviour
 [System.Serializable]
 public class quest
 {
+    public int questId;
     public string nameRu, nameEn;
     [HideInInspector]
     public string name
