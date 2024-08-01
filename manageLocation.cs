@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class manageLocation : MonoBehaviour
 {
-    public location[] locations = new location[0]; 
+    public location[] locations = new location[0];
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private GameObject player;
@@ -19,17 +19,20 @@ public class manageLocation : MonoBehaviour
         {
             if (location.name == name)
             {
-                Sequence sequence = DOTween.Sequence();
-                Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                fadeAnimation.OnComplete(() =>
+                if (!location.locked)
                 {
-                    scripts.player.canMove = false;
-                    player.transform.position = location.spawns[int.Parse(spawn)].position;
-                });
-                sequence.Append(fadeAnimation);
-                sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
-                sequence.OnComplete(() => {scripts.player.canMove = true;});
+                    Sequence sequence = DOTween.Sequence();
+                    Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+                    fadeAnimation.OnComplete(() =>
+                    {
+                        scripts.player.canMove = false;
+                        player.transform.position = location.spawns[int.Parse(spawn)].position;
+                    });
+                    sequence.Append(fadeAnimation);
+                    sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+                    sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
+                    sequence.OnComplete(() => { scripts.player.canMove = true; });
+                }
             }
         }
     }
@@ -39,5 +42,6 @@ public class manageLocation : MonoBehaviour
 public class location
 {
     public string name;
+    public bool locked;
     public Transform[] spawns; // 0 - left, 1 - right, 2 - up, 3 - down
 }

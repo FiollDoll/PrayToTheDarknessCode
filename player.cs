@@ -25,6 +25,12 @@ public class player : MonoBehaviour
     {
         visualMode = num;
         GetComponent<SpriteRenderer>().sprite = visualSprites[num];
+        animator.SetBool("noClothStyle", false);
+        animator.SetBool("standartStyle", false);
+        if (num == 0)
+            animator.SetBool("standartStyle", true);
+        else
+            animator.SetBool("noClothStyle", true);
     }
 
     private void FixedUpdate()

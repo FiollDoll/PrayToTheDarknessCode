@@ -11,15 +11,13 @@ public class inventory : MonoBehaviour
     [SerializeField] private Sprite nullSprite;
     [SerializeField] private allScripts scripts;
 
-    public void AddItem(string name, bool addStepQuest = false)
+    public void AddItem(string name)
     {
         foreach (item item in gameItems)
         {
             if (item.nameEn == name)
             {
                 playerItems.Add(item);
-                if (addStepQuest)
-                    scripts.quests.NextStep();
                 break;
             }
         }

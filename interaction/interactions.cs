@@ -15,7 +15,7 @@ public class interactions : MonoBehaviour
             scripts.dialogsManager.ActivateDialog(other.gameObject.name);
         else if (other.gameObject.tag == "interact" || other.gameObject.tag == "item")
         {
-            if (other.gameObject.GetComponent<extraInteraction>() != null)
+            if (other.gameObject.GetComponent<extraInteraction>())
             {
                 if (other.gameObject.GetComponent<extraInteraction>().stageInter == scripts.quests.totalStep)
                 {
@@ -67,10 +67,10 @@ public class interactions : MonoBehaviour
             {
                 Destroy(GameObject.Find(totalColliderName));
                 iconInteraction.gameObject.SetActive(false);
-                scripts.inventory.AddItem(totalColliderName, true);// Переделать потом на questItem
+                scripts.inventory.AddItem(totalColliderName);// Переделать потом на questItem
             }
 
-            if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>() != null)
+            if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>())
             {
                 extraInteraction EI = GameObject.Find(totalColliderName).GetComponent<extraInteraction>();
                 if (EI.NextStep && EI.stageInter == scripts.quests.totalStep)
