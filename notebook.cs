@@ -13,7 +13,6 @@ public class notebook : MonoBehaviour
     [SerializeField] private List<note> playerNotes = new List<note>();
     [SerializeField] private allScripts scripts;
 
-    private void Start() => AddNote("Я устал...");
 
     public void AddNote(string name)
     {
