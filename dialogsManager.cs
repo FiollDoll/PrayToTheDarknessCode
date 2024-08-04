@@ -53,7 +53,7 @@ public class dialogsManager : MonoBehaviour
 
     private void DialogMoveNext()
     {
-        if ((totalStep + 1) == activatedDialog.steps.Length)
+        if ((totalStep + 1) >= activatedDialog.steps.Length)
         {
             totalStep = 0;
             Sequence sequence = DOTween.Sequence();
@@ -78,7 +78,12 @@ public class dialogsManager : MonoBehaviour
             }
             else
                 ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
-
+            if (activatedDialog.darkAfterEnd)
+            {
+                sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
+                sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+                sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+            }
         }
         else
         {
@@ -109,9 +114,9 @@ public class dialogsManager : MonoBehaviour
     {
         if (animatingText)
         {
+            textDialog.text = activatedDialog.steps[totalStep].text;
             StopCoroutine("SetText");
             animatingText = false;
-            textDialog.text = activatedDialog.steps[totalStep].text;
         }
         else
             DialogMoveNext();
@@ -130,9 +135,14 @@ public class dialogsManager : MonoBehaviour
 [System.Serializable]
 public class dialog
 {
+    [Header("Main")]
     public string nameDialog;
     public dialogStep[] steps = new dialogStep[0];
+    [Header("AfterEnd")]
     public dialog startNewDialogAfterEnd;
+    public bool darkAfterEnd;
+    public Transform posAfterEnd;
+    [Header("Other")]
     public Sprite bigPicture;
     public bool readed, moreRead;
 }

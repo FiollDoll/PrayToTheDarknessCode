@@ -79,9 +79,9 @@ public class interactions : MonoBehaviour
                 switch (totalColliderMode)
                 {
                     case "item":
-                        Destroy(GameObject.Find(totalColliderName));
                         iconInteraction.gameObject.SetActive(false);
                         scripts.inventory.AddItem(totalColliderName);
+                        Destroy(GameObject.Find(totalColliderName));
                         break;
                     case "location":
                         scripts.locations.ActivateLocation(totalColliderName, spawnName);

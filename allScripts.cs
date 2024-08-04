@@ -9,4 +9,5 @@ public class allScripts : MonoBehaviour
     public inventory inventory;
     public notebook notebook;
     public quests quests;
+    public cutsceneManager cutsceneManager;
 }

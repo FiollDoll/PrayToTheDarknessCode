@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class player : MonoBehaviour
@@ -11,6 +12,7 @@ public class player : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     private Animator animator;
+    public CinemachineVirtualCamera virtualCamera;
 
     private Rigidbody2D rb;
 

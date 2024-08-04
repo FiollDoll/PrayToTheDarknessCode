@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-
+using Cinemachine;
 public class manageLocation : MonoBehaviour
 {
     public location totalLocation;
@@ -31,6 +31,7 @@ public class manageLocation : MonoBehaviour
                     Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
                     fadeAnimation.OnComplete(() =>
                     {
+                        scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
                         scripts.player.canMove = false;
                         player.transform.position = location.spawns[int.Parse(spawn)].position;
                     });
@@ -60,5 +61,6 @@ public class location
 {
     public string name;
     public bool locked, autoEnter;
+    public Collider2D wallsForCamera;
     public Transform[] spawns; // 0 - left, 1 - right, 2 - up, 3 - down
 }
