@@ -1,12 +1,21 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class interactions : MonoBehaviour
 {
-    [SerializeField] private GameObject iconInteraction;
+    [SerializeField] private GameObject iconInteractionObj;
+    [SerializeField] private Sprite iconDefault, iconLocation;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
+
+    private void IconInteractionActivate(bool status, int mode = 0)
+    {
+        iconInteractionObj.gameObject.SetActive(status);
+        if (mode == 0)
+            iconInteractionObj.GetComponent<Image>().sprite = iconDefault;
+        else
+            iconInteractionObj.GetComponent<Image>().sprite = iconLocation;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -27,10 +36,13 @@ public class interactions : MonoBehaviour
                     else
                         spawnName = nameLocationChar[i].ToString();
                 }
-                if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
-                    scripts.locations.ActivateLocation(totalColliderName, spawnName);
-                else
-                    iconInteraction.gameObject.SetActive(true);
+                if (!scripts.locations.GetLocation(totalColliderName).locked)
+                {
+                    if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
+                        scripts.locations.ActivateLocation(totalColliderName, spawnName);
+                    else
+                        IconInteractionActivate(true, 1);
+                }
                 break;
             case "interact":
             case "item":
@@ -38,14 +50,14 @@ public class interactions : MonoBehaviour
                 {
                     if (other.gameObject.GetComponent<extraInteraction>().stageInter == scripts.quests.totalStep)
                     {
-                        iconInteraction.gameObject.SetActive(true);
+                        IconInteractionActivate(true);
                         totalColliderName = other.gameObject.name;
                         totalColliderMode = other.gameObject.tag;
                     }
                 }
                 else
                 {
-                    iconInteraction.gameObject.SetActive(true);
+                    IconInteractionActivate(true);
                     totalColliderName = other.gameObject.name;
                     totalColliderMode = other.gameObject.tag;
                 }
@@ -59,10 +71,8 @@ public class interactions : MonoBehaviour
         {
             case "interact":
             case "item":
-                iconInteraction.gameObject.SetActive(false);
-                break;
             case "location":
-                iconInteraction.gameObject.SetActive(false);
+                IconInteractionActivate(false);
                 break;
         }
         totalColliderName = "";
@@ -79,7 +89,7 @@ public class interactions : MonoBehaviour
                 switch (totalColliderMode)
                 {
                     case "item":
-                        iconInteraction.gameObject.SetActive(false);
+                        IconInteractionActivate(false);
                         scripts.inventory.AddItem(totalColliderName);
                         Destroy(GameObject.Find(totalColliderName));
                         break;

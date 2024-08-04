@@ -28,12 +28,14 @@ public class inventory : MonoBehaviour
     {
         if (playerItems[slot].canUse)
         {
-            if (playerItems[slot].nameEn == "Cigarette")
+            if (playerItems[slot].activateNameDialog != "")
+                scripts.dialogsManager.ActivateDialog(playerItems[slot].activateNameDialog);
+            if (playerItems[slot].questName != "" && playerItems[slot].questNextStep)
             {
-                if (scripts.quests.totalQuest.questId == 0)
+                if (scripts.quests.FindQuest(playerItems[slot].questName) == scripts.quests.totalQuest)
                     scripts.quests.NextStep();
-                scripts.dialogsManager.ActivateDialog("CigaretteActivate");
             }
+
             playerItems.RemoveAt(slot);
         }
         UpdateInvUI();
@@ -67,5 +69,9 @@ public class item
         }
     }
     public Sprite icon;
+    [Header("UseSettings")]
     public bool canUse;
+    public string activateNameDialog;
+    public string questName;
+    public bool questNextStep;
 }

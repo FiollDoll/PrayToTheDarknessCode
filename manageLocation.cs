@@ -24,22 +24,19 @@ public class manageLocation : MonoBehaviour
         {
             if (location.name == name)
             {
-                if (!location.locked)
+                totalLocation = location;
+                Sequence sequence = DOTween.Sequence();
+                Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+                fadeAnimation.OnComplete(() =>
                 {
-                    totalLocation = location;
-                    Sequence sequence = DOTween.Sequence();
-                    Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                    fadeAnimation.OnComplete(() =>
-                    {
-                        scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
-                        scripts.player.canMove = false;
-                        player.transform.position = location.spawns[int.Parse(spawn)].position;
-                    });
-                    sequence.Append(fadeAnimation);
-                    sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                    sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
-                    sequence.OnComplete(() => { scripts.player.canMove = true; });
-                }
+                    scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
+                    scripts.player.canMove = false;
+                    player.transform.position = location.spawns[int.Parse(spawn)].position;
+                });
+                sequence.Append(fadeAnimation);
+                sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+                sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
+                sequence.OnComplete(() => { scripts.player.canMove = true; });
             }
         }
     }
