@@ -53,13 +53,15 @@ public class dialogsManager : MonoBehaviour
 
     private void DialogMoveNext()
     {
-        if ((totalStep + 1) >= activatedDialog.steps.Length)
+        if ((totalStep + 1) >= activatedDialog.steps.Length) // Окончание
         {
             totalStep = 0;
+            scripts.player.canMove = true;
             Sequence sequence = DOTween.Sequence();
+
             if (activatedDialog.bigPicture != null)
             {
-                sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
+                sequence = sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
                 sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.1f));
                 sequence.Append(bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
                 sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
@@ -67,30 +69,38 @@ public class dialogsManager : MonoBehaviour
             else
                 sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f));
 
-            if (activatedDialog.startNewDialogAfterEnd == null)
-            {
-                sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-                sequence.OnComplete(() =>
-                {
-                    dialogMenu.gameObject.SetActive(false);
-                });
-                scripts.player.canMove = true;
-            }
-            else
-                ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
             if (activatedDialog.darkAfterEnd)
             {
-                sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
-                sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+                Tween extraSequence = noViewPanel.DOFade(100f, 0.7f).SetEase(Ease.InQuart);
+                if (activatedDialog.posAfterEnd != null)
+                {
+                    extraSequence.OnComplete(() =>
+                    {
+                        scripts.player.transform.localPosition = activatedDialog.posAfterEnd.position;
+                    });
+                }
+                sequence.Append(extraSequence);
+                sequence.Append(noViewPanel.DOFade(0f, 0.7f).SetEase(Ease.OutQuart));
             }
+            sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+            sequence.OnComplete(() =>
+            {
+                dialogMenu.gameObject.SetActive(false);
+            });
+            if (activatedDialog.startNewDialogAfterEnd != null)
+                ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
         }
         else
         {
-            totalStep++;
+            if ((totalStep + 1) != activatedDialog.steps.Length) // Хз почему, но оно прокликивается
+                totalStep++;
             textName.text = activatedDialog.steps[totalStep].name;
             StartCoroutine(SetText(activatedDialog.steps[totalStep].text));
             iconImage.sprite = activatedDialog.steps[totalStep].icon;
+            if (activatedDialog.steps[totalStep].cameraTarget != null)
+                scripts.player.virtualCamera.Follow = activatedDialog.steps[totalStep].cameraTarget;
+            else
+                scripts.player.virtualCamera.Follow = scripts.player.transform;
         }
     }
 
@@ -114,9 +124,9 @@ public class dialogsManager : MonoBehaviour
     {
         if (animatingText)
         {
-            textDialog.text = activatedDialog.steps[totalStep].text;
             StopCoroutine("SetText");
             animatingText = false;
+            textDialog.text = activatedDialog.steps[totalStep].text;
         }
         else
             DialogMoveNext();
@@ -141,7 +151,7 @@ public class dialog
     [Header("AfterEnd")]
     public dialog startNewDialogAfterEnd;
     public bool darkAfterEnd;
-    public Transform posAfterEnd;
+    [Tooltip("Работает только с darkAfterEnd")] public Transform posAfterEnd;
     [Header("Other")]
     public Sprite bigPicture;
     public bool readed, moreRead;
@@ -175,4 +185,5 @@ public class dialogStep
     }
     public string ruText, enText;
     public Sprite icon;
+    public Transform cameraTarget;
 }

@@ -54,6 +54,11 @@ public class interactions : MonoBehaviour
                         totalColliderName = other.gameObject.name;
                         totalColliderMode = other.gameObject.tag;
                     }
+                    else
+                    {
+                        IconInteractionActivate(false);
+                        totalColliderMode = "";
+                    }
                 }
                 else
                 {
@@ -94,7 +99,8 @@ public class interactions : MonoBehaviour
                         Destroy(GameObject.Find(totalColliderName));
                         break;
                     case "location":
-                        scripts.locations.ActivateLocation(totalColliderName, spawnName);
+                        if (!scripts.locations.GetLocation(totalColliderName).locked)
+                            scripts.locations.ActivateLocation(totalColliderName, spawnName);
                         break;
                     default:
                         if (!scripts.dialogsManager.dialogMenu.activeSelf)
