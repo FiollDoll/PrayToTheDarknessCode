@@ -24,9 +24,12 @@ public class dialogsManager : MonoBehaviour
     {
         foreach (dialog totalDialog in dialogs)
         {
+            Debug.Log(name);
             if (totalDialog.nameDialog == name && !totalDialog.readed)
             {
                 dialogMenu.gameObject.SetActive(true);
+                if (totalDialog.steps[0].cameraTarget != null)
+                    scripts.player.virtualCamera.Follow = totalDialog.steps[0].cameraTarget;
                 if (totalDialog.bigPicture != null)
                 {
                     noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
@@ -56,7 +59,6 @@ public class dialogsManager : MonoBehaviour
         if ((totalStep + 1) >= activatedDialog.steps.Length) // Окончание
         {
             totalStep = 0;
-            scripts.player.canMove = true;
             Sequence sequence = DOTween.Sequence();
 
             if (activatedDialog.bigPicture != null)
@@ -89,6 +91,8 @@ public class dialogsManager : MonoBehaviour
             });
             if (activatedDialog.startNewDialogAfterEnd != null)
                 ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
+            scripts.player.canMove = true;
+            scripts.player.virtualCamera.Follow = scripts.player.transform;
         }
         else
         {

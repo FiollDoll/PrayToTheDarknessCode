@@ -91,7 +91,7 @@ public class interactions : MonoBehaviour
         {
             if (totalColliderName != "")
             {
-                if (totalColliderMode != "location") // Заменить
+                if (totalColliderMode != "location")
                 {
                     if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>() != null)
                     {
@@ -100,7 +100,7 @@ public class interactions : MonoBehaviour
                             scripts.quests.NextStep();
                         if (EI.swapPlayerVisual)
                             scripts.player.ChangeVisual(EI.playerVisual);
-                        if (EI.destroyAfterInter)
+                        if (EI.destroyAfterInter) // Внимание: после удаление код снизу может не работать
                             Destroy(GameObject.Find(totalColliderName));
                         if (EI.spriteChange != null)
                             EI.spriteObjChange.GetComponent<SpriteRenderer>().sprite = EI.spriteChange;
