@@ -51,6 +51,8 @@ public class quests : MonoBehaviour
         sequence.Append(fadeAnimation);
         sequence.Append(textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-340, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+        if (totalQuest.steps[totalStep].delayNextStep != 0)
+            StartCoroutine(StartStepDelay(totalQuest.steps[totalStep].delayNextStep));
     }
 
     private void UpdateQuestUI()
@@ -58,6 +60,12 @@ public class quests : MonoBehaviour
         totalQuest = recentQuests[recentQuests.Count - 1];
         textNameQuest.text = totalQuest.name;
         textQuest.text = totalQuest.steps[totalStep].name;
+    }
+
+    private IEnumerator StartStepDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        NextStep();
     }
 }
 
@@ -108,4 +116,5 @@ public class step
                 return nameEn;
         }
     }
+    public float delayNextStep;
 }

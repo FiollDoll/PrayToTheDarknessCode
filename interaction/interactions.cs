@@ -91,6 +91,24 @@ public class interactions : MonoBehaviour
         {
             if (totalColliderName != "")
             {
+                if (totalColliderMode != "location") // Заменить
+                {
+                    if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>() != null)
+                    {
+                        extraInteraction EI = GameObject.Find(totalColliderName).GetComponent<extraInteraction>();
+                        if (EI.NextStep && EI.stageInter == scripts.quests.totalStep)
+                            scripts.quests.NextStep();
+                        if (EI.swapPlayerVisual)
+                            scripts.player.ChangeVisual(EI.playerVisual);
+                        if (EI.destroyAfterInter)
+                            Destroy(GameObject.Find(totalColliderName));
+                        if (EI.spriteChange != null)
+                            EI.spriteObjChange.GetComponent<SpriteRenderer>().sprite = EI.spriteChange;
+                        if (EI.objWithState != null)
+                            EI.objWithState.gameObject.SetActive(EI.setStateForObj);
+                    }
+                }
+
                 switch (totalColliderMode)
                 {
                     case "item":
@@ -106,17 +124,6 @@ public class interactions : MonoBehaviour
                         if (!scripts.dialogsManager.dialogMenu.activeSelf)
                             scripts.dialogsManager.ActivateDialog(totalColliderName);
                         break;
-                }
-
-                if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>())
-                {
-                    extraInteraction EI = GameObject.Find(totalColliderName).GetComponent<extraInteraction>();
-                    if (EI.NextStep && EI.stageInter == scripts.quests.totalStep)
-                        scripts.quests.NextStep();
-                    if (EI.swapPlayerVisual)
-                        scripts.player.ChangeVisual(EI.playerVisual);
-                    if (EI.destroyAfterInter)
-                        Destroy(GameObject.Find(totalColliderName));
                 }
             }
         }
