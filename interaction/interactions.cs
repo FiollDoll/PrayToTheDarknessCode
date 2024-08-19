@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class interactions : MonoBehaviour
 {
-    [SerializeField] private GameObject iconInteractionObj;
+    [SerializeField] private GameObject iconInteractionObj, floorChangeMenu;
     [SerializeField] private Sprite iconDefault, iconLocation;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
@@ -44,6 +44,7 @@ public class interactions : MonoBehaviour
                         IconInteractionActivate(true, 1);
                 }
                 break;
+            case "cutscene":
             case "interact":
             case "item":
                 if (other.gameObject.GetComponent<extraInteraction>())
@@ -74,12 +75,15 @@ public class interactions : MonoBehaviour
     {
         switch (other.gameObject.tag)
         {
+            case "cutscene":
             case "interact":
             case "item":
             case "location":
                 IconInteractionActivate(false);
                 break;
         }
+        if (floorChangeMenu.gameObject.activeSelf)
+            floorChangeMenu.gameObject.SetActive(false);
         totalColliderName = "";
         totalColliderMode = "";
         spawnName = "";
@@ -102,10 +106,6 @@ public class interactions : MonoBehaviour
                             scripts.player.ChangeVisual(EI.playerVisual);
                         if (EI.destroyAfterInter) // Внимание: после удаление код снизу может не работать
                             Destroy(GameObject.Find(totalColliderName));
-                        if (EI.spriteChange != null)
-                            EI.spriteObjChange.GetComponent<SpriteRenderer>().sprite = EI.spriteChange;
-                        if (EI.objWithState != null)
-                            EI.objWithState.gameObject.SetActive(EI.setStateForObj);
                     }
                 }
 
@@ -120,9 +120,17 @@ public class interactions : MonoBehaviour
                         if (!scripts.locations.GetLocation(totalColliderName).locked)
                             scripts.locations.ActivateLocation(totalColliderName, spawnName);
                         break;
+                    case "cutscene":
+                        scripts.cutsceneManager.ActivateCutscene(totalColliderName);
+                        break;
                     default:
-                        if (!scripts.dialogsManager.dialogMenu.activeSelf)
-                            scripts.dialogsManager.ActivateDialog(totalColliderName);
+                        if (totalColliderName == "floorChange")
+                            floorChangeMenu.gameObject.SetActive(!floorChangeMenu.gameObject.activeSelf);
+                        else
+                        {
+                            if (!scripts.dialogsManager.dialogMenu.activeSelf)
+                                scripts.dialogsManager.ActivateDialog(totalColliderName);
+                        }
                         break;
                 }
             }

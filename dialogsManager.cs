@@ -24,7 +24,6 @@ public class dialogsManager : MonoBehaviour
     {
         foreach (dialog totalDialog in dialogs)
         {
-            Debug.Log(name);
             if (totalDialog.nameDialog == name && !totalDialog.readed)
             {
                 dialogMenu.gameObject.SetActive(true);
@@ -56,6 +55,11 @@ public class dialogsManager : MonoBehaviour
 
     private void DialogMoveNext()
     {
+        if (activatedDialog != null)
+        {
+            if (activatedDialog.steps[totalStep].activatedCutsceneStep != -1)
+                scripts.cutsceneManager.ActivateCutsceneStep(activatedDialog.steps[totalStep].activatedCutsceneStep);
+        }
         if ((totalStep + 1) >= activatedDialog.steps.Length) // Окончание
         {
             totalStep = 0;
@@ -88,9 +92,13 @@ public class dialogsManager : MonoBehaviour
             sequence.OnComplete(() =>
             {
                 dialogMenu.gameObject.SetActive(false);
+                activatedDialog = null;
             });
+            if (activatedDialog.noteAdd != "")
+                scripts.notebook.AddNote(activatedDialog.noteAdd);
             if (activatedDialog.startNewDialogAfterEnd != null)
                 ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
+
             scripts.player.canMove = true;
             scripts.player.virtualCamera.Follow = scripts.player.transform;
         }
@@ -128,8 +136,8 @@ public class dialogsManager : MonoBehaviour
     {
         if (animatingText)
         {
-            StopCoroutine("SetText");
             animatingText = false;
+            StopAllCoroutines();
             textDialog.text = activatedDialog.steps[totalStep].text;
         }
         else
@@ -158,6 +166,7 @@ public class dialog
     [Tooltip("Работает только с darkAfterEnd")] public Transform posAfterEnd;
     [Header("Other")]
     public Sprite bigPicture;
+    public string noteAdd;
     public bool readed, moreRead;
 }
 
@@ -189,5 +198,6 @@ public class dialogStep
     }
     public string ruText, enText;
     public Sprite icon;
+    public int activatedCutsceneStep = -1;
     public Transform cameraTarget;
 }

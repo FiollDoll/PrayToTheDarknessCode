@@ -9,11 +9,6 @@ public class extraInteraction : MonoBehaviour
     [Tooltip("Стадия квеста для применения")]public int stageInter;
     [Tooltip("Переключение на следующий этап")]public bool NextStep;
 
-    [Header("ObjectsSettings")]
-    [Tooltip("Смена спрайта")]public GameObject spriteObjChange;
-    [Tooltip("Объект, у которого меняется спрайт")]public Sprite spriteChange;
-    [Tooltip("Смена состояния видимости")]public bool setStateForObj;
-    [Tooltip("Объект, у которого меняется состояние видимости")]public GameObject objWithState;
     [Tooltip("Уничтожение после использования(item удаляется в любом случае)")]public bool destroyAfterInter;
 
     [Header("OtherSettings")]
