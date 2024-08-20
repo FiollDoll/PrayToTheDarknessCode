@@ -53,6 +53,8 @@ public class quests : MonoBehaviour
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
         if (totalQuest.steps[totalStep].delayNextStep != 0)
             StartCoroutine(StartStepDelay(totalQuest.steps[totalStep].delayNextStep));
+        if (totalQuest.steps[totalStep].startDialog != "")
+            scripts.dialogsManager.ActivateDialog(totalQuest.steps[totalStep].startDialog);
     }
 
     private void UpdateQuestUI()
@@ -117,4 +119,5 @@ public class step
         }
     }
     public float delayNextStep;
+    public string startDialog;
 }

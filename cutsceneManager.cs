@@ -27,7 +27,11 @@ public class cutsceneManager : MonoBehaviour
             totalCutscene.steps[step].objectsChangeSprite[i].obj.GetComponent<SpriteRenderer>().sprite = totalCutscene.steps[step].objectsChangeSprite[i].newSprite;
         for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
             totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
-        scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
+        
+        if (totalCutscene.steps[step].activatedDialog != "")
+            scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
+        if (totalCutscene.steps[step].questStepNext)
+            scripts.quests.NextStep();
     }
 }
 
@@ -63,6 +67,7 @@ public class cutscene
         public objectState[] objectsChangeState = new objectState[0];
         public objectTransform[] objectsChangeTransform = new objectTransform[0];
         public objectSprite[] objectsChangeSprite = new objectSprite[0];
+        public bool questStepNext;
     }
 
     public string name;

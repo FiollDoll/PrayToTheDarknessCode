@@ -1,12 +1,15 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 public class interactions : MonoBehaviour
 {
     [SerializeField] private GameObject iconInteractionObj, floorChangeMenu;
     [SerializeField] private Sprite iconDefault, iconLocation;
+    [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
+    extraInter selectedEI = null;
 
     private void IconInteractionActivate(bool status, int mode = 0)
     {
@@ -47,26 +50,30 @@ public class interactions : MonoBehaviour
             case "cutscene":
             case "interact":
             case "item":
-                if (other.gameObject.GetComponent<extraInteraction>())
+                if (GameObject.Find(other.gameObject.name).GetComponent<extraInteraction>() != null)
                 {
-                    if (other.gameObject.GetComponent<extraInteraction>().stageInter == scripts.quests.totalStep)
+                    extraInteraction EI = GameObject.Find(other.gameObject.name).GetComponent<extraInteraction>();
+                    for (int i = 0; i < EI.interactions.Length; i++)
                     {
-                        IconInteractionActivate(true);
-                        totalColliderName = other.gameObject.name;
-                        totalColliderMode = other.gameObject.tag;
+                        extraInter totalEI = EI.interactions[i];
+                        if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameEn)
+                        {
+                            if (totalEI.nameQuestRequired != "")
+                                continue;
+                        }
+
+                        if (totalEI.stageInter != scripts.quests.totalStep && totalEI.nameQuestRequired != "")
+                            continue;
+                        selectedEI = EI.interactions[i];
+                        GameObject.Find(other.gameObject.name).gameObject.name = totalEI.interName; // Сделано плохо
+                        break;
                     }
-                    else
-                    {
-                        IconInteractionActivate(false);
-                        totalColliderMode = "";
-                    }
+                    if (selectedEI == null)
+                        return;
                 }
-                else
-                {
-                    IconInteractionActivate(true);
-                    totalColliderName = other.gameObject.name;
-                    totalColliderMode = other.gameObject.tag;
-                }
+                IconInteractionActivate(true);
+                totalColliderName = other.gameObject.name;
+                totalColliderMode = other.gameObject.tag;
                 break;
         }
     }
@@ -84,6 +91,7 @@ public class interactions : MonoBehaviour
         }
         if (floorChangeMenu.gameObject.activeSelf)
             floorChangeMenu.gameObject.SetActive(false);
+        selectedEI = null;
         totalColliderName = "";
         totalColliderMode = "";
         spawnName = "";
@@ -99,13 +107,8 @@ public class interactions : MonoBehaviour
                 {
                     if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>() != null)
                     {
-                        extraInteraction EI = GameObject.Find(totalColliderName).GetComponent<extraInteraction>();
-                        if (EI.NextStep && EI.stageInter == scripts.quests.totalStep)
-                            scripts.quests.NextStep();
-                        if (EI.swapPlayerVisual)
-                            scripts.player.ChangeVisual(EI.playerVisual);
-                        if (EI.destroyAfterInter) // Внимание: после удаление код снизу может не работать
-                            Destroy(GameObject.Find(totalColliderName));
+                        if (selectedEI == null)
+                            return;
                     }
                 }
 
@@ -132,6 +135,23 @@ public class interactions : MonoBehaviour
                                 scripts.dialogsManager.ActivateDialog(totalColliderName);
                         }
                         break;
+                }
+                if (selectedEI != null)
+                {
+                    if (selectedEI.darkAfterUse)
+                    {
+                        Sequence sequence = DOTween.Sequence();
+                        Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+                        sequence.Append(fadeAnimation);
+                        sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+                        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+                    }
+                    if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalStep)
+                        scripts.quests.NextStep();
+                    if (selectedEI.swapPlayerVisual)
+                        scripts.player.ChangeVisual(selectedEI.playerVisual);
+                    if (selectedEI.destroyAfterInter)
+                        Destroy(GameObject.Find(totalColliderName));
                 }
             }
         }

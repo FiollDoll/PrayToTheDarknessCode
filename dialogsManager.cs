@@ -22,44 +22,42 @@ public class dialogsManager : MonoBehaviour
 
     public void ActivateDialog(string name) // Старт диалога
     {
-        foreach (dialog totalDialog in dialogs)
+        if (activatedDialog == null)
         {
-            if (totalDialog.nameDialog == name && !totalDialog.readed)
+            foreach (dialog totalDialog in dialogs)
             {
-                dialogMenu.gameObject.SetActive(true);
-                if (totalDialog.steps[0].cameraTarget != null)
-                    scripts.player.virtualCamera.Follow = totalDialog.steps[0].cameraTarget;
-                if (totalDialog.bigPicture != null)
+                if (totalDialog.nameDialog == name && !totalDialog.readed)
                 {
-                    noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                    bigPicture.sprite = totalDialog.bigPicture;
-                    bigPicture.DOFade(100f, 1f).SetEase(Ease.InQuart);
-                }
-                Sequence sequence = DOTween.Sequence();
-                sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart));
-                if (totalDialog.bigPicture != null)
-                    sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
+                    dialogMenu.gameObject.SetActive(true);
+                    if (totalDialog.steps[0].cameraTarget != null)
+                        scripts.player.virtualCamera.Follow = totalDialog.steps[0].cameraTarget;
+                    if (totalDialog.bigPicture != null)
+                    {
+                        noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+                        bigPicture.sprite = totalDialog.bigPicture;
+                        bigPicture.DOFade(100f, 1f).SetEase(Ease.InQuart);
+                    }
+                    Sequence sequence = DOTween.Sequence();
+                    sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart));
+                    if (totalDialog.bigPicture != null)
+                        sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+                    sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
 
-                if (!totalDialog.moreRead)
-                    totalDialog.readed = true;
-                scripts.player.canMove = false;
-                activatedDialog = totalDialog;
-                textName.text = activatedDialog.steps[0].name;
-                StartCoroutine(SetText(activatedDialog.steps[0].text));
-                iconImage.sprite = activatedDialog.steps[0].icon;
-                break;
+                    if (!totalDialog.moreRead)
+                        totalDialog.readed = true;
+                    scripts.player.canMove = false;
+                    activatedDialog = totalDialog;
+                    textName.text = activatedDialog.steps[0].name;
+                    StartCoroutine(SetText(activatedDialog.steps[0].text));
+                    iconImage.sprite = activatedDialog.steps[0].icon;
+                    break;
+                }
             }
         }
     }
 
     private void DialogMoveNext()
     {
-        if (activatedDialog != null)
-        {
-            if (activatedDialog.steps[totalStep].activatedCutsceneStep != -1)
-                scripts.cutsceneManager.ActivateCutsceneStep(activatedDialog.steps[totalStep].activatedCutsceneStep);
-        }
         if ((totalStep + 1) >= activatedDialog.steps.Length) // Окончание
         {
             totalStep = 0;
@@ -92,20 +90,19 @@ public class dialogsManager : MonoBehaviour
             sequence.OnComplete(() =>
             {
                 dialogMenu.gameObject.SetActive(false);
+                if (activatedDialog.noteAdd != "")
+                    scripts.notebook.AddNote(activatedDialog.noteAdd);
+                if (activatedDialog.startNewDialogAfterEnd != null)
+                    ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
+
+                scripts.player.canMove = true;
+                scripts.player.virtualCamera.Follow = scripts.player.transform;
                 activatedDialog = null;
             });
-            if (activatedDialog.noteAdd != "")
-                scripts.notebook.AddNote(activatedDialog.noteAdd);
-            if (activatedDialog.startNewDialogAfterEnd != null)
-                ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
-
-            scripts.player.canMove = true;
-            scripts.player.virtualCamera.Follow = scripts.player.transform;
         }
-        else
+        else if ((totalStep + 1) < activatedDialog.steps.Length)
         {
-            if ((totalStep + 1) != activatedDialog.steps.Length) // Хз почему, но оно прокликивается
-                totalStep++;
+            totalStep++;
             textName.text = activatedDialog.steps[totalStep].name;
             StartCoroutine(SetText(activatedDialog.steps[totalStep].text));
             iconImage.sprite = activatedDialog.steps[totalStep].icon;
@@ -114,6 +111,9 @@ public class dialogsManager : MonoBehaviour
             else
                 scripts.player.virtualCamera.Follow = scripts.player.transform;
         }
+
+        if (activatedDialog.steps[totalStep].activatedCutsceneStep != -1)
+            scripts.cutsceneManager.ActivateCutsceneStep(activatedDialog.steps[totalStep].activatedCutsceneStep);
     }
 
     private IEnumerator SetText(string text)
