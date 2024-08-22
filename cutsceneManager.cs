@@ -28,6 +28,9 @@ public class cutsceneManager : MonoBehaviour
         for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
             totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
         
+        if (totalCutscene.steps[step].moveToLocation != "")
+            scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, "0");
+
         if (totalCutscene.steps[step].activatedDialog != "")
             scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
         if (totalCutscene.steps[step].questStepNext)
@@ -63,6 +66,7 @@ public class cutscene
     {
         public string name;
         public string activatedDialog;
+        public string moveToLocation;
         public string addNote;
         public objectState[] objectsChangeState = new objectState[0];
         public objectTransform[] objectsChangeTransform = new objectTransform[0];
