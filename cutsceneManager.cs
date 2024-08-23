@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class cutsceneManager : MonoBehaviour
 {
     public cutscene totalCutscene;
     [SerializeField] private cutscene[] cutsceneInGame = new cutscene[0];
+    [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
 
     public void ActivateCutscene(string name)
@@ -19,7 +22,7 @@ public class cutsceneManager : MonoBehaviour
         }
     }
 
-    public void ActivateCutsceneStep(int step)
+    public void StepDo(int step)
     {
         for (int i = 0; i < totalCutscene.steps[step].objectsChangeState.Length; i++)
             totalCutscene.steps[step].objectsChangeState[i].obj.gameObject.SetActive(totalCutscene.steps[step].objectsChangeState[i].newState);
@@ -27,14 +30,32 @@ public class cutsceneManager : MonoBehaviour
             totalCutscene.steps[step].objectsChangeSprite[i].obj.GetComponent<SpriteRenderer>().sprite = totalCutscene.steps[step].objectsChangeSprite[i].newSprite;
         for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
             totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
-        
+
         if (totalCutscene.steps[step].moveToLocation != "")
-            scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, "0");
+            scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, "0", totalCutscene.steps[step].toLocationWithFade);
 
         if (totalCutscene.steps[step].activatedDialog != "")
             scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
         if (totalCutscene.steps[step].questStepNext)
             scripts.quests.NextStep();
+    }
+
+    public void ActivateCutsceneStep(int step)
+    {
+        if (totalCutscene.steps[step].timeDarkStart != 0)
+        {
+            Sequence sequence = DOTween.Sequence();
+            Tween stepSequence = noViewPanel.DOFade(100f, totalCutscene.steps[step].timeDarkStart).SetEase(Ease.InQuart);
+            stepSequence.OnComplete(() =>
+            {
+                StepDo(step);
+            });
+            sequence.Append(stepSequence);
+            sequence.Append(noViewPanel.DOFade(0f, totalCutscene.steps[step].timeDarkEnd).SetEase(Ease.OutQuart));
+            sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+        }
+        else
+            StepDo(step);
     }
 }
 
@@ -65,13 +86,20 @@ public class cutscene
     public class cutsceneStep
     {
         public string name;
+        [Header("DoInScripts")]
         public string activatedDialog;
         public string moveToLocation;
+        public bool toLocationWithFade = true;
         public string addNote;
+        public bool questStepNext;
+
+        [Header("Objects")]
         public objectState[] objectsChangeState = new objectState[0];
         public objectTransform[] objectsChangeTransform = new objectTransform[0];
         public objectSprite[] objectsChangeSprite = new objectSprite[0];
-        public bool questStepNext;
+        [Header("dark")]
+        public float timeDarkStart;
+        public float timeDarkEnd;
     }
 
     public string name;

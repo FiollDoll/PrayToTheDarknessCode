@@ -18,7 +18,7 @@ public class dialogsManager : MonoBehaviour
     public GameObject dialogMenu;
     [SerializeField] private allScripts scripts;
 
-    private void Start() => dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
+    private void Start() => dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
 
     public void ActivateDialog(string name) // Старт диалога
     {
@@ -31,17 +31,25 @@ public class dialogsManager : MonoBehaviour
                     dialogMenu.gameObject.SetActive(true);
                     if (totalDialog.steps[0].cameraTarget != null)
                         scripts.player.virtualCamera.Follow = totalDialog.steps[0].cameraTarget;
+
                     if (totalDialog.bigPicture != null)
                     {
-                        noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                        bigPicture.sprite = totalDialog.bigPicture;
-                        bigPicture.DOFade(100f, 1f).SetEase(Ease.InQuart);
-                    }
-                    Sequence sequence = DOTween.Sequence();
-                    sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart));
-                    if (totalDialog.bigPicture != null)
+                        Sequence sequence = DOTween.Sequence();
+                        Tween stepSequence = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+                        stepSequence.OnComplete(() =>
+                        {
+                            bigPicture.sprite = totalDialog.bigPicture;
+                            if (totalDialog.bigPictureSecond != null)
+                                StartCoroutine(BigPictureAnimate(totalDialog));
+                        });
+                        sequence.Append(stepSequence);
                         sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                    sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
+                        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+                    }
+                    if (totalDialog.mainPanelStartDelay == 0)
+                        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart);
+                    else
+                        StartCoroutine(ActivateUIMainMenuWithDelay(totalDialog, totalDialog.mainPanelStartDelay));
 
                     if (!totalDialog.moreRead)
                         totalDialog.readed = true;
@@ -60,20 +68,21 @@ public class dialogsManager : MonoBehaviour
     {
         if ((totalStep + 1) >= activatedDialog.steps.Length) // Окончание
         {
+            if (activatedDialog.activatedCutsceneStepAtEnd != -1)
+                scripts.cutsceneManager.ActivateCutsceneStep(activatedDialog.activatedCutsceneStepAtEnd);
             totalStep = 0;
             Sequence sequence = DOTween.Sequence();
-
-            if (activatedDialog.bigPicture != null)
+            if (activatedDialog.bigPicture != null && !activatedDialog.disableFadeAtEnd)
             {
                 sequence = sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
-                sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.1f));
+                sequence.Append(dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.1f));
                 sequence.Append(bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
                 sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
             }
             else
-                sequence.Append(dialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f));
+                sequence.Append(dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f));
 
-            if (activatedDialog.darkAfterEnd)
+            if (activatedDialog.darkAfterEnd && !activatedDialog.disableFadeAtEnd)
             {
                 Tween extraSequence = noViewPanel.DOFade(100f, 0.7f).SetEase(Ease.InQuart);
                 if (activatedDialog.posAfterEnd != null)
@@ -94,7 +103,6 @@ public class dialogsManager : MonoBehaviour
                     scripts.notebook.AddNote(activatedDialog.noteAdd);
                 if (activatedDialog.startNewDialogAfterEnd != null)
                     ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
-
                 scripts.player.canMove = true;
                 scripts.player.virtualCamera.Follow = scripts.player.transform;
                 activatedDialog = null;
@@ -132,6 +140,26 @@ public class dialogsManager : MonoBehaviour
         animatingText = false;
     }
 
+    private IEnumerator BigPictureAnimate(dialog totalDialog)
+    {
+        bigPicture.sprite = totalDialog.bigPicture;
+        yield return new WaitForSeconds(0.35f);
+        bigPicture.sprite = totalDialog.bigPictureSecond;
+        yield return new WaitForSeconds(0.35f);
+        if (totalDialog.bigPictureThird != null)
+        {
+            bigPicture.sprite = totalDialog.bigPictureThird;
+            yield return new WaitForSeconds(0.35f);
+        }
+        StartCoroutine(BigPictureAnimate(totalDialog));
+    }
+
+    private IEnumerator ActivateUIMainMenuWithDelay(dialog totalDialog, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart);
+    }
+
     public void DialogManage()
     {
         if (animatingText)
@@ -165,8 +193,11 @@ public class dialog
     public bool darkAfterEnd;
     [Tooltip("Работает только с darkAfterEnd")] public Transform posAfterEnd;
     [Header("Other")]
-    public Sprite bigPicture;
     public string noteAdd;
+    public Sprite bigPicture, bigPictureSecond, bigPictureThird;
+    public int activatedCutsceneStepAtEnd = -1;
+    public bool disableFadeAtEnd;
+    public float mainPanelStartDelay; // Задержка
     public bool readed, moreRead;
 }
 
