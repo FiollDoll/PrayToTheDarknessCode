@@ -21,6 +21,7 @@ public class quests : MonoBehaviour
         {
             if (quest.nameEn == name)
             {
+                totalQuest = quest;
                 recentQuests.Add(quest);
                 UpdateQuestUI();
                 break;
@@ -41,6 +42,8 @@ public class quests : MonoBehaviour
     public void NextStep()
     {
         totalStep++;
+        if (totalStep == totalQuest.steps.Length)
+            totalQuest = null;
         Sequence sequence = DOTween.Sequence();
 
         Tween fadeAnimation = textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-600, 0.5f).SetEase(Ease.InQuart);
@@ -59,9 +62,16 @@ public class quests : MonoBehaviour
 
     private void UpdateQuestUI()
     {
-        totalQuest = recentQuests[recentQuests.Count - 1];
-        textNameQuest.text = totalQuest.name;
-        textQuest.text = totalQuest.steps[totalStep].name;
+        if (totalQuest != null)
+        {
+            textNameQuest.text = totalQuest.name;
+            textQuest.text = totalQuest.steps[totalStep].name;
+        }
+        else
+        {
+            textNameQuest.text = "";
+            textQuest.text = "";
+        }
     }
 
     private IEnumerator StartStepDelay(float delay)

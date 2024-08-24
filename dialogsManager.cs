@@ -11,6 +11,7 @@ public class dialogsManager : MonoBehaviour
     [SerializeField] private Image iconImage, bigPicture;
     [SerializeField] private Image noViewPanel;
 
+    [SerializeField] private Sprite nullSprite;
     private bool animatingText;
     public dialog[] dialogs = new dialog[0];
     private dialog activatedDialog;
@@ -46,6 +47,8 @@ public class dialogsManager : MonoBehaviour
                         sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
                         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
                     }
+                    else
+                        bigPicture.sprite = nullSprite;
                     if (totalDialog.mainPanelStartDelay == 0)
                         dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart);
                     else

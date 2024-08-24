@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using DG.Tweening;
 
 public class cutsceneManager : MonoBehaviour
 {
     public cutscene totalCutscene;
+    [SerializeField] private GameObject playerCamera;
     [SerializeField] private cutscene[] cutsceneInGame = new cutscene[0];
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
@@ -38,6 +41,9 @@ public class cutsceneManager : MonoBehaviour
             scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
         if (totalCutscene.steps[step].questStepNext)
             scripts.quests.NextStep();
+        if (totalCutscene.steps[step].newVolumeProfile != null)
+            playerCamera.GetComponent<Volume>().profile = totalCutscene.steps[step].newVolumeProfile;
+
     }
 
     public void ActivateCutsceneStep(int step)
@@ -86,6 +92,9 @@ public class cutscene
     public class cutsceneStep
     {
         public string name;
+        [Header("PostProcessing")]
+        public VolumeProfile newVolumeProfile;
+        
         [Header("DoInScripts")]
         public string activatedDialog;
         public string moveToLocation;
