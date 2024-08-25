@@ -62,7 +62,7 @@ public class interactions : MonoBehaviour
                                 continue;
                         }
 
-                        if (totalEI.stageInter != scripts.quests.totalStep && totalEI.nameQuestRequired != "")
+                        if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
                             continue;
                         selectedEI = EI.interactions[i];
                         GameObject.Find(other.gameObject.name).gameObject.name = totalEI.interName; // Сделано плохо
@@ -75,6 +75,9 @@ public class interactions : MonoBehaviour
                 totalColliderName = other.gameObject.name;
                 totalColliderMode = other.gameObject.tag;
                 break;
+            case "cutsceneAuto":
+                scripts.cutsceneManager.ActivateCutscene(other.gameObject.name);
+                break;
         }
     }
 
@@ -83,6 +86,7 @@ public class interactions : MonoBehaviour
         switch (other.gameObject.tag)
         {
             case "cutscene":
+            case "cutsceneAuto":
             case "interact":
             case "item":
             case "location":
@@ -146,7 +150,7 @@ public class interactions : MonoBehaviour
                         sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
                         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
                     }
-                    if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalStep)
+                    if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalQuest.totalStep)
                         scripts.quests.NextStep();
                     if (selectedEI.swapPlayerVisual)
                         scripts.player.ChangeVisual(selectedEI.playerVisual);

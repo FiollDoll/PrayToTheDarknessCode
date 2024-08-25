@@ -163,24 +163,21 @@ public class dialogsManager : MonoBehaviour
         dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart);
     }
 
-    public void DialogManage()
-    {
-        if (animatingText)
-        {
-            animatingText = false;
-            StopAllCoroutines();
-            textDialog.text = activatedDialog.steps[totalStep].text;
-        }
-        else
-            DialogMoveNext();
-    }
-
     private void Update()
     {
         if (activatedDialog != null)
         {
             if (Input.GetKeyDown(KeyCode.Space))
-                DialogManage();
+            {
+                if (animatingText)
+                {
+                    animatingText = false;
+                    StopAllCoroutines();
+                    textDialog.text = activatedDialog.steps[totalStep].text;
+                }
+                else
+                    DialogMoveNext();
+            }
         }
     }
 }

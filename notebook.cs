@@ -6,7 +6,7 @@ using TMPro;
 
 public class notebook : MonoBehaviour
 {
-    [SerializeField] private GameObject noteMenu, pageNote, pageQuest, pageReadNote, pageChoiceNote, pageChoiceQuest;
+    [SerializeField] private GameObject noteMenu, pageNote, pageQuest, pageReadNote, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
     [SerializeField] private GameObject buttonNotePrefab;
     [SerializeField] private GameObject newNoteNotify;
     [SerializeField] private note[] gameNotes = new note[0];
@@ -33,6 +33,7 @@ public class notebook : MonoBehaviour
         pageQuest.gameObject.SetActive(false);
         pageReadNote.gameObject.SetActive(false);
         pageChoiceNote.gameObject.SetActive(false);
+        buttonChoiceActiveQuest.gameObject.SetActive(false);
         if (num == 0)
         {
             pageNote.gameObject.SetActive(true);
@@ -55,10 +56,13 @@ public class notebook : MonoBehaviour
             foreach (Transform child in pageChoiceQuest.transform)
                 Destroy(child.gameObject);
 
-            for (int i = 0; i < scripts.quests.recentQuests.Count; i++)
+            for (int i = 0; i < scripts.quests.activeQuests.Count; i++)
             {
                 var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceQuest.transform);
-                obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = scripts.quests.recentQuests[i].name;
+                if (scripts.quests.activeQuests[i] == scripts.quests.totalQuest)
+                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = "-> " + scripts.quests.activeQuests[i].name;
+                else
+                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = scripts.quests.activeQuests[i].name;
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
             }
@@ -77,19 +81,21 @@ public class notebook : MonoBehaviour
         }
         else
         {
-            pageReadNote.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>().text = scripts.quests.totalQuest.name;
-            pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text = "";
-            for (int i = 0; i < (scripts.quests.totalStep + 1); i++)
+            quest selectedQuest = scripts.quests.activeQuests[num];
+            pageReadNote.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>().text = selectedQuest.name;
+            pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text = selectedQuest.description;
+            int totalStep = selectedQuest.totalStep;
+            if (selectedQuest.steps[totalStep].name != "")
+                pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -<b>" + selectedQuest.steps[totalStep].name + "</b>\n" + selectedQuest.steps[totalStep].description;
+            if (selectedQuest != scripts.quests.totalQuest)
             {
-                if (scripts.quests.totalQuest.steps[i].name != "")
-                {
-                    if (i == scripts.quests.totalStep)
-                        pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -<b>" + scripts.quests.totalQuest.steps[i].name + "</b>";
-                    else
-                        pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -" + scripts.quests.totalQuest.steps[i].name;
-                }
+                buttonChoiceActiveQuest.gameObject.SetActive(true);
+                buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate { scripts.quests.ChoiceActiveQuest(selectedQuest.nameEn); });
             }
+            else
+                buttonChoiceActiveQuest.gameObject.SetActive(false);
         }
+        pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick.AddListener(delegate { ChoicePage(mode); });
     }
 
     public void ManageNotePanel()

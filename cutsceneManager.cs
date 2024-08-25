@@ -33,6 +33,8 @@ public class cutsceneManager : MonoBehaviour
             totalCutscene.steps[step].objectsChangeSprite[i].obj.GetComponent<SpriteRenderer>().sprite = totalCutscene.steps[step].objectsChangeSprite[i].newSprite;
         for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
             totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
+        for (int i = 0; i < totalCutscene.steps[step].animatorsChanges.Length; i++)
+            totalCutscene.steps[step].animatorsChanges[i].animator.SetBool(totalCutscene.steps[step].animatorsChanges[i].boolName,totalCutscene.steps[step].animatorsChanges[i].boolStatus);
 
         if (totalCutscene.steps[step].moveToLocation != "")
             scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, "0", totalCutscene.steps[step].toLocationWithFade);
@@ -89,12 +91,20 @@ public class cutscene
     }
 
     [System.Serializable]
+    public class animations
+    {
+        public Animator animator;
+        public string boolName;
+        public bool boolStatus;
+    }
+
+    [System.Serializable]
     public class cutsceneStep
     {
         public string name;
         [Header("PostProcessing")]
         public VolumeProfile newVolumeProfile;
-        
+
         [Header("DoInScripts")]
         public string activatedDialog;
         public string moveToLocation;
@@ -106,6 +116,8 @@ public class cutscene
         public objectState[] objectsChangeState = new objectState[0];
         public objectTransform[] objectsChangeTransform = new objectTransform[0];
         public objectSprite[] objectsChangeSprite = new objectSprite[0];
+        public animations[] animatorsChanges = new animations[0];
+
         [Header("dark")]
         public float timeDarkStart;
         public float timeDarkEnd;
