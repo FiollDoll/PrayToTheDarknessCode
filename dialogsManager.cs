@@ -15,8 +15,9 @@ public class dialogsManager : MonoBehaviour
     private bool animatingText;
     public dialog[] dialogs = new dialog[0];
     private dialog activatedDialog;
-    private int totalStep;
+    [SerializeField] private int totalStep;
     public GameObject dialogMenu;
+    private bool dialogEnding;
     [SerializeField] private allScripts scripts;
 
     private void Start() => dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
@@ -59,8 +60,8 @@ public class dialogsManager : MonoBehaviour
                     scripts.player.canMove = false;
                     activatedDialog = totalDialog;
                     textName.text = activatedDialog.steps[0].totalNpc.name;
-                    if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld) && activatedDialog.steps[0].animateTalking)
-                        GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
+                    if (GameObject.Find(activatedDialog.steps[0].totalNpc.nameInWorld) && activatedDialog.steps[0].animateTalking)
+                        GameObject.Find(activatedDialog.steps[0].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
                     StartCoroutine(SetText(activatedDialog.steps[0].text));
                     iconImage.sprite = activatedDialog.steps[0].icon;
                     break;
@@ -71,12 +72,13 @@ public class dialogsManager : MonoBehaviour
 
     private void DialogMoveNext()
     {
-        if ((totalStep + 1) >= activatedDialog.steps.Length) // Окончание
+        if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld) && activatedDialog.steps[totalStep].animateTalking)
+            GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
+        if ((totalStep + 1) == activatedDialog.steps.Length) // Окончание
         {
-            if (activatedDialog.activatedCutsceneStepAtEnd != -1 && activatedDialog.steps[totalStep].animateTalking)
+            dialogEnding = true;
+            if (activatedDialog.activatedCutsceneStepAtEnd != -1)
                 scripts.cutsceneManager.ActivateCutsceneStep(activatedDialog.activatedCutsceneStepAtEnd);
-            if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld))
-                GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
 
             totalStep = 0;
             Sequence sequence = DOTween.Sequence();
@@ -114,12 +116,11 @@ public class dialogsManager : MonoBehaviour
                 scripts.player.canMove = true;
                 scripts.player.virtualCamera.Follow = scripts.player.transform;
                 activatedDialog = null;
+                dialogEnding = false;
             });
         }
         else if ((totalStep + 1) < activatedDialog.steps.Length)
         {
-            if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld) && activatedDialog.steps[totalStep].animateTalking)
-                GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
             totalStep++;
             textName.text = activatedDialog.steps[totalStep].totalNpc.name;
             if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld) && activatedDialog.steps[totalStep].animateTalking)
@@ -178,14 +179,17 @@ public class dialogsManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (animatingText)
+                if (!dialogEnding)
                 {
-                    animatingText = false;
-                    StopAllCoroutines();
-                    textDialog.text = activatedDialog.steps[totalStep].text;
+                    if (animatingText)
+                    {
+                        animatingText = false;
+                        StopAllCoroutines();
+                        textDialog.text = activatedDialog.steps[totalStep].text;
+                    }
+                    else
+                        DialogMoveNext();
                 }
-                else
-                    DialogMoveNext();
             }
         }
     }

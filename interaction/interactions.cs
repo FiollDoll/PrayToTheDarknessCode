@@ -113,11 +113,11 @@ public class interactions : MonoBehaviour
                             return;
                     }
                 }
-                interLabelText.text = "";
                 switch (totalColliderMode)
                 {
                     case "item":
                         scripts.inventory.AddItem(totalColliderName);
+                        interLabelText.text = "";
                         Destroy(GameObject.Find(totalColliderName));
                         break;
                     case "location":
