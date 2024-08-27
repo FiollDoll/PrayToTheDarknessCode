@@ -58,7 +58,9 @@ public class dialogsManager : MonoBehaviour
                         totalDialog.readed = true;
                     scripts.player.canMove = false;
                     activatedDialog = totalDialog;
-                    textName.text = activatedDialog.steps[0].name;
+                    textName.text = activatedDialog.steps[0].totalNpc.name;
+                    if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld) && activatedDialog.steps[0].animateTalking)
+                        GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
                     StartCoroutine(SetText(activatedDialog.steps[0].text));
                     iconImage.sprite = activatedDialog.steps[0].icon;
                     break;
@@ -71,8 +73,11 @@ public class dialogsManager : MonoBehaviour
     {
         if ((totalStep + 1) >= activatedDialog.steps.Length) // Окончание
         {
-            if (activatedDialog.activatedCutsceneStepAtEnd != -1)
+            if (activatedDialog.activatedCutsceneStepAtEnd != -1 && activatedDialog.steps[totalStep].animateTalking)
                 scripts.cutsceneManager.ActivateCutsceneStep(activatedDialog.activatedCutsceneStepAtEnd);
+            if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld))
+                GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
+
             totalStep = 0;
             Sequence sequence = DOTween.Sequence();
             if (activatedDialog.bigPicture != null && !activatedDialog.disableFadeAtEnd)
@@ -113,8 +118,12 @@ public class dialogsManager : MonoBehaviour
         }
         else if ((totalStep + 1) < activatedDialog.steps.Length)
         {
+            if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld) && activatedDialog.steps[totalStep].animateTalking)
+                GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
             totalStep++;
-            textName.text = activatedDialog.steps[totalStep].name;
+            textName.text = activatedDialog.steps[totalStep].totalNpc.name;
+            if (GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld) && activatedDialog.steps[totalStep].animateTalking)
+                GameObject.Find(activatedDialog.steps[totalStep].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
             StartCoroutine(SetText(activatedDialog.steps[totalStep].text));
             iconImage.sprite = activatedDialog.steps[totalStep].icon;
             if (activatedDialog.steps[totalStep].cameraTarget != null)
@@ -204,18 +213,7 @@ public class dialog
 [System.Serializable]
 public class dialogStep
 {
-    [HideInInspector]
-    public string name
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return ruName;
-            else
-                return enName;
-        }
-    }
-    public string ruName, enName;
+    public NPC totalNpc;
     [HideInInspector]
     public string text
     {
@@ -228,7 +226,24 @@ public class dialogStep
         }
     }
     public string ruText, enText;
-    public Sprite icon;
+    public bool animateTalking = true;
+    public enum iconMood { standart, happy, angry, sad }
+    public iconMood iconMoodSelected;
+    public Sprite icon
+    {
+        get
+        {
+            if (iconMoodSelected == iconMood.standart)
+                return totalNpc.icon.standartIcon;
+            else if (iconMoodSelected == iconMood.happy)
+                return totalNpc.icon.happyIcon;
+            else if (iconMoodSelected == iconMood.angry)
+                return totalNpc.icon.angryIcon;
+            else if (iconMoodSelected == iconMood.sad)
+                return totalNpc.icon.sadIcon;
+            return null;
+        }
+    }
     public int activatedCutsceneStep = -1;
     public Transform cameraTarget;
 }

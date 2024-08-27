@@ -11,6 +11,7 @@ public class extraInteraction : MonoBehaviour
 public class extraInter
 {
     public string interName;
+    public string interLabel;
     // Распространяется на tag interact и item
     [Header("QuestSettings")]
     [Tooltip("Требуемый квест для применения")] public string nameQuestRequired;

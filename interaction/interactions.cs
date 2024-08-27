@@ -1,24 +1,17 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using DG.Tweening;
 public class interactions : MonoBehaviour
 {
-    [SerializeField] private GameObject iconInteractionObj, floorChangeMenu;
+    [SerializeField] private GameObject floorChangeMenu;
     [SerializeField] private Sprite iconDefault, iconLocation;
+    [SerializeField] private TextMeshProUGUI interLabelText;
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
     extraInter selectedEI = null;
-
-    private void IconInteractionActivate(bool status, int mode = 0)
-    {
-        iconInteractionObj.gameObject.SetActive(status);
-        if (mode == 0)
-            iconInteractionObj.GetComponent<Image>().sprite = iconDefault;
-        else
-            iconInteractionObj.GetComponent<Image>().sprite = iconLocation;
-    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -44,15 +37,20 @@ public class interactions : MonoBehaviour
                     if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
                         scripts.locations.ActivateLocation(totalColliderName, spawnName);
                     else
-                        IconInteractionActivate(true, 1);
+                    {
+                        if (other.gameObject.GetComponent<extraInteraction>() != null) // Для особых случаев
+                            interLabelText.text = other.gameObject.GetComponent<extraInteraction>().interactions[0].interLabel;
+                        else
+                            interLabelText.text = scripts.locations.GetLocation(totalColliderName).name;
+                    }
                 }
                 break;
             case "cutscene":
             case "interact":
             case "item":
-                if (GameObject.Find(other.gameObject.name).GetComponent<extraInteraction>() != null)
+                if (other.gameObject.GetComponent<extraInteraction>() != null)
                 {
-                    extraInteraction EI = GameObject.Find(other.gameObject.name).GetComponent<extraInteraction>();
+                    extraInteraction EI = other.gameObject.GetComponent<extraInteraction>();
                     for (int i = 0; i < EI.interactions.Length; i++)
                     {
                         extraInter totalEI = EI.interactions[i];
@@ -65,13 +63,13 @@ public class interactions : MonoBehaviour
                         if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
                             continue;
                         selectedEI = EI.interactions[i];
-                        GameObject.Find(other.gameObject.name).gameObject.name = totalEI.interName; // Сделано плохо
+                        other.gameObject.name = totalEI.interName; // Сделано плохо
+                        interLabelText.text = selectedEI.interLabel;
                         break;
                     }
                     if (selectedEI == null)
                         return;
                 }
-                IconInteractionActivate(true);
                 totalColliderName = other.gameObject.name;
                 totalColliderMode = other.gameObject.tag;
                 break;
@@ -90,7 +88,7 @@ public class interactions : MonoBehaviour
             case "interact":
             case "item":
             case "location":
-                IconInteractionActivate(false);
+                interLabelText.text = "";
                 break;
         }
         if (floorChangeMenu.gameObject.activeSelf)
@@ -115,11 +113,10 @@ public class interactions : MonoBehaviour
                             return;
                     }
                 }
-
+                interLabelText.text = "";
                 switch (totalColliderMode)
                 {
                     case "item":
-                        IconInteractionActivate(false);
                         scripts.inventory.AddItem(totalColliderName);
                         Destroy(GameObject.Find(totalColliderName));
                         break;
@@ -140,6 +137,7 @@ public class interactions : MonoBehaviour
                         }
                         break;
                 }
+
                 if (selectedEI != null)
                 {
                     if (selectedEI.darkAfterUse)

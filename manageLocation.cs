@@ -26,34 +26,28 @@ public class manageLocation : MonoBehaviour
             player.transform.position = location.spawns[int.Parse(spawn)].position;
         }
 
-        foreach (location location in locations)
+        totalLocation = GetLocation(name);
+        if (withFade)
         {
-            if (location.name == name)
+            Sequence sequence = DOTween.Sequence();
+            Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+            fadeAnimation.OnComplete(() =>
             {
-                totalLocation = location;
-                if (withFade)
-                {
-                    Sequence sequence = DOTween.Sequence();
-                    Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                    fadeAnimation.OnComplete(() =>
-                    {
-                        LocationActivated(location);
-                    });
-                    sequence.Append(fadeAnimation);
-                    sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                    sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
-                }
-                else
-                    LocationActivated(location);
-            }
+                LocationActivated(totalLocation);
+            });
+            sequence.Append(fadeAnimation);
+            sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+            sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
         }
+        else
+            LocationActivated(totalLocation);
     }
 
     public location GetLocation(string name)
     {
         foreach (location location in locations)
         {
-            if (location.name == name)
+            if (location.gameName == name)
                 return location;
         }
         return null;
@@ -64,7 +58,19 @@ public class manageLocation : MonoBehaviour
 [System.Serializable]
 public class location
 {
-    public string name;
+    public string gameName;
+    [HideInInspector]
+    public string name
+    {
+        get
+        {
+            if (PlayerPrefs.GetString("language") == "ru")
+                return ruName;
+            else
+                return enName;
+        }
+    }
+    public string ruName, enName;
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;
     public Transform[] spawns; // 0 - left, 1 - right, 2 - up, 3 - down
