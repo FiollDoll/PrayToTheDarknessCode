@@ -231,7 +231,7 @@ public class dialogStep
     }
     public string ruText, enText;
     public bool animateTalking = true;
-    public enum iconMood { standart, happy, angry, sad }
+    public enum iconMood { standart, happy, angry, sad, scary, wonder, confusion }
     public iconMood iconMoodSelected;
     public Sprite icon
     {
@@ -245,6 +245,12 @@ public class dialogStep
                 return totalNpc.icon.angryIcon;
             else if (iconMoodSelected == iconMood.sad)
                 return totalNpc.icon.sadIcon;
+            else if (iconMoodSelected == iconMood.scary)
+                return totalNpc.icon.scaryIcon;
+            else if (iconMoodSelected == iconMood.wonder)
+                return totalNpc.icon.wonderIcon;
+            else if (iconMoodSelected == iconMood.confusion)
+                return totalNpc.icon.confusionIcon;
             return null;
         }
     }

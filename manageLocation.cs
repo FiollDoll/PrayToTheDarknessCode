@@ -24,6 +24,12 @@ public class manageLocation : MonoBehaviour
         {
             scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
             player.transform.position = location.spawns[int.Parse(spawn)].position;
+            NPC_movement[] NPCs = GameObject.FindObjectsOfType<NPC_movement>();
+            foreach(NPC_movement totalNPC in NPCs)
+            {
+                if (totalNPC.moveToPlayer)
+                    totalNPC.gameObject.transform.position = location.spawns[int.Parse(spawn)].position;
+            }
         }
 
         totalLocation = GetLocation(name);
