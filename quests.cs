@@ -62,7 +62,7 @@ public class quests : MonoBehaviour
             UpdateQuestUI();
         });
         sequence.Append(fadeAnimation);
-        sequence.Append(textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-340, 0.5f).SetEase(Ease.OutQuart));
+        sequence.Append(textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
         if (totalQuest.steps[totalQuest.totalStep].delayNextStep != 0)
             StartCoroutine(StartStepDelay(totalQuest.steps[totalQuest.totalStep].delayNextStep));
