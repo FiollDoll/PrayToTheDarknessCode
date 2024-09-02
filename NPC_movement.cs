@@ -29,10 +29,15 @@ public class NPC_movement : MonoBehaviour
         if (!playerInCollider && moveToPlayer)
         {
             transform.position = Vector3.MoveTowards(transform.position, playerTransform.position, speed * Time.deltaTime);
+            GetComponent<Animator>().SetBool("walk", true);
             if (playerTransform.position.x > transform.position.x)
                 GetComponent<SpriteRenderer>().flipX = false;
             else
                 GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else
+        {
+            //GetComponent<Animator>().SetBool("walk", false);
         }
     }
 }

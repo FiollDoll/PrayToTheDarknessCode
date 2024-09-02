@@ -134,6 +134,8 @@ public class interactions : MonoBehaviour
                         {
                             if (!scripts.dialogsManager.dialogMenu.activeSelf)
                                 scripts.dialogsManager.ActivateDialog(totalColliderName);
+                            interLabelText.text = "";
+                            totalColliderName = "";
                         }
                         break;
                 }

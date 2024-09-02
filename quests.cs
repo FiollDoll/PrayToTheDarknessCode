@@ -54,6 +54,7 @@ public class quests : MonoBehaviour
             else
                 totalQuest = null;
         }
+        
         Sequence sequence = DOTween.Sequence();
 
         Tween fadeAnimation = textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-600, 0.5f).SetEase(Ease.InQuart);
@@ -64,6 +65,10 @@ public class quests : MonoBehaviour
         sequence.Append(fadeAnimation);
         sequence.Append(textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+        
+        if (totalQuest == null)
+            return;
+            
         if (totalQuest.steps[totalQuest.totalStep].delayNextStep != 0)
             StartCoroutine(StartStepDelay(totalQuest.steps[totalQuest.totalStep].delayNextStep));
         if (totalQuest.steps[totalQuest.totalStep].startDialog != "")

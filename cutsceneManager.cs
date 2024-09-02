@@ -3,14 +3,18 @@ using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using DG.Tweening;
+using Cinemachine;
 
 public class cutsceneManager : MonoBehaviour
 {
     public cutscene totalCutscene;
-    [SerializeField] private GameObject playerCamera;
+    [SerializeField] private GameObject playerCamera, virtualCamera;
     [SerializeField] private cutscene[] cutsceneInGame = new cutscene[0];
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
+    private float startCameraSize;
+
+    private void Start() => startCameraSize = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
 
     public void ActivateCutscene(string name)
     {
@@ -46,6 +50,8 @@ public class cutsceneManager : MonoBehaviour
         if (totalCutscene.steps[step].newVolumeProfile != null)
             playerCamera.GetComponent<Volume>().profile = totalCutscene.steps[step].newVolumeProfile;
 
+        if (totalCutscene.steps[step].editCameraSize != 0)
+            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = startCameraSize + totalCutscene.steps[step].editCameraSize;
     }
 
     public void ActivateCutsceneStep(int step)
@@ -117,6 +123,9 @@ public class cutscene
         public objectTransform[] objectsChangeTransform = new objectTransform[0];
         public objectSprite[] objectsChangeSprite = new objectSprite[0];
         public animations[] animatorsChanges = new animations[0];
+
+        [Header("Camera")]
+        public float editCameraSize;
 
         [Header("dark")]
         public float timeDarkStart;

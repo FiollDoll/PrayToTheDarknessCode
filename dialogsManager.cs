@@ -158,6 +158,8 @@ public class dialogsManager : MonoBehaviour
                 scripts.player.virtualCamera.Follow = selectedStep.cameraTarget;
             else
                 scripts.player.virtualCamera.Follow = scripts.player.transform;
+            if (selectedStep.questStart != "")
+                scripts.quests.ActivateQuest(selectedStep.questStart);
         }
         
         void ActivateChoiceMenu()
@@ -328,6 +330,7 @@ public class dialogStep
         }
     }
     public int activatedCutsceneStep = -1;
+    public string questStart;
     public Transform cameraTarget;
 }
 
