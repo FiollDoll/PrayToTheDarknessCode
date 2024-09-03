@@ -11,7 +11,7 @@ public class interactions : MonoBehaviour
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
-    extraInter selectedEI = null;
+    public extraInter selectedEI = null;
 
     private void OnTriggerEnter2D(Collider2D other)
     {

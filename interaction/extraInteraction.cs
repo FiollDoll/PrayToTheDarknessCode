@@ -21,6 +21,7 @@ public class extraInter
     [Tooltip("Уничтожение после использования(item удаляется в любом случае)")] public bool destroyAfterInter;
 
     [Header("OtherSettings")]
+    [Tooltip("Использование предмета")] public string itemNameUse;
     [Tooltip("Затемнение")] public bool darkAfterUse;
     [Tooltip("Смена внешки")] public bool swapPlayerVisual;
     [Tooltip("Номер внешки")] public int playerVisual;

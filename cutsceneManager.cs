@@ -12,9 +12,14 @@ public class cutsceneManager : MonoBehaviour
     [SerializeField] private cutscene[] cutsceneInGame = new cutscene[0];
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
+    private Volume volume;
     private float startCameraSize;
 
-    private void Start() => startCameraSize = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
+    private void Start()
+    {
+        volume = playerCamera.GetComponent<Volume>();
+        startCameraSize = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
+    }
 
     public void ActivateCutscene(string name)
     {
@@ -38,7 +43,7 @@ public class cutsceneManager : MonoBehaviour
         for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
             totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
         for (int i = 0; i < totalCutscene.steps[step].animatorsChanges.Length; i++)
-            totalCutscene.steps[step].animatorsChanges[i].animator.SetBool(totalCutscene.steps[step].animatorsChanges[i].boolName,totalCutscene.steps[step].animatorsChanges[i].boolStatus);
+            totalCutscene.steps[step].animatorsChanges[i].animator.SetBool(totalCutscene.steps[step].animatorsChanges[i].boolName, totalCutscene.steps[step].animatorsChanges[i].boolStatus);
 
         if (totalCutscene.steps[step].moveToLocation != "")
             scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, "0", totalCutscene.steps[step].toLocationWithFade);
@@ -47,8 +52,9 @@ public class cutsceneManager : MonoBehaviour
             scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
         if (totalCutscene.steps[step].questStepNext)
             scripts.quests.NextStep();
+
         if (totalCutscene.steps[step].newVolumeProfile != null)
-            playerCamera.GetComponent<Volume>().profile = totalCutscene.steps[step].newVolumeProfile;
+            volume.profile = totalCutscene.steps[step].newVolumeProfile;
 
         if (totalCutscene.steps[step].editCameraSize != 0)
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = startCameraSize + totalCutscene.steps[step].editCameraSize;

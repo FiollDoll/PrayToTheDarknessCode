@@ -42,7 +42,8 @@ public class inventory : MonoBehaviour
                 scripts.quests.NextStep();
         }
 
-        playerItems.RemoveAt(slot);
+        if (playerItems[slot].removeAfterUse)
+            playerItems.RemoveAt(slot);
         ManageInventoryPanel(); // Закрытие
     }
 
@@ -52,7 +53,20 @@ public class inventory : MonoBehaviour
         itemInfoMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
         itemInfoMenu.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
         int num = id;
-        itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = playerItems[num].canUse;
+        if (playerItems[num].canUse)
+        {
+            if (playerItems[num].useInInventory)
+                itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+            else if (playerItems[num].useInCollider)
+            {
+                if (scripts.interactions.selectedEI.itemNameUse == playerItems[num].nameEn)
+                    itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+                else
+                    itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = false;
+            }
+            else
+                itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = false;
+        }
         itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().onClick.AddListener(delegate { UseItem(num); });
     }
 
@@ -105,8 +119,14 @@ public class item
         }
     }
     public Sprite icon;
+
     [Header("UseSettings")]
     public bool canUse;
+    public bool removeAfterUse = true;
+    public bool useInInventory;
+    public bool useInCollider;
+
+    [Header("UseInInventorySetting")]
     public string activateNameDialog;
     public string questName;
     public bool questNextStep;
