@@ -10,4 +10,5 @@ public class allScripts : MonoBehaviour
     public notebook notebook;
     public quests quests;
     public cutsceneManager cutsceneManager;
+    public main main;
 }

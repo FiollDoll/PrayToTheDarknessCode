@@ -19,7 +19,7 @@ public class eyes : MonoBehaviour
     private void Update()
     {
         toTarget = transform.parent.InverseTransformPoint(Target.position) - _initPos;
-        if (toTarget.x < 10 && toTarget.x > -10)
+        if (toTarget.x < 20 && toTarget.x > -20)
             transform.localPosition = _initPos + Vector3.ClampMagnitude(toTarget * TrackingForce, Radius);
     }
 }

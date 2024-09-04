@@ -9,7 +9,6 @@ public class inventory : MonoBehaviour
     [SerializeField] private item[] gameItems = new item[0];
     [SerializeField] private GameObject inventorySlotPrefab;
     [SerializeField] private GameObject itemInfoMenu;
-    [SerializeField] private Sprite nullSprite;
     [SerializeField] private allScripts scripts;
 
     public void ManageInventoryPanel()

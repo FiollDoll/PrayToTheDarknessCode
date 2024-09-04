@@ -113,6 +113,23 @@ public class interactions : MonoBehaviour
                             return;
                     }
                 }
+                if (selectedEI != null)
+                {
+                    if (selectedEI.darkAfterUse)
+                    {
+                        Sequence sequence = DOTween.Sequence();
+                        Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+                        sequence.Append(fadeAnimation);
+                        sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+                        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+                    }
+                    if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalQuest.totalStep)
+                        scripts.quests.NextStep();
+                    if (selectedEI.swapPlayerVisual)
+                        scripts.player.ChangeVisual(selectedEI.playerVisual);
+                    if (selectedEI.destroyAfterInter)
+                        Destroy(GameObject.Find(totalColliderName));
+                }
                 switch (totalColliderMode)
                 {
                     case "item":
@@ -138,24 +155,6 @@ public class interactions : MonoBehaviour
                             totalColliderName = "";
                         }
                         break;
-                }
-
-                if (selectedEI != null)
-                {
-                    if (selectedEI.darkAfterUse)
-                    {
-                        Sequence sequence = DOTween.Sequence();
-                        Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                        sequence.Append(fadeAnimation);
-                        sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-                    }
-                    if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalQuest.totalStep)
-                        scripts.quests.NextStep();
-                    if (selectedEI.swapPlayerVisual)
-                        scripts.player.ChangeVisual(selectedEI.playerVisual);
-                    if (selectedEI.destroyAfterInter)
-                        Destroy(GameObject.Find(totalColliderName));
                 }
             }
         }
