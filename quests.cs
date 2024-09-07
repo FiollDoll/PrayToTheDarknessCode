@@ -37,7 +37,7 @@ public class quests : MonoBehaviour
     {
         foreach (quest quest in gameQuests)
         {
-            if (quest.nameEn == name)
+            if (quest.nameInGame == name)
                 return quest;
         }
         return null;
@@ -54,7 +54,7 @@ public class quests : MonoBehaviour
             else
                 totalQuest = null;
         }
-        
+
         Sequence sequence = DOTween.Sequence();
 
         Tween fadeAnimation = textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-600, 0.5f).SetEase(Ease.InQuart);
@@ -65,10 +65,10 @@ public class quests : MonoBehaviour
         sequence.Append(fadeAnimation);
         sequence.Append(textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-        
+
         if (totalQuest == null)
             return;
-            
+
         if (totalQuest.steps[totalQuest.totalStep].delayNextStep != 0)
             StartCoroutine(StartStepDelay(totalQuest.steps[totalQuest.totalStep].delayNextStep));
         if (totalQuest.steps[totalQuest.totalStep].startDialog != "")
@@ -79,8 +79,16 @@ public class quests : MonoBehaviour
     {
         if (totalQuest != null)
         {
-            textNameQuest.text = totalQuest.name;
-            textQuest.text = totalQuest.steps[totalQuest.totalStep].name;
+            if (totalQuest.cursedText)
+            {
+                scripts.main.SetCursedText(textNameQuest, Random.Range(5, 15));
+                scripts.main.SetCursedText(textQuest, Random.Range(5, 15));
+            }
+            else
+            {
+                textNameQuest.text = totalQuest.name;
+                textQuest.text = totalQuest.steps[totalQuest.totalStep].name;
+            }
         }
         else
         {
@@ -99,7 +107,7 @@ public class quests : MonoBehaviour
 [System.Serializable]
 public class quest
 {
-    public int questId;
+    public string nameInGame;
     public string nameRu, nameEn;
     [HideInInspector]
     public string name
@@ -127,6 +135,7 @@ public class quest
     }
     public step[] steps = new step[0];
     public int totalStep;
+    public bool cursedText;
 }
 
 [System.Serializable]

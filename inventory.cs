@@ -9,6 +9,7 @@ public class inventory : MonoBehaviour
     [SerializeField] private item[] gameItems = new item[0];
     [SerializeField] private GameObject inventorySlotPrefab;
     [SerializeField] private GameObject itemInfoMenu;
+    [SerializeField] private TextMeshProUGUI newItemText;
     [SerializeField] private allScripts scripts;
 
     public void ManageInventoryPanel()
@@ -26,6 +27,7 @@ public class inventory : MonoBehaviour
             if (item.nameEn == name)
             {
                 playerItems.Add(item);
+                StartCoroutine(ActivateNotify(item.name));
                 break;
             }
         }
@@ -87,6 +89,14 @@ public class inventory : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
             ManageInventoryPanel();
+    }
+
+    private IEnumerator ActivateNotify(string name)
+    {
+        newItemText.gameObject.SetActive(true);
+        newItemText.text = "+" + name;
+        yield return new WaitForSeconds(2);
+        newItemText.gameObject.SetActive(false);
     }
 }
 

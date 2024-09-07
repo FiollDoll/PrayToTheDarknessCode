@@ -136,6 +136,7 @@ public class cutscene
         [Header("dark")]
         public float timeDarkStart;
         public float timeDarkEnd;
+        
     }
 
     public string name;

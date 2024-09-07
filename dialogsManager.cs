@@ -64,7 +64,7 @@ public class dialogsManager : MonoBehaviour
                         totalDialog.readed = true;
                     scripts.player.canMove = false;
                     activatedDialog = totalDialog;
-                    // Вот здесь ещё подделать, если steps = 0, а choice нет
+
                     selectedStep = activatedDialog.steps[0];
                     textName.text = selectedStep.totalNpc.name;
                     if (GameObject.Find(selectedStep.totalNpc.nameInWorld) && selectedStep.animateTalking)
@@ -72,6 +72,7 @@ public class dialogsManager : MonoBehaviour
                     StartCoroutine(SetText(selectedStep.text));
                     totalMode = "dialog";
                     iconImage.sprite = selectedStep.icon;
+
                     break;
                 }
             }
@@ -117,6 +118,8 @@ public class dialogsManager : MonoBehaviour
                 scripts.notebook.AddNote(activatedDialog.noteAdd);
             if (activatedDialog.startNewDialogAfterEnd != null)
                 ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
+            if (activatedDialog.nextStepQuest)
+                scripts.quests.NextStep();
             scripts.player.canMove = true;
             scripts.player.virtualCamera.Follow = scripts.player.transform;
             activatedDialog = null;
@@ -132,11 +135,29 @@ public class dialogsManager : MonoBehaviour
         choiceDialogMenu.gameObject.SetActive(false);
         mainDialogMenu.gameObject.SetActive(true);
         totalStep = 0;
-        selectedStep = activatedDialog.steps[0];
+        selectedStep = selectedChoice.steps[0];
         textName.text = selectedChoice.steps[0].totalNpc.name;
         if (GameObject.Find(selectedChoice.steps[0].totalNpc.nameInWorld) && selectedChoice.steps[0].animateTalking)
             GameObject.Find(selectedChoice.steps[0].totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
         StartCoroutine(SetText(selectedChoice.steps[0].text));
+    }
+
+    private void ActivateChoiceMenu()
+    {
+        choiceDialogMenu.gameObject.SetActive(true);
+        mainDialogMenu.gameObject.SetActive(false);
+        foreach (Transform child in choiceDialogMenu.transform.Find("choices"))
+            Destroy(child.gameObject);
+
+        for (int i = 0; i < activatedDialog.dialogsChoices.Length; i++)
+        {
+            var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity, choiceDialogMenu.transform.Find("choices"));
+            obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = activatedDialog.dialogsChoices[i].textQuestion;
+            int num = i;
+            obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
+            if (activatedDialog.dialogsChoices[i].readed && !activatedDialog.dialogsChoices[i].moreRead)
+                obj.GetComponent<Button>().interactable = false;
+        }
     }
 
     private void DialogMoveNext()
@@ -159,24 +180,6 @@ public class dialogsManager : MonoBehaviour
                 scripts.player.virtualCamera.Follow = scripts.player.transform;
             if (selectedStep.questStart != "")
                 scripts.quests.ActivateQuest(selectedStep.questStart);
-        }
-        
-        void ActivateChoiceMenu()
-        {
-            choiceDialogMenu.gameObject.SetActive(true);
-            mainDialogMenu.gameObject.SetActive(false);
-            foreach (Transform child in choiceDialogMenu.transform.Find("choices"))
-                Destroy(child.gameObject);
-
-            for (int i = 0; i < activatedDialog.dialogsChoices.Length; i++)
-            {
-                var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity, choiceDialogMenu.transform.Find("choices"));
-                obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = activatedDialog.dialogsChoices[i].textQuestion;
-                int num = i;
-                obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
-                if (activatedDialog.dialogsChoices[i].readed)
-                    obj.GetComponent<Button>().interactable = false;
-            }
         }
 
         if (GameObject.Find(selectedStep.totalNpc.nameInWorld) && selectedStep.animateTalking)
@@ -285,6 +288,7 @@ public class dialog
     public int activatedCutsceneStepAtEnd = -1;
     public bool disableFadeAtEnd;
     public float mainPanelStartDelay; // Задержка
+    public bool nextStepQuest;
     public bool readed, moreRead;
 }
 
@@ -349,6 +353,6 @@ public class dialogStepChoice
     }
     public string ruTextQuestion, enTextQuestion;
     public dialogStep[] steps = new dialogStep[0];
-    public bool readed;
+    public bool readed, moreRead;
     public bool returnToStartChoices;
 }
