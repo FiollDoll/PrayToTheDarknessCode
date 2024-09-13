@@ -90,7 +90,7 @@ public class notebook : MonoBehaviour
             if (selectedQuest != scripts.quests.totalQuest)
             {
                 buttonChoiceActiveQuest.gameObject.SetActive(true);
-                buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate { scripts.quests.ChoiceActiveQuest(selectedQuest.nameEn); });
+                buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate { scripts.quests.ChoiceActiveQuest(selectedQuest.nameInGame); });
             }
             else
                 buttonChoiceActiveQuest.gameObject.SetActive(false);

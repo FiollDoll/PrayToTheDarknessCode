@@ -20,7 +20,7 @@ public class dialogsManager : MonoBehaviour
     [SerializeField] private int totalStep;
     public GameObject dialogMenu, mainDialogMenu, choiceDialogMenu;
     public GameObject buttonChoicePrefab;
-    private bool dialogEnding;
+    private bool dialogEnding, canStepNext;
     [SerializeField] private allScripts scripts;
 
     private void Start() => dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
@@ -34,8 +34,10 @@ public class dialogsManager : MonoBehaviour
                 if (totalDialog.nameDialog == name && !totalDialog.readed)
                 {
                     dialogMenu.gameObject.SetActive(true);
+                    canStepNext = false;
                     choiceDialogMenu.gameObject.SetActive(false);
                     mainDialogMenu.gameObject.SetActive(true);
+                    scripts.main.EndCursedText(textDialog);
                     if (totalDialog.steps[0].cameraTarget != null)
                         scripts.player.virtualCamera.Follow = totalDialog.steps[0].cameraTarget;
 
@@ -56,7 +58,12 @@ public class dialogsManager : MonoBehaviour
                     else
                         bigPicture.sprite = scripts.main.nullSprite;
                     if (totalDialog.mainPanelStartDelay == 0)
-                        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart);
+                    {
+                        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+                            {
+                                canStepNext = true;
+                            });
+                    }
                     else
                         StartCoroutine(ActivateUIMainMenuWithDelay(totalDialog, totalDialog.mainPanelStartDelay));
 
@@ -79,7 +86,7 @@ public class dialogsManager : MonoBehaviour
         }
     }
 
-    private void DialogCLose()
+    public void DialogCLose()
     {
         dialogEnding = true;
         if (activatedDialog.activatedCutsceneStepAtEnd != -1)
@@ -114,16 +121,18 @@ public class dialogsManager : MonoBehaviour
         sequence.OnComplete(() =>
         {
             dialogMenu.gameObject.SetActive(false);
-            if (activatedDialog.noteAdd != "")
-                scripts.notebook.AddNote(activatedDialog.noteAdd);
-            if (activatedDialog.startNewDialogAfterEnd != null)
-                ActivateDialog(activatedDialog.startNewDialogAfterEnd.nameDialog);
             if (activatedDialog.nextStepQuest)
                 scripts.quests.NextStep();
             scripts.player.canMove = true;
+            scripts.main.EndCursedText(textDialog);
             scripts.player.virtualCamera.Follow = scripts.player.transform;
+            if (activatedDialog.noteAdd != "")
+                scripts.notebook.AddNote(activatedDialog.noteAdd);
+            string newDialog = activatedDialog.startNewDialogAfterEnd;
             activatedDialog = null;
             dialogEnding = false;
+            if (newDialog != "")
+                ActivateDialog(newDialog);
         });
     }
 
@@ -172,14 +181,20 @@ public class dialogsManager : MonoBehaviour
             textName.text = selectedStep.totalNpc.name;
             if (GameObject.Find(selectedStep.totalNpc.nameInWorld) && selectedStep.animateTalking)
                 GameObject.Find(selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
-            StartCoroutine(SetText(selectedStep.text));
+
+            if (selectedStep.cursedText)
+                scripts.main.SetCursedText(textDialog, Random.Range(5, 40));
+            else
+                StartCoroutine(SetText(selectedStep.text));
+
             iconImage.sprite = selectedStep.icon;
             if (selectedStep.cameraTarget != null)
                 scripts.player.virtualCamera.Follow = selectedStep.cameraTarget;
             else
                 scripts.player.virtualCamera.Follow = scripts.player.transform;
+
             if (selectedStep.questStart != "")
-                scripts.quests.ActivateQuest(selectedStep.questStart);
+                scripts.quests.ActivateQuest(selectedStep.questStart, true);
         }
 
         if (GameObject.Find(selectedStep.totalNpc.nameInWorld) && selectedStep.animateTalking)
@@ -246,7 +261,10 @@ public class dialogsManager : MonoBehaviour
     private IEnumerator ActivateUIMainMenuWithDelay(dialog totalDialog, float delay)
     {
         yield return new WaitForSeconds(delay);
-        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart);
+        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+                {
+                    canStepNext = true;
+                });
     }
 
     private void Update()
@@ -255,7 +273,7 @@ public class dialogsManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (!dialogEnding)
+                if (!dialogEnding && canStepNext)
                 {
                     if (animatingText)
                     {
@@ -279,7 +297,7 @@ public class dialog
     [Tooltip("Обычные этапы диалога")] public dialogStep[] steps = new dialogStep[0];
     [Tooltip("Диалоги с выбором варианта. Начинается после steps")] public dialogStepChoice[] dialogsChoices = new dialogStepChoice[0];
     [Header("AfterEnd")]
-    public dialog startNewDialogAfterEnd;
+    public string startNewDialogAfterEnd;
     public bool darkAfterEnd;
     [Tooltip("Работает только с darkAfterEnd")] public Transform posAfterEnd;
     [Header("Other")]
@@ -308,6 +326,7 @@ public class dialogStep
         }
     }
     public string ruText, enText;
+    public bool cursedText;
     public bool animateTalking = true;
     public enum iconMood { standart, happy, angry, sad, scary, wonder, confusion }
     public iconMood iconMoodSelected;

@@ -54,7 +54,7 @@ public class interactions : MonoBehaviour
                     for (int i = 0; i < EI.interactions.Length; i++)
                     {
                         extraInter totalEI = EI.interactions[i];
-                        if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameEn)
+                        if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
                         {
                             if (totalEI.nameQuestRequired != "")
                                 continue;

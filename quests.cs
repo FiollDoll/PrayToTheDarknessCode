@@ -14,12 +14,12 @@ public class quests : MonoBehaviour
 
     private void Start() => ActivateQuest("Good morning");
 
-    public void ActivateQuest(string name)
+    public void ActivateQuest(string name, bool extraActivate = false)
     {
         quest newQuest = FindQuest(name);
         if (newQuest != null)
         {
-            if (totalQuest != null)
+            if (totalQuest != null || extraActivate)
                 totalQuest = newQuest;
             activeQuests.Add(newQuest);
             UpdateQuestUI();
@@ -30,7 +30,7 @@ public class quests : MonoBehaviour
     {
         totalQuest = FindQuest(name);
         UpdateQuestUI();
-        scripts.notebook.ChoicePage(0);
+        scripts.notebook.ChoicePage(1);
     }
 
     public quest FindQuest(string name)
@@ -86,6 +86,8 @@ public class quests : MonoBehaviour
             }
             else
             {
+                scripts.main.EndCursedText(textNameQuest);
+                scripts.main.EndCursedText(textQuest);
                 textNameQuest.text = totalQuest.name;
                 textQuest.text = totalQuest.steps[totalQuest.totalStep].name;
             }

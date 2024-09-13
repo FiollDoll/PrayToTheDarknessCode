@@ -10,7 +10,8 @@ public class prehistory : MonoBehaviour
     [SerializeField] private DialogMini[] dialogs = new DialogMini[0];
     [SerializeField] private GameObject prehistoryObj, trainingObj;
     [SerializeField] private TextMeshProUGUI textDialog;
-    public bool prehistoryEnded = false; // Потом убрать true
+    public bool prehistoryEnded = false;
+    private int step;
 
     private void Update()
     {
@@ -21,7 +22,13 @@ public class prehistory : MonoBehaviour
         }
     }
 
-    public void ActivateText(int text) => StartCoroutine(SetText(text));
+    public void ActivateText() => StartCoroutine(SetText(step));
+    public void EndPrehistory()
+    {
+        prehistoryObj.gameObject.SetActive(false);
+        trainingObj.gameObject.SetActive(true);
+        prehistoryEnded = true;
+    }
 
     private IEnumerator SetText(int text)
     {
@@ -32,13 +39,14 @@ public class prehistory : MonoBehaviour
             textDialog.text += tChar;
             yield return new WaitForSeconds(0.06f);
         }
+        step++;
     }
 }
 
 [System.Serializable]
 public class DialogMini
 {
-        [HideInInspector]
+    [HideInInspector]
     public string text
     {
         get

@@ -36,20 +36,18 @@ public class cutsceneManager : MonoBehaviour
 
     public void StepDo(int step)
     {
-        for (int i = 0; i < totalCutscene.steps[step].objectsChangeState.Length; i++)
-            totalCutscene.steps[step].objectsChangeState[i].obj.gameObject.SetActive(totalCutscene.steps[step].objectsChangeState[i].newState);
-        for (int i = 0; i < totalCutscene.steps[step].objectsChangeSprite.Length; i++)
-            totalCutscene.steps[step].objectsChangeSprite[i].obj.GetComponent<SpriteRenderer>().sprite = totalCutscene.steps[step].objectsChangeSprite[i].newSprite;
-        for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
-            totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
-        for (int i = 0; i < totalCutscene.steps[step].animatorsChanges.Length; i++)
-            totalCutscene.steps[step].animatorsChanges[i].animator.SetBool(totalCutscene.steps[step].animatorsChanges[i].boolName, totalCutscene.steps[step].animatorsChanges[i].boolStatus);
-
         if (totalCutscene.steps[step].moveToLocation != "")
             scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, "0", totalCutscene.steps[step].toLocationWithFade);
 
+        if (totalCutscene.steps[step].closeDialogMenu)
+            scripts.dialogsManager.DialogCLose();
+        
         if (totalCutscene.steps[step].activatedDialog != "")
             scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
+        
+        if (totalCutscene.steps[step].addNote != "")
+            scripts.notebook.AddNote(totalCutscene.steps[step].addNote);
+
         if (totalCutscene.steps[step].questStepNext)
             scripts.quests.NextStep();
 
@@ -58,6 +56,15 @@ public class cutsceneManager : MonoBehaviour
 
         if (totalCutscene.steps[step].editCameraSize != 0)
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = startCameraSize + totalCutscene.steps[step].editCameraSize;
+
+        for (int i = 0; i < totalCutscene.steps[step].objectsChangeState.Length; i++)
+            totalCutscene.steps[step].objectsChangeState[i].obj.gameObject.SetActive(totalCutscene.steps[step].objectsChangeState[i].newState);
+        for (int i = 0; i < totalCutscene.steps[step].objectsChangeSprite.Length; i++)
+            totalCutscene.steps[step].objectsChangeSprite[i].obj.GetComponent<SpriteRenderer>().sprite = totalCutscene.steps[step].objectsChangeSprite[i].newSprite;
+        for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
+            totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
+        for (int i = 0; i < totalCutscene.steps[step].animatorsChanges.Length; i++)
+            totalCutscene.steps[step].animatorsChanges[i].animator.SetBool(totalCutscene.steps[step].animatorsChanges[i].boolName, totalCutscene.steps[step].animatorsChanges[i].boolStatus);
     }
 
     public void ActivateCutsceneStep(int step)
@@ -122,7 +129,9 @@ public class cutscene
         public string moveToLocation;
         public bool toLocationWithFade = true;
         public string addNote;
+        public bool closeDialogMenu;
         public bool questStepNext;
+        public bool lockNote, lockInventory;
 
         [Header("Objects")]
         public objectState[] objectsChangeState = new objectState[0];
@@ -136,7 +145,7 @@ public class cutscene
         [Header("dark")]
         public float timeDarkStart;
         public float timeDarkEnd;
-        
+
     }
 
     public string name;

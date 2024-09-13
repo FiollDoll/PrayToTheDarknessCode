@@ -49,6 +49,8 @@ public class manageLocation : MonoBehaviour
             LocationActivated(totalLocation);
     }
 
+    public void FastMoveToLocation(string name) => ActivateLocation(name, "0");
+
     public location GetLocation(string name)
     {
         foreach (location location in locations)

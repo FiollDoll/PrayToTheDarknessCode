@@ -1,6 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class main : MonoBehaviour
@@ -9,6 +9,7 @@ public class main : MonoBehaviour
     private string charsOnString = "ÁаÇĞĔÖŌØŸÚÑÍDsViOlWQcx[]pljt1234567890CvmdSueWsadsczxvbh;qoewqri";
 
     [SerializeField] private allScripts scripts;
+    private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
 
     private string CursedText(int len)
     {
@@ -20,9 +21,27 @@ public class main : MonoBehaviour
         return totalString;
     }
 
-    public void SetCursedText(TextMeshProUGUI text, int len) => StartCoroutine(GenerateCursedText(text, len));
-    public void EndCursedText() => StopCoroutine("GenerateCursedText");
-    private IEnumerator GenerateCursedText(TextMeshProUGUI text, int len) // Сделать остановку
+    public void SetCursedText(TextMeshProUGUI text, int len) 
+    {
+        if (cursedTextCoroutines.ContainsKey(text))
+        {
+            StopCoroutine(cursedTextCoroutines[text]);
+            cursedTextCoroutines.Remove(text);
+        }
+        Coroutine newCoroutine = StartCoroutine(GenerateCursedText(text, len));
+        cursedTextCoroutines[text] = newCoroutine;
+    }
+
+    public void EndCursedText(TextMeshProUGUI text) 
+    {
+        if (cursedTextCoroutines.TryGetValue(text, out Coroutine coroutine))
+        {
+            StopCoroutine(coroutine);
+            cursedTextCoroutines.Remove(text); // Удаляем запись
+        }
+    }
+
+    private IEnumerator GenerateCursedText(TextMeshProUGUI text, int len) 
     {
         while (true)
         {
