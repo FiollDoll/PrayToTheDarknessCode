@@ -115,6 +115,7 @@ public class interactions : MonoBehaviour
                 }
                 if (selectedEI != null)
                 {
+                        scripts.inventory.AddItem(selectedEI.itemNameAdd);
                     if (selectedEI.darkAfterUse)
                     {
                         Sequence sequence = DOTween.Sequence();

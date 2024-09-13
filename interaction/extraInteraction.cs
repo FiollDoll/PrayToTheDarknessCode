@@ -22,6 +22,7 @@ public class extraInter
 
     [Header("OtherSettings")]
     [Tooltip("Использование предмета")] public string itemNameUse;
+    [Tooltip("Выдача предмета")] public string itemNameAdd;
     [Tooltip("Затемнение")] public bool darkAfterUse;
     [Tooltip("Смена внешки")] public bool swapPlayerVisual;
     [Tooltip("Номер внешки")] public int playerVisual;

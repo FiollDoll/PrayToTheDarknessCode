@@ -44,7 +44,17 @@ public class inventory : MonoBehaviour
         }
 
         if (playerItems[slot].removeAfterUse)
-            playerItems.RemoveAt(slot);
+        {
+            if (playerItems[slot].countUse > 0)
+                playerItems[slot].countUse -= 1;
+
+            if (playerItems[slot].countUse == 0)
+                playerItems.RemoveAt(slot);
+
+            if (playerItems[slot].countUse == -1)
+                playerItems.RemoveAt(slot);
+        }
+
         ManageInventoryPanel(); // Закрытие
     }
 
@@ -131,6 +141,7 @@ public class item
 
     [Header("UseSettings")]
     public bool canUse;
+    public float countUse = -1;
     public bool removeAfterUse = true;
     public bool useInInventory;
     public bool useInCollider;
