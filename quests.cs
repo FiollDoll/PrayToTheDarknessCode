@@ -8,7 +8,7 @@ public class quests : MonoBehaviour
 {
     public quest totalQuest;
     public List<quest> activeQuests = new List<quest>();
-    [SerializeField] private quest[] gameQuests = new quest[0];
+    public quest[] gameQuests = new quest[0];
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
     [SerializeField] private allScripts scripts;
 
@@ -75,7 +75,7 @@ public class quests : MonoBehaviour
             scripts.dialogsManager.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
     }
 
-    private void UpdateQuestUI()
+    public void UpdateQuestUI()
     {
         if (totalQuest != null)
         {

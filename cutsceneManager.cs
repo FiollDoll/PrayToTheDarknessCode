@@ -41,10 +41,10 @@ public class cutsceneManager : MonoBehaviour
 
         if (totalCutscene.steps[step].closeDialogMenu)
             scripts.dialogsManager.DialogCLose();
-        
+
         if (totalCutscene.steps[step].activatedDialog != "")
             scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
-        
+
         if (totalCutscene.steps[step].addNote != "")
             scripts.notebook.AddNote(totalCutscene.steps[step].addNote);
 
@@ -65,6 +65,18 @@ public class cutsceneManager : MonoBehaviour
             totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
         for (int i = 0; i < totalCutscene.steps[step].animatorsChanges.Length; i++)
             totalCutscene.steps[step].animatorsChanges[i].animator.SetBool(totalCutscene.steps[step].animatorsChanges[i].boolName, totalCutscene.steps[step].animatorsChanges[i].boolStatus);
+
+        for (int i = 0; i < totalCutscene.steps[step].locksLocations.Length; i++)
+            scripts.locations.SetLockToLocation(totalCutscene.steps[step].locksLocations[i].location, totalCutscene.steps[step].locksLocations[i].lockLocation);
+
+        for (int i = 0; i < totalCutscene.steps[step].npcMove.Length; i++)
+            GameObject.Find(totalCutscene.steps[step].npcMove[i].NPC_name).GetComponent<NPC_movement>().moveToPlayer = totalCutscene.steps[step].npcMove[i].move;
+
+        for (int i = 0; i < totalCutscene.steps[step].addQuests.Length; i++)
+            scripts.quests.ActivateQuest(totalCutscene.steps[step].addQuests[i]);
+        for (int i = 0; i < totalCutscene.steps[step].addItem.Length; i++)
+            scripts.inventory.AddItem(totalCutscene.steps[step].addItem[i]);
+
     }
 
     public void ActivateCutsceneStep(int step)
@@ -89,6 +101,18 @@ public class cutsceneManager : MonoBehaviour
 [System.Serializable]
 public class cutscene
 {
+    [System.Serializable]
+    public class locationsLock
+    {
+        public string location;
+        public bool lockLocation;
+    }
+    [System.Serializable]
+    public class NPC_moveToPlayer
+    {
+        public string NPC_name;
+        public bool move;
+    }
     [System.Serializable]
     public class objectState
     {
@@ -127,6 +151,8 @@ public class cutscene
         [Header("DoInScripts")]
         public string activatedDialog;
         public string moveToLocation;
+        public string[] addItem;
+        public string[] addQuests;
         public bool toLocationWithFade = true;
         public string addNote;
         public bool closeDialogMenu;
@@ -138,6 +164,9 @@ public class cutscene
         public objectTransform[] objectsChangeTransform = new objectTransform[0];
         public objectSprite[] objectsChangeSprite = new objectSprite[0];
         public animations[] animatorsChanges = new animations[0];
+        public locationsLock[] locksLocations = new locationsLock[0];
+        public NPC_moveToPlayer[] npcMove = new NPC_moveToPlayer[0];
+
 
         [Header("Camera")]
         public float editCameraSize;

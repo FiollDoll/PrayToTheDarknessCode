@@ -51,6 +51,9 @@ public class manageLocation : MonoBehaviour
 
     public void FastMoveToLocation(string name) => ActivateLocation(name, "0");
 
+    public void SetLockToLocation(string nameLocation, bool lockLocation) => GetLocation(nameLocation).locked = lockLocation;
+    
+
     public location GetLocation(string name)
     {
         foreach (location location in locations)

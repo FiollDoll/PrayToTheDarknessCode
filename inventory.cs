@@ -67,7 +67,26 @@ public class inventory : MonoBehaviour
         if (playerItems[num].canUse)
         {
             if (playerItems[num].useInInventory)
-                itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+            {
+                if (playerItems[num].questName != "")
+                {
+                    if (playerItems[num].questName == scripts.quests.totalQuest.nameInGame)
+                    {
+                        if (playerItems[num].questStage != -1)
+                        {
+                            if (scripts.quests.totalQuest.totalStep == playerItems[num].questStage)
+                                itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+                        }
+                        else
+                            itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+
+                    }
+                    else
+                        itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = false;
+                }
+                else
+                    itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+            }
             else if (playerItems[num].useInCollider)
             {
                 if (scripts.interactions.selectedEI.itemNameUse == playerItems[num].nameEn)
@@ -149,5 +168,6 @@ public class item
     [Header("UseInInventorySetting")]
     public string activateNameDialog;
     public string questName;
+    public int questStage = -1;
     public bool questNextStep;
 }

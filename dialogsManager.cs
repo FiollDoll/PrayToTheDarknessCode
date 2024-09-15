@@ -195,6 +195,8 @@ public class dialogsManager : MonoBehaviour
 
             if (selectedStep.questStart != "")
                 scripts.quests.ActivateQuest(selectedStep.questStart, true);
+            if (selectedStep.activatedCutsceneStep != -1)
+                scripts.cutsceneManager.ActivateCutsceneStep(selectedStep.activatedCutsceneStep);
         }
 
         if (GameObject.Find(selectedStep.totalNpc.nameInWorld) && selectedStep.animateTalking)
@@ -223,9 +225,6 @@ public class dialogsManager : MonoBehaviour
             else
                 AddStep();
         }
-
-        if (selectedStep.activatedCutsceneStep != -1)
-            scripts.cutsceneManager.ActivateCutsceneStep(selectedStep.activatedCutsceneStep);
     }
 
     private IEnumerator SetText(string text)
