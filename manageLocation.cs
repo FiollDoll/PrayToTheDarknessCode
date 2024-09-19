@@ -20,15 +20,16 @@ public class manageLocation : MonoBehaviour
 
     public void ActivateLocation(string name, string spawn, bool withFade = true)
     {
-        void LocationActivated(location location)
+        void LocationActivate(location location)
         {
             scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
-            player.transform.position = location.spawns[int.Parse(spawn)].position;
+            player.transform.position = location.GetSpawn(spawn).position;
+            
             NPC_movement[] NPCs = GameObject.FindObjectsOfType<NPC_movement>();
-            foreach(NPC_movement totalNPC in NPCs)
+            foreach (NPC_movement totalNPC in NPCs)
             {
                 if (totalNPC.moveToPlayer)
-                    totalNPC.gameObject.transform.position = location.spawns[int.Parse(spawn)].position;
+                    totalNPC.gameObject.transform.position = location.GetSpawn(spawn).position;
             }
         }
 
@@ -39,20 +40,22 @@ public class manageLocation : MonoBehaviour
             Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
             fadeAnimation.OnComplete(() =>
             {
-                LocationActivated(totalLocation);
+                LocationActivate(totalLocation);
+                //scripts.player.canMove = false; //Вкл на билд
             });
             sequence.Append(fadeAnimation);
             sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
             sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
+            sequence.OnComplete(() => { scripts.player.canMove = true; });
         }
         else
-            LocationActivated(totalLocation);
+            LocationActivate(totalLocation);
     }
 
-    public void FastMoveToLocation(string name) => ActivateLocation(name, "0");
+    public void FastMoveToLocation(string name) => ActivateLocation(name, "fromStairs"); // Для кнопок лестницы
 
     public void SetLockToLocation(string nameLocation, bool lockLocation) => GetLocation(nameLocation).locked = lockLocation;
-    
+
 
     public location GetLocation(string name)
     {
@@ -69,6 +72,13 @@ public class manageLocation : MonoBehaviour
 [System.Serializable]
 public class location
 {
+    [System.Serializable]
+    public class spawnInLocation
+    {
+        public string name;
+        public Transform spawn;
+    }
+
     public string gameName;
     [HideInInspector]
     public string name
@@ -84,5 +94,17 @@ public class location
     public string ruName, enName;
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;
-    public Transform[] spawns; // 0 - left, 1 - right, 2 - up, 3 - down
+    public spawnInLocation[] spawns = new spawnInLocation[0];
+
+    public Transform GetSpawn(string name)
+    {
+        foreach (spawnInLocation spawn in spawns)
+        {
+            if (spawn.name == name)
+            {
+                return spawn.spawn;
+            }
+        }
+        return null;
+    }
 }

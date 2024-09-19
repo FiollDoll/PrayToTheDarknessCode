@@ -21,28 +21,17 @@ public class interactions : MonoBehaviour
                 scripts.dialogsManager.ActivateDialog(other.gameObject.name);
                 break;
             case "location":
-                char[] nameLocationChar = other.gameObject.name.ToCharArray();
-                totalColliderName = "";
+                totalColliderName = other.gameObject.name;
                 totalColliderMode = "location";
-                spawnName = "";
-                for (int i = 0; i < nameLocationChar.Length; i++)
-                {
-                    if (i != (nameLocationChar.Length - 1))
-                        totalColliderName += nameLocationChar[i];
-                    else
-                        spawnName = nameLocationChar[i].ToString();
-                }
+                selectedEI = other.gameObject.GetComponent<extraInteraction>().interactions[0];
+                spawnName = selectedEI.moveToSpawn;
+
                 if (!scripts.locations.GetLocation(totalColliderName).locked)
                 {
                     if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
                         scripts.locations.ActivateLocation(totalColliderName, spawnName);
                     else
-                    {
-                        if (other.gameObject.GetComponent<extraInteraction>() != null) // Для особых случаев
-                            interLabelText.text = other.gameObject.GetComponent<extraInteraction>().interactions[0].interLabel;
-                        else
-                            interLabelText.text = scripts.locations.GetLocation(totalColliderName).name;
-                    }
+                        interLabelText.text = selectedEI.interLabel;
                 }
                 break;
             case "cutscene":
@@ -115,7 +104,7 @@ public class interactions : MonoBehaviour
                 }
                 if (selectedEI != null)
                 {
-                        scripts.inventory.AddItem(selectedEI.itemNameAdd);
+                    scripts.inventory.AddItem(selectedEI.itemNameAdd);
                     if (selectedEI.darkAfterUse)
                     {
                         Sequence sequence = DOTween.Sequence();
@@ -140,7 +129,7 @@ public class interactions : MonoBehaviour
                         break;
                     case "location":
                         if (!scripts.locations.GetLocation(totalColliderName).locked)
-                            scripts.locations.ActivateLocation(totalColliderName, spawnName);
+                            scripts.locations.ActivateLocation(totalColliderName, selectedEI.moveToSpawn);
                         break;
                     case "cutscene":
                         scripts.cutsceneManager.ActivateCutscene(totalColliderName);

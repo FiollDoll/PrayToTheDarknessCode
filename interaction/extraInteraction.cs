@@ -11,7 +11,20 @@ public class extraInteraction : MonoBehaviour
 public class extraInter
 {
     public string interName;
-    public string interLabel;
+    [HideInInspector]
+    public string interLabel
+    {
+        get
+        {
+            if (PlayerPrefs.GetString("language") == "ru")
+                return ruLabelName;
+            else
+                return enLabelName;
+        }
+    }
+    public string ruLabelName, enLabelName;
+
+    [Tooltip("ЕСЛИ ДЛЯ ПЕРЕХОДА В ЛОКАЦИЮ - имя спавна")] public string moveToSpawn;
     // Распространяется на tag interact и item
     [Header("QuestSettings")]
     [Tooltip("Требуемый квест для применения")] public string nameQuestRequired;

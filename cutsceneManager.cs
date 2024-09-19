@@ -37,7 +37,7 @@ public class cutsceneManager : MonoBehaviour
     public void StepDo(int step)
     {
         if (totalCutscene.steps[step].moveToLocation != "")
-            scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, "0", totalCutscene.steps[step].toLocationWithFade);
+            scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, totalCutscene.steps[step].moveToLocationSpawn, totalCutscene.steps[step].toLocationWithFade);
 
         if (totalCutscene.steps[step].closeDialogMenu)
             scripts.dialogsManager.DialogCLose();
@@ -151,6 +151,7 @@ public class cutscene
         [Header("DoInScripts")]
         public string activatedDialog;
         public string moveToLocation;
+        public string moveToLocationSpawn;
         public string[] addItem;
         public string[] addQuests;
         public bool toLocationWithFade = true;
