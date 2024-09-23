@@ -30,7 +30,7 @@ public class extraInter
     [Tooltip("Требуемый квест для применения")] public string nameQuestRequired;
     [Tooltip("Стадия квеста для применения")] public int stageInter;
     [Tooltip("Переключение на следующий этап")] public bool NextStep;
-
+    public bool activateCutscene;
     [Tooltip("Уничтожение после использования(item удаляется в любом случае)")] public bool destroyAfterInter;
 
     [Header("OtherSettings")]

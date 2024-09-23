@@ -43,14 +43,17 @@ public class interactions : MonoBehaviour
                     for (int i = 0; i < EI.interactions.Length; i++)
                     {
                         extraInter totalEI = EI.interactions[i];
-                        if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
+                        if (scripts.quests.totalQuest != null)
                         {
-                            if (totalEI.nameQuestRequired != "")
+                            if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
+                            {
+                                if (totalEI.nameQuestRequired != "")
+                                    continue;
+                            }
+
+                            if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
                                 continue;
                         }
-
-                        if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
-                            continue;
                         selectedEI = EI.interactions[i];
                         other.gameObject.name = totalEI.interName; // Сделано плохо
                         interLabelText.text = selectedEI.interLabel;
@@ -115,6 +118,8 @@ public class interactions : MonoBehaviour
                     }
                     if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalQuest.totalStep)
                         scripts.quests.NextStep();
+                    if (selectedEI.activateCutscene)
+                        scripts.cutsceneManager.ActivateCutscene(totalColliderName);
                     if (selectedEI.swapPlayerVisual)
                         scripts.player.ChangeVisual(selectedEI.playerVisual);
                     if (selectedEI.destroyAfterInter)
@@ -131,9 +136,6 @@ public class interactions : MonoBehaviour
                         if (!scripts.locations.GetLocation(totalColliderName).locked)
                             scripts.locations.ActivateLocation(totalColliderName, selectedEI.moveToSpawn);
                         break;
-                    case "cutscene":
-                        scripts.cutsceneManager.ActivateCutscene(totalColliderName);
-                        break;
                     default:
                         if (totalColliderName == "floorChange")
                             floorChangeMenu.gameObject.SetActive(!floorChangeMenu.gameObject.activeSelf);
@@ -141,8 +143,6 @@ public class interactions : MonoBehaviour
                         {
                             if (!scripts.dialogsManager.dialogMenu.activeSelf)
                                 scripts.dialogsManager.ActivateDialog(totalColliderName);
-                            interLabelText.text = "";
-                            totalColliderName = "";
                         }
                         break;
                 }

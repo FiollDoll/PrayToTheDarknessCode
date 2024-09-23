@@ -24,7 +24,7 @@ public class manageLocation : MonoBehaviour
         {
             scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
             player.transform.position = location.GetSpawn(spawn).position;
-            
+
             NPC_movement[] NPCs = GameObject.FindObjectsOfType<NPC_movement>();
             foreach (NPC_movement totalNPC in NPCs)
             {
@@ -45,7 +45,7 @@ public class manageLocation : MonoBehaviour
             });
             sequence.Append(fadeAnimation);
             sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-            sequence.Insert(0, transform.DOScale(new Vector3(3, 3, 3), sequence.Duration()));
+            sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
             sequence.OnComplete(() => { scripts.player.canMove = true; });
         }
         else

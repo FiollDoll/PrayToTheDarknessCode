@@ -34,7 +34,7 @@ public class cutsceneManager : MonoBehaviour
         }
     }
 
-    public void StepDo(int step)
+    public void StepDo(int step) // Выполнить шаг катсцены.
     {
         if (totalCutscene.steps[step].moveToLocation != "")
             scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, totalCutscene.steps[step].moveToLocationSpawn, totalCutscene.steps[step].toLocationWithFade);
@@ -57,25 +57,25 @@ public class cutsceneManager : MonoBehaviour
         if (totalCutscene.steps[step].editCameraSize != 0)
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = startCameraSize + totalCutscene.steps[step].editCameraSize;
 
-        for (int i = 0; i < totalCutscene.steps[step].objectsChangeState.Length; i++)
-            totalCutscene.steps[step].objectsChangeState[i].obj.gameObject.SetActive(totalCutscene.steps[step].objectsChangeState[i].newState);
-        for (int i = 0; i < totalCutscene.steps[step].objectsChangeSprite.Length; i++)
-            totalCutscene.steps[step].objectsChangeSprite[i].obj.GetComponent<SpriteRenderer>().sprite = totalCutscene.steps[step].objectsChangeSprite[i].newSprite;
-        for (int i = 0; i < totalCutscene.steps[step].objectsChangeTransform.Length; i++)
-            totalCutscene.steps[step].objectsChangeTransform[i].obj.transform.position = totalCutscene.steps[step].objectsChangeTransform[i].newTransform.position;
-        for (int i = 0; i < totalCutscene.steps[step].animatorsChanges.Length; i++)
-            totalCutscene.steps[step].animatorsChanges[i].animator.SetBool(totalCutscene.steps[step].animatorsChanges[i].boolName, totalCutscene.steps[step].animatorsChanges[i].boolStatus);
+        foreach (cutscene.objectState objState in totalCutscene.steps[step].objectsChangeState)
+            objState.obj.gameObject.SetActive(objState.newState);
+        foreach (cutscene.objectSprite objectSprite in totalCutscene.steps[step].objectsChangeSprite)
+            objectSprite.obj.GetComponent<SpriteRenderer>().sprite = objectSprite.newSprite;
+        foreach (cutscene.objectTransform objectTransform in totalCutscene.steps[step].objectsChangeTransform)
+            objectTransform.obj.transform.position = objectTransform.newTransform.position;
+        foreach (cutscene.animations animations in totalCutscene.steps[step].animatorsChanges)
+            animations.animator.SetBool(animations.boolName, animations.boolStatus);
 
-        for (int i = 0; i < totalCutscene.steps[step].locksLocations.Length; i++)
-            scripts.locations.SetLockToLocation(totalCutscene.steps[step].locksLocations[i].location, totalCutscene.steps[step].locksLocations[i].lockLocation);
+        foreach (cutscene.locationsLock locationsLock in totalCutscene.steps[step].locksLocations)
+            scripts.locations.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
 
-        for (int i = 0; i < totalCutscene.steps[step].npcMove.Length; i++)
-            GameObject.Find(totalCutscene.steps[step].npcMove[i].NPC_name).GetComponent<NPC_movement>().moveToPlayer = totalCutscene.steps[step].npcMove[i].move;
+        foreach (cutscene.NPC_moveToPlayer nPC_MoveToPlayer in totalCutscene.steps[step].npcMove)
+            GameObject.Find(nPC_MoveToPlayer.NPC_name).GetComponent<NPC_movement>().moveToPlayer = nPC_MoveToPlayer.move;
 
-        for (int i = 0; i < totalCutscene.steps[step].addQuests.Length; i++)
-            scripts.quests.ActivateQuest(totalCutscene.steps[step].addQuests[i]);
-        for (int i = 0; i < totalCutscene.steps[step].addItem.Length; i++)
-            scripts.inventory.AddItem(totalCutscene.steps[step].addItem[i]);
+        foreach (string quest in totalCutscene.steps[step].addQuests)
+            scripts.quests.ActivateQuest(quest);
+        foreach (string item in totalCutscene.steps[step].addItem)
+            scripts.inventory.AddItem(item);
 
     }
 
@@ -90,7 +90,7 @@ public class cutsceneManager : MonoBehaviour
                 StepDo(step);
             });
             sequence.Append(stepSequence);
-            sequence.Append(noViewPanel.DOFade(0f, totalCutscene.steps[step].timeDarkEnd).SetEase(Ease.OutQuart));
+            sequence.Append(noViewPanel.DOFade(0f, 0f).SetEase(Ease.OutQuart));
             sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
         }
         else
@@ -145,37 +145,44 @@ public class cutscene
     public class cutsceneStep
     {
         public string name;
-        [Header("PostProcessing")]
-        public VolumeProfile newVolumeProfile;
 
-        [Header("DoInScripts")]
+        [Header("-DoInScripts")]
+        public bool questStepNext;
+
+        [Header("-Dialogs")]
         public string activatedDialog;
-        public string moveToLocation;
-        public string moveToLocationSpawn;
+        public bool closeDialogMenu;
+
+        [Header("-AddAnything")]
         public string[] addItem;
         public string[] addQuests;
-        public bool toLocationWithFade = true;
         public string addNote;
-        public bool closeDialogMenu;
-        public bool questStepNext;
-        public bool lockNote, lockInventory;
 
-        [Header("Objects")]
+
+        [Header("-Locations")]
+        public string moveToLocation;
+        public string moveToLocationSpawn;
+        public bool toLocationWithFade = true;
+
+
+        [Header("-Locks")]
+        public bool lockNote;
+        public bool lockInventory;
+        public locationsLock[] locksLocations = new locationsLock[0];
+
+
+        [Header("-UltraChanges")]
         public objectState[] objectsChangeState = new objectState[0];
         public objectTransform[] objectsChangeTransform = new objectTransform[0];
         public objectSprite[] objectsChangeSprite = new objectSprite[0];
         public animations[] animatorsChanges = new animations[0];
-        public locationsLock[] locksLocations = new locationsLock[0];
+
+
+        [Header("-Other")]
         public NPC_moveToPlayer[] npcMove = new NPC_moveToPlayer[0];
-
-
-        [Header("Camera")]
         public float editCameraSize;
-
-        [Header("dark")]
+        public VolumeProfile newVolumeProfile;
         public float timeDarkStart;
-        public float timeDarkEnd;
-
     }
 
     public string name;

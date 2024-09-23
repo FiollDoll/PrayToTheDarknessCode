@@ -24,7 +24,7 @@ public class inventory : MonoBehaviour
     {
         foreach (item item in gameItems)
         {
-            if (item.nameEn == name)
+            if (item.nameInGame == name)
             {
                 playerItems.Add(item);
                 StartCoroutine(ActivateNotify(item.name));
@@ -89,7 +89,7 @@ public class inventory : MonoBehaviour
             }
             else if (playerItems[num].useInCollider)
             {
-                if (scripts.interactions.selectedEI.itemNameUse == playerItems[num].nameEn)
+                if (scripts.interactions.selectedEI.itemNameUse == playerItems[num].nameInGame)
                     itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
                 else
                     itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = false;
@@ -108,7 +108,7 @@ public class inventory : MonoBehaviour
         for (int i = 0; i < playerItems.Count; i++)
         {
             var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform.Find("inventoryMenu").transform.Find("items"));
-            obj.transform.Find("item").GetComponent<Image>().sprite = playerItems[i].icon;
+            obj.GetComponent<Image>().sprite = playerItems[i].icon;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { WatchItem(num); });
         }
@@ -132,6 +132,7 @@ public class inventory : MonoBehaviour
 [System.Serializable]
 public class item
 {
+    public string nameInGame;
     public string nameRu, nameEn;
     [HideInInspector]
     public string name
