@@ -4,18 +4,16 @@ using TMPro;
 public class devTool : MonoBehaviour
 {
     [SerializeField] private GameObject menuTools;
-    [SerializeField] private TMP_InputField InputFieldStage, InputFieldNewQuest;
+    [SerializeField] private TMP_InputField InputFieldStage, InputFieldNewQuest, InputFieldToLocation, InputFieldSpawn;
     [SerializeField] private allScripts scripts;
 
-    public void ActivateMenuTools()
-    {
-        menuTools.gameObject.SetActive(!menuTools.activeSelf);
-    }
+    public void ActivateMenuTools() => menuTools.gameObject.SetActive(!menuTools.activeSelf);
 
-    public void ActivateQuest()
-    {
-        scripts.quests.ActivateQuest(InputFieldNewQuest.text);
-    }
+
+    public void ActivateQuest() => scripts.quests.ActivateQuest(InputFieldNewQuest.text);
+
+    public void ActivateLocation() => scripts.locations.ActivateLocation(InputFieldToLocation.text, InputFieldSpawn.text);
+
 
     public void ActivateStepQuest()
     {
@@ -32,7 +30,6 @@ public class devTool : MonoBehaviour
 
     public void AddItem() => scripts.inventory.AddItem("");
 
-    public void TpLocation() => scripts.locations.ActivateLocation("", "0");
 
     private void Update()
     {

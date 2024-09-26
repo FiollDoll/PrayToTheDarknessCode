@@ -124,11 +124,14 @@ public class interactions : MonoBehaviour
                         scripts.player.ChangeVisual(selectedEI.playerVisual);
                     if (selectedEI.destroyAfterInter)
                         Destroy(GameObject.Find(totalColliderName));
+                    if (selectedEI.moveToSpawn != "")
+                        scripts.locations.ActivateLocation(totalColliderName, selectedEI.moveToSpawn);
                 }
                 switch (totalColliderMode)
                 {
                     case "item":
                         scripts.inventory.AddItem(totalColliderName);
+
                         interLabelText.text = "";
                         Destroy(GameObject.Find(totalColliderName));
                         break;

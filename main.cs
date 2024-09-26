@@ -6,7 +6,7 @@ using TMPro;
 public class main : MonoBehaviour
 {
     public Sprite nullSprite;
-    private string charsOnString = "ÁаÇĞĔÖŌØŸÚÑÍDsViOlWQcx[]pljt1234567890CvmdSueWsadsczxvbh;qoewqri";
+    private string charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
 
     [SerializeField] private allScripts scripts;
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
@@ -17,11 +17,16 @@ public class main : MonoBehaviour
         char[] chars = charsOnString.ToCharArray();
 
         for (int i = 0; i < len; i++)
-            totalString += chars[Random.Range(0, chars.Length)];
+        {
+            if (Random.Range(0, 2) == 0)
+                totalString += char.ToUpper(chars[Random.Range(0, chars.Length)]);
+            else
+                totalString += char.ToLower(chars[Random.Range(0, chars.Length)]);
+        }
         return totalString;
     }
 
-    public void SetCursedText(TextMeshProUGUI text, int len) 
+    public void SetCursedText(TextMeshProUGUI text, int len)
     {
         if (cursedTextCoroutines.ContainsKey(text))
         {
@@ -32,7 +37,7 @@ public class main : MonoBehaviour
         cursedTextCoroutines[text] = newCoroutine;
     }
 
-    public void EndCursedText(TextMeshProUGUI text) 
+    public void EndCursedText(TextMeshProUGUI text)
     {
         if (cursedTextCoroutines.TryGetValue(text, out Coroutine coroutine))
         {
@@ -41,7 +46,7 @@ public class main : MonoBehaviour
         }
     }
 
-    private IEnumerator GenerateCursedText(TextMeshProUGUI text, int len) 
+    private IEnumerator GenerateCursedText(TextMeshProUGUI text, int len)
     {
         while (true)
         {

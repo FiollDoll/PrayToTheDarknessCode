@@ -81,6 +81,9 @@ public class cutsceneManager : MonoBehaviour
 
     public void ActivateCutsceneStep(int step)
     {
+        if (step == -1)
+            return;
+            
         if (totalCutscene.steps[step].timeDarkStart != 0)
         {
             Sequence sequence = DOTween.Sequence();

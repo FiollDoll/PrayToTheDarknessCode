@@ -15,6 +15,7 @@ public class inventory : MonoBehaviour
     public void ManageInventoryPanel()
     {
         transform.Find("inventoryMenu").gameObject.SetActive(!transform.Find("inventoryMenu").gameObject.activeSelf);
+        scripts.player.canMove = !transform.Find("inventoryMenu").gameObject.activeSelf;
         itemInfoMenu.gameObject.SetActive(false);
         if (transform.Find("inventoryMenu").gameObject.activeSelf)
             UpdateInvUI();
@@ -44,16 +45,7 @@ public class inventory : MonoBehaviour
         }
 
         if (playerItems[slot].removeAfterUse)
-        {
-            if (playerItems[slot].countUse > 0)
-                playerItems[slot].countUse -= 1;
-
-            if (playerItems[slot].countUse == 0)
-                playerItems.RemoveAt(slot);
-
-            if (playerItems[slot].countUse == -1)
-                playerItems.RemoveAt(slot);
-        }
+            playerItems.RemoveAt(slot);
 
         ManageInventoryPanel(); // Закрытие
     }
@@ -63,41 +55,51 @@ public class inventory : MonoBehaviour
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
         itemInfoMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
         itemInfoMenu.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
-        int num = id;
-        if (playerItems[num].canUse)
+        itemInfoMenu.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+        Button button = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
+        if (playerItems[id].canUse)
         {
-            if (playerItems[num].useInInventory)
+            if (playerItems[id].useInInventory)
             {
-                if (playerItems[num].questName != "")
+                if (playerItems[id].questName != "")
                 {
-                    if (playerItems[num].questName == scripts.quests.totalQuest.nameInGame)
+                    if (playerItems[id].questName == scripts.quests.totalQuest.nameInGame)
                     {
-                        if (playerItems[num].questStage != -1)
+                        if (playerItems[id].questStage != -1)
                         {
-                            if (scripts.quests.totalQuest.totalStep == playerItems[num].questStage)
-                                itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+                            if (scripts.quests.totalQuest.totalStep == playerItems[id].questStage)
+                                button.interactable = true;
                         }
                         else
-                            itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+                            button.interactable = true;
 
                     }
                     else
-                        itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = false;
+                        button.interactable = false;
                 }
                 else
-                    itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+                    button.interactable = true;
             }
-            else if (playerItems[num].useInCollider)
+            else if (playerItems[id].useInCollider)
             {
-                if (scripts.interactions.selectedEI.itemNameUse == playerItems[num].nameInGame)
-                    itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = true;
+                if (scripts.interactions.selectedEI.itemNameUse == playerItems[id].nameInGame)
+                    button.interactable = true;
                 else
-                    itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = false;
+                    button.interactable = false;
             }
-            else
-                itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().interactable = false;
         }
-        itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>().onClick.AddListener(delegate { UseItem(num); });
+        else
+            button.interactable = false;
+        if (button.interactable)
+        {
+            button.onClick.AddListener(delegate { UseItem(id); });
+            if (playerItems[id].activationText != "")
+                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = playerItems[id].activationText;
+            else
+                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "???";
+        }
+        else
+            button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "";
     }
 
     private void UpdateInvUI()
@@ -157,11 +159,22 @@ public class item
                 return descriptionEn;
         }
     }
+    public string activationTextRu, activationTextEn;
+    [HideInInspector]
+    public string activationText
+    {
+        get
+        {
+            if (PlayerPrefs.GetString("language") == "ru")
+                return activationTextRu;
+            else
+                return activationTextEn;
+        }
+    }
     public Sprite icon;
 
     [Header("UseSettings")]
     public bool canUse;
-    public float countUse = -1;
     public bool removeAfterUse = true;
     public bool useInInventory;
     public bool useInCollider;

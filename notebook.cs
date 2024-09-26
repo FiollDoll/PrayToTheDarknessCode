@@ -74,19 +74,22 @@ public class notebook : MonoBehaviour
         pageReadNote.gameObject.SetActive(true);
         pageChoiceNote.gameObject.SetActive(false);
         pageChoiceQuest.gameObject.SetActive(false);
+        TextMeshProUGUI header = pageReadNote.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI note = pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
+
         if (mode == 0)
         {
-            pageReadNote.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>().text = playerNotes[num].name;
-            pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text = playerNotes[num].description;
+            header.text = playerNotes[num].name;
+            note.text = playerNotes[num].description;
         }
         else
         {
             quest selectedQuest = scripts.quests.activeQuests[num];
-            pageReadNote.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>().text = selectedQuest.name;
-            pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text = selectedQuest.description;
+            header.text = selectedQuest.name;
+            note.text = selectedQuest.description;
             int totalStep = selectedQuest.totalStep;
             if (selectedQuest.steps[totalStep].name != "")
-                pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>().text += "\n -<b>" + selectedQuest.steps[totalStep].name + "</b>\n" + selectedQuest.steps[totalStep].description;
+                note.text += "\n\n -<b>" + selectedQuest.steps[totalStep].name + "</b>\n" + selectedQuest.steps[totalStep].description;
             if (selectedQuest != scripts.quests.totalQuest)
             {
                 buttonChoiceActiveQuest.gameObject.SetActive(true);
@@ -102,6 +105,8 @@ public class notebook : MonoBehaviour
     {
         noteMenu.gameObject.SetActive(!noteMenu.gameObject.activeSelf);
         scripts.player.canMove = !noteMenu.gameObject.activeSelf;
+        if (noteMenu.gameObject.activeSelf)
+            ChoicePage(0);
     }
 
     private IEnumerator ActivateNotify()

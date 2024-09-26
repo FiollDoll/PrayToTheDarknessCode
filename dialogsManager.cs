@@ -22,7 +22,11 @@ public class dialogsManager : MonoBehaviour
     private dialogStepChoice _selectedChoice;
     private dialogStep _selectedStep;
 
-    private void Start() => dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
+    private void Start()
+    {
+        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
+        dialogMenu.transform.Find("choiceMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
+    }
 
     public void ActivateDialog(string name) // Старт диалога
     {
@@ -32,13 +36,22 @@ public class dialogsManager : MonoBehaviour
             {
                 if (totalDialog.nameDialog == name && !totalDialog.readed)
                 {
+                    _activatedDialog = totalDialog;
                     dialogMenu.gameObject.SetActive(true);
                     _canStepNext = false;
-                    _choiceDialogMenu.gameObject.SetActive(false);
-                    _mainDialogMenu.gameObject.SetActive(true);
+                    if (totalDialog.steps.Length > 0)
+                    {
+                        _mainDialogMenu.gameObject.SetActive(true);
+                        _totalMode = "dialog";
+                        _selectedStep = _activatedDialog.steps[0];
+                    }
+                    else
+                    {
+                        _choiceDialogMenu.gameObject.SetActive(true);
+                        _totalMode = "choice";
+                    }
+
                     _scripts.main.EndCursedText(_textDialog);
-                    if (totalDialog.steps[0].cameraTarget != null)
-                        _scripts.player.virtualCamera.Follow = totalDialog.steps[0].cameraTarget;
 
                     if (totalDialog.bigPicture != null)
                     {
@@ -58,10 +71,17 @@ public class dialogsManager : MonoBehaviour
                         _bigPicture.sprite = _scripts.main.nullSprite;
                     if (totalDialog.mainPanelStartDelay == 0)
                     {
-                        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+                        _mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
                             {
                                 _canStepNext = true;
                             });
+                        if (_totalMode == "choice")
+                        {
+                            _choiceDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+                            {
+                                _canStepNext = true;
+                            });
+                        }
                     }
                     else
                         StartCoroutine(ActivateUIMainMenuWithDelay(totalDialog, totalDialog.mainPanelStartDelay));
@@ -69,15 +89,20 @@ public class dialogsManager : MonoBehaviour
                     if (!totalDialog.moreRead)
                         totalDialog.readed = true;
                     _scripts.player.canMove = false;
-                    _activatedDialog = totalDialog;
 
-                    _selectedStep = _activatedDialog.steps[0];
-                    _textName.text = _selectedStep.totalNpc.name;
-                    if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
-                        GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
-                    StartCoroutine(SetText(_selectedStep.text));
-                    _totalMode = "dialog";
-                    _iconImage.sprite = _selectedStep.icon;
+                    if (_totalMode == "dialog")
+                    {
+                        if (_selectedStep.cameraTarget != null)
+                            _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
+                        if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
+                            GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
+                        StartCoroutine(SetText(_selectedStep.text));
+                        _textName.text = _selectedStep.totalNpc.name;
+                        _iconImage.sprite = _selectedStep.icon;
+                    }
+                    else
+                        ActivateChoiceMenu();
+
                     break;
                 }
             }
@@ -95,12 +120,13 @@ public class dialogsManager : MonoBehaviour
         if (_activatedDialog.bigPicture != null && !_activatedDialog.disableFadeAtEnd)
         {
             sequence = sequence.Append(_noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
-            sequence.Append(dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.1f));
+            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.1f));
             sequence.Append(_bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
             sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
         }
         else
-            sequence.Append(dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f));
+            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f));
+        _choiceDialogMenu.GetComponent<RectTransform>().localScale = new Vector2(0f, 1f);
 
         if (_activatedDialog.darkAfterEnd && !_activatedDialog.disableFadeAtEnd)
         {
@@ -143,6 +169,8 @@ public class dialogsManager : MonoBehaviour
         _mainDialogMenu.gameObject.SetActive(true);
         _totalStep = 0;
         _selectedStep = _selectedChoice.steps[0];
+        if (_selectedStep.cameraTarget != null)
+            _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
         _textName.text = _selectedStep.totalNpc.name;
         _iconImage.sprite = _selectedStep.icon;
         if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
@@ -150,10 +178,11 @@ public class dialogsManager : MonoBehaviour
         StartCoroutine(SetText(_selectedStep.text));
     }
 
-    private void ActivateChoiceMenu()
+    private void ActivateChoiceMenu(bool setScale = false)
     {
         _choiceDialogMenu.gameObject.SetActive(true);
-        _mainDialogMenu.gameObject.SetActive(false);
+        if (setScale)
+            _choiceDialogMenu.GetComponent<RectTransform>().localScale = new Vector2(1f, 1f);
         foreach (Transform child in _choicesContainer.transform)
             Destroy(child.gameObject);
 
@@ -208,7 +237,7 @@ public class dialogsManager : MonoBehaviour
                 if (_activatedDialog.dialogsChoices.Length == 0)
                     DialogCLose();
                 else
-                    ActivateChoiceMenu();
+                    ActivateChoiceMenu(true);
                 return;
             }
         }
@@ -217,7 +246,7 @@ public class dialogsManager : MonoBehaviour
             if ((_totalStep + 1) == _selectedChoice.steps.Length)
             {
                 if (_selectedChoice.returnToStartChoices)
-                    ActivateChoiceMenu();
+                    ActivateChoiceMenu(true);
                 else
                     DialogCLose();
                 return;
@@ -263,7 +292,15 @@ public class dialogsManager : MonoBehaviour
                 {
                     _canStepNext = true;
                 });
+        if (_totalMode == "choice")
+        {
+            dialogMenu.transform.Find("choiceMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+                    {
+                        _canStepNext = true;
+                    });
+        }
     }
+
 
     private void Update()
     {
@@ -332,21 +369,16 @@ public class dialogStep
     {
         get
         {
-            if (iconMoodSelected == iconMood.standart)
-                return totalNpc.icon.standartIcon;
-            else if (iconMoodSelected == iconMood.happy)
-                return totalNpc.icon.happyIcon;
-            else if (iconMoodSelected == iconMood.angry)
-                return totalNpc.icon.angryIcon;
-            else if (iconMoodSelected == iconMood.sad)
-                return totalNpc.icon.sadIcon;
-            else if (iconMoodSelected == iconMood.scary)
-                return totalNpc.icon.scaryIcon;
-            else if (iconMoodSelected == iconMood.wonder)
-                return totalNpc.icon.wonderIcon;
-            else if (iconMoodSelected == iconMood.confusion)
-                return totalNpc.icon.confusionIcon;
-            return null;
+            return iconMoodSelected switch
+            {
+                iconMood.standart => totalNpc.icon.standartIcon,
+                iconMood.happy => totalNpc.icon.happyIcon,
+                iconMood.sad => totalNpc.icon.sadIcon,
+                iconMood.scary => totalNpc.icon.scaryIcon,
+                iconMood.wonder => totalNpc.icon.wonderIcon,
+                iconMood.confusion => totalNpc.icon.confusionIcon,
+                iconMood.angry => totalNpc.icon.angryIcon,
+            };
         }
     }
     public int activatedCutsceneStep = -1;
