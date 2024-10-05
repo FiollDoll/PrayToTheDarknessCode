@@ -181,6 +181,7 @@ public class dialogsManager : MonoBehaviour
     private void ActivateChoiceMenu(bool setScale = false)
     {
         _choiceDialogMenu.gameObject.SetActive(true);
+        _choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         if (setScale)
             _choiceDialogMenu.GetComponent<RectTransform>().localScale = new Vector2(1f, 1f);
         foreach (Transform child in _choicesContainer.transform)
@@ -195,6 +196,7 @@ public class dialogsManager : MonoBehaviour
             if (_activatedDialog.dialogsChoices[i].readed && !_activatedDialog.dialogsChoices[i].moreRead)
                 obj.GetComponent<Button>().interactable = false;
         }
+        _choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
     }
 
     private void DialogMoveNext()

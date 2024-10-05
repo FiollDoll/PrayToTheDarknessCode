@@ -43,13 +43,10 @@ public class player : MonoBehaviour
         if (canMove)
         {
             rb.velocity = new Vector2(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed));
-            if (visualMode == 0)
-            {
-                if (horiz != 0 || vert != 0)
-                    animator.SetBool("walk", true);
-                else
-                    animator.SetBool("walk", false);
-            }
+            if (horiz != 0 || vert != 0)
+                animator.SetBool("walk", true);
+            else
+                animator.SetBool("walk", false);
             if (horiz > 0)
                 GetComponent<SpriteRenderer>().flipX = false;
             else if (horiz < 0)

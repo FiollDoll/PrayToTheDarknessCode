@@ -48,6 +48,7 @@ public class notebook : MonoBehaviour
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number); });
             }
+            pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
         else if (num == 1)
         {
@@ -66,6 +67,7 @@ public class notebook : MonoBehaviour
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
             }
+            pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
     }
 
