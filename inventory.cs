@@ -14,10 +14,11 @@ public class inventory : MonoBehaviour
 
     public void ManageInventoryPanel()
     {
-        transform.Find("inventoryMenu").gameObject.SetActive(!transform.Find("inventoryMenu").gameObject.activeSelf);
-        scripts.player.canMove = !transform.Find("inventoryMenu").gameObject.activeSelf;
-        itemInfoMenu.gameObject.SetActive(false);
-        if (transform.Find("inventoryMenu").gameObject.activeSelf)
+        GameObject invMenu = transform.Find("inventoryMenu").gameObject;
+        invMenu.SetActive(!invMenu.activeSelf);
+        scripts.player.canMove = !invMenu.activeSelf;
+        itemInfoMenu.SetActive(false);
+        if (invMenu.activeSelf)
             UpdateInvUI();
     }
 

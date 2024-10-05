@@ -39,11 +39,11 @@ public class dialogsManager : MonoBehaviour
                     _activatedDialog = totalDialog;
                     dialogMenu.gameObject.SetActive(true);
                     _canStepNext = false;
-                    if (totalDialog.steps.Length > 0)
+                    if (_activatedDialog.steps.Length > 0)
                     {
                         _mainDialogMenu.gameObject.SetActive(true);
-                        _totalMode = "dialog";
                         _selectedStep = _activatedDialog.steps[0];
+                        _totalMode = "dialog";
                     }
                     else
                     {
@@ -53,15 +53,15 @@ public class dialogsManager : MonoBehaviour
 
                     _scripts.main.EndCursedText(_textDialog);
 
-                    if (totalDialog.bigPicture != null)
+                    if (_activatedDialog.bigPicture != null)
                     {
                         Sequence sequence = DOTween.Sequence();
                         Tween stepSequence = _noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
                         stepSequence.OnComplete(() =>
                         {
-                            _bigPicture.sprite = totalDialog.bigPicture;
-                            if (totalDialog.bigPictureSecond != null)
-                                StartCoroutine(bigPictureAnimate(totalDialog));
+                            _bigPicture.sprite = _activatedDialog.bigPicture;
+                            if (_activatedDialog.bigPictureSecond != null)
+                                StartCoroutine(bigPictureAnimate(_activatedDialog));
                         });
                         sequence.Append(stepSequence);
                         sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
@@ -70,28 +70,19 @@ public class dialogsManager : MonoBehaviour
                     else
                         _bigPicture.sprite = _scripts.main.nullSprite;
 
-                    if (totalDialog.mainPanelStartDelay == 0)
+                    if (_activatedDialog.mainPanelStartDelay == 0)
                         OpenPanels();
                     else
-                        StartCoroutine(ActivateUIMainMenuWithDelay(totalDialog, totalDialog.mainPanelStartDelay));
+                        StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog, _activatedDialog.mainPanelStartDelay));
 
-                    if (!totalDialog.moreRead)
-                        totalDialog.readed = true;
+                    if (!_activatedDialog.moreRead)
+                        _activatedDialog.readed = true;
                     _scripts.player.canMove = false;
 
                     if (_totalMode == "dialog")
-                    {
-                        if (_selectedStep.cameraTarget != null)
-                            _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
-                        if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
-                            GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
-                        StartCoroutine(SetText(_selectedStep.text));
-                        _textName.text = _selectedStep.totalNpc.name;
-                        _iconImage.sprite = _selectedStep.icon;
-                    }
+                        DialogUpdateAction();
                     else
                         ActivateChoiceMenu();
-
                     break;
                 }
             }
@@ -153,7 +144,8 @@ public class dialogsManager : MonoBehaviour
     {
         _totalMode = "choice";
         _selectedChoice = _activatedDialog.dialogsChoices[id];
-        _selectedChoice.readed = true;
+        if (!_selectedChoice.moreRead)
+            _selectedChoice.readed = true;
         _choiceDialogMenu.gameObject.SetActive(false);
         _mainDialogMenu.gameObject.SetActive(true);
         _totalStep = 0;
@@ -182,7 +174,7 @@ public class dialogsManager : MonoBehaviour
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = _activatedDialog.dialogsChoices[i].textQuestion;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
-            if (_activatedDialog.dialogsChoices[i].readed && !_activatedDialog.dialogsChoices[i].moreRead)
+            if (_activatedDialog.dialogsChoices[i].readed)
                 obj.GetComponent<Button>().interactable = false;
         }
         _choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
@@ -197,68 +189,66 @@ public class dialogsManager : MonoBehaviour
                 _selectedStep = _activatedDialog.steps[_totalStep];
             else
                 _selectedStep = _selectedChoice.steps[_totalStep];
-            _textName.text = _selectedStep.totalNpc.name;
-            if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
-                GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
-
-            if (_selectedStep.cursedText)
-                _scripts.main.SetCursedText(_textDialog, Random.Range(5, 40));
-            else
-                StartCoroutine(SetText(_selectedStep.text));
-
-            _iconImage.sprite = _selectedStep.icon;
-            if (_selectedStep.cameraTarget != null)
-                _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
-            else
-                _scripts.player.virtualCamera.Follow = _scripts.player.transform;
-
-            if (_selectedStep.questStart != "")
-                _scripts.quests.ActivateQuest(_selectedStep.questStart, true);
-            if (_selectedStep.activatedCutsceneStep != -1)
-                _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activatedCutsceneStep);
+            DialogUpdateAction();
         }
 
         if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
             GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
 
-        if (_totalMode == "dialog") // Окончание обычного диалога
+        if (_totalMode == "dialog" && (_totalStep + 1) == _activatedDialog.steps.Length) // Окончание обычного диалога
         {
-            if ((_totalStep + 1) == _activatedDialog.steps.Length)
-            {
-                if (_activatedDialog.dialogsChoices.Length == 0)
-                    DialogCLose();
-                else
-                    ActivateChoiceMenu(true);
-                return;
-            }
+            if (_activatedDialog.dialogsChoices.Length == 0)
+                DialogCLose();
+            else
+                ActivateChoiceMenu(true);
+            return;
         }
-        else if (_totalMode == "choice")
+        else if (_totalMode == "choice" && (_totalStep + 1) == _selectedChoice.steps.Length)
         {
-            if ((_totalStep + 1) == _selectedChoice.steps.Length)
-            {
-                if (_selectedChoice.returnToStartChoices)
-                    ActivateChoiceMenu(true);
-                else
-                    DialogCLose();
-                return;
-            }
+            if (_selectedChoice.returnToStartChoices)
+                ActivateChoiceMenu(true);
+            else
+                DialogCLose();
+            return;
         }
         AddStep();
     }
+
+    private void DialogUpdateAction()
+    {
+        _textName.text = _selectedStep.totalNpc.name;
+        if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
+            GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
+
+        if (_selectedStep.cursedText)
+            _scripts.main.SetCursedText(_textDialog, Random.Range(5, 40));
+        else
+            StartCoroutine(SetText(_selectedStep.text));
+
+        _iconImage.sprite = _selectedStep.icon;
+        if (_selectedStep.cameraTarget != null)
+            _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
+        else
+            _scripts.player.virtualCamera.Follow = _scripts.player.transform;
+
+        if (_selectedStep.questStart != "")
+            _scripts.quests.ActivateQuest(_selectedStep.questStart, true);
+        if (_selectedStep.activatedCutsceneStep != -1)
+            _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activatedCutsceneStep);
+    }
+
     private void OpenPanels()
     {
         _mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
         {
             _canStepNext = true;
         });
-        if (_totalMode == "choice")
+        _choiceDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
         {
-            _choiceDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
-            {
-                _canStepNext = true;
-            });
-        }
+            _canStepNext = true;
+        });
     }
+    
     private IEnumerator SetText(string text)
     {
         _textDialog.text = "";

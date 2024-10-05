@@ -7,8 +7,6 @@ public class main : MonoBehaviour
 {
     public Sprite nullSprite;
     private string charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
-
-    [SerializeField] private allScripts scripts;
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
 
     private string CursedText(int len)

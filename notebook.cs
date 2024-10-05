@@ -60,10 +60,11 @@ public class notebook : MonoBehaviour
             for (int i = 0; i < scripts.quests.activeQuests.Count; i++)
             {
                 var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceQuest.transform);
+                TextMeshProUGUI textName = obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
                 if (scripts.quests.activeQuests[i] == scripts.quests.totalQuest)
-                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = "-> " + scripts.quests.activeQuests[i].name;
+                    textName.text = "-> " + scripts.quests.activeQuests[i].name;
                 else
-                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = scripts.quests.activeQuests[i].name;
+                    textName.text = scripts.quests.activeQuests[i].name;
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
             }
@@ -89,9 +90,8 @@ public class notebook : MonoBehaviour
             quest selectedQuest = scripts.quests.activeQuests[num];
             header.text = selectedQuest.name;
             note.text = selectedQuest.description;
-            int totalStep = selectedQuest.totalStep;
-            if (selectedQuest.steps[totalStep].name != "")
-                note.text += "\n\n -<b>" + selectedQuest.steps[totalStep].name + "</b>\n" + selectedQuest.steps[totalStep].description;
+            if (selectedQuest.steps[selectedQuest.totalStep].name != "")
+                note.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" + selectedQuest.steps[selectedQuest.totalStep].description;
             if (selectedQuest != scripts.quests.totalQuest)
             {
                 buttonChoiceActiveQuest.gameObject.SetActive(true);
