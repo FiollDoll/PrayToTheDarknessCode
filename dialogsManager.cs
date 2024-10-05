@@ -16,7 +16,7 @@ public class dialogsManager : MonoBehaviour
 
     private int _totalStep;
     private string _totalMode;
-    private bool _animatingText, _dialogEnding, _canStepNext;
+    private bool _animatingText, _canStepNext;
     public dialog[] dialogs = new dialog[0];
     private dialog _activatedDialog;
     private dialogStepChoice _selectedChoice;
@@ -24,8 +24,8 @@ public class dialogsManager : MonoBehaviour
 
     private void Start()
     {
-        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
-        dialogMenu.transform.Find("choiceMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.001f);
+        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.001f);
+        dialogMenu.transform.Find("choiceMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.001f);
     }
 
     public void ActivateDialog(string name) // Старт диалога
@@ -69,20 +69,9 @@ public class dialogsManager : MonoBehaviour
                     }
                     else
                         _bigPicture.sprite = _scripts.main.nullSprite;
+
                     if (totalDialog.mainPanelStartDelay == 0)
-                    {
-                        _mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
-                            {
-                                _canStepNext = true;
-                            });
-                        if (_totalMode == "choice")
-                        {
-                            _choiceDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
-                            {
-                                _canStepNext = true;
-                            });
-                        }
-                    }
+                        OpenPanels();
                     else
                         StartCoroutine(ActivateUIMainMenuWithDelay(totalDialog, totalDialog.mainPanelStartDelay));
 
@@ -111,7 +100,7 @@ public class dialogsManager : MonoBehaviour
 
     public void DialogCLose()
     {
-        _dialogEnding = true;
+        _canStepNext = false;
         if (_activatedDialog.activatedCutsceneStepAtEnd != -1)
             _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activatedCutsceneStepAtEnd);
 
@@ -120,12 +109,12 @@ public class dialogsManager : MonoBehaviour
         if (_activatedDialog.bigPicture != null && !_activatedDialog.disableFadeAtEnd)
         {
             sequence = sequence.Append(_noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
-            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.1f));
+            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.1f));
             sequence.Append(_bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
             sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
         }
         else
-            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 1f, 0f), 0.5f));
+            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.5f));
         _choiceDialogMenu.GetComponent<RectTransform>().localScale = new Vector2(0f, 1f);
 
         if (_activatedDialog.darkAfterEnd && !_activatedDialog.disableFadeAtEnd)
@@ -154,7 +143,7 @@ public class dialogsManager : MonoBehaviour
                 _scripts.notebook.AddNote(_activatedDialog.noteAdd);
             string newDialog = _activatedDialog.startNewDialogAfterEnd;
             _activatedDialog = null;
-            _dialogEnding = false;
+            _canStepNext = true;
             if (newDialog != "")
                 ActivateDialog(newDialog);
         });
@@ -256,7 +245,20 @@ public class dialogsManager : MonoBehaviour
         }
         AddStep();
     }
-
+    private void OpenPanels()
+    {
+        _mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+        {
+            _canStepNext = true;
+        });
+        if (_totalMode == "choice")
+        {
+            _choiceDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+            {
+                _canStepNext = true;
+            });
+        }
+    }
     private IEnumerator SetText(string text)
     {
         _textDialog.text = "";
@@ -290,19 +292,8 @@ public class dialogsManager : MonoBehaviour
     private IEnumerator ActivateUIMainMenuWithDelay(dialog totalDialog, float delay)
     {
         yield return new WaitForSeconds(delay);
-        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
-                {
-                    _canStepNext = true;
-                });
-        if (_totalMode == "choice")
-        {
-            dialogMenu.transform.Find("choiceMenu").GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
-                    {
-                        _canStepNext = true;
-                    });
-        }
+        OpenPanels();
     }
-
 
     private void Update()
     {
@@ -310,7 +301,7 @@ public class dialogsManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (!_dialogEnding && _canStepNext)
+                if (_canStepNext)
                 {
                     if (_animatingText)
                     {
