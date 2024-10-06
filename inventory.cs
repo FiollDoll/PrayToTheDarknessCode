@@ -58,39 +58,29 @@ public class inventory : MonoBehaviour
         itemInfoMenu.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
         itemInfoMenu.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
         Button button = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
-        if (playerItems[id].canUse)
+        button.interactable = true; // Дефолт значение
+        if (playerItems[id].canUse && (playerItems[id].useInInventory || playerItems[id].useInCollider))
         {
             if (playerItems[id].useInInventory)
             {
                 if (playerItems[id].questName != "")
                 {
-                    if (playerItems[id].questName == scripts.quests.totalQuest.nameInGame)
-                    {
-                        if (playerItems[id].questStage != -1)
-                        {
-                            if (scripts.quests.totalQuest.totalStep == playerItems[id].questStage)
-                                button.interactable = true;
-                        }
-                        else
-                            button.interactable = true;
-
-                    }
-                    else
+                    if (playerItems[id].questName != scripts.quests.totalQuest.nameInGame)
+                        button.interactable = false;
+                    if (scripts.quests.totalQuest.totalStep != playerItems[id].questStage && playerItems[id].questStage > 0)
                         button.interactable = false;
                 }
-                else
-                    button.interactable = true;
             }
             else if (playerItems[id].useInCollider)
             {
-                if (scripts.interactions.selectedEI.itemNameUse == playerItems[id].nameInGame)
-                    button.interactable = true;
-                else
+                if (scripts.interactions.selectedEI == null
+                 || (scripts.interactions.selectedEI != null && scripts.interactions.selectedEI.itemNameUse != playerItems[id].nameInGame))
                     button.interactable = false;
             }
         }
         else
             button.interactable = false;
+
         if (button.interactable)
         {
             button.onClick.AddListener(delegate { UseItem(id); });

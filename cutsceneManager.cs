@@ -73,7 +73,7 @@ public class cutsceneManager : MonoBehaviour
             GameObject.Find(nPC_MoveToPlayer.NPC_name).GetComponent<NPC_movement>().moveToPlayer = nPC_MoveToPlayer.move;
 
         foreach (string quest in totalCutscene.steps[step].addQuests)
-            scripts.quests.ActivateQuest(quest);
+            scripts.quests.ActivateQuest(quest, true);
         foreach (string item in totalCutscene.steps[step].addItem)
             scripts.inventory.AddItem(item);
 

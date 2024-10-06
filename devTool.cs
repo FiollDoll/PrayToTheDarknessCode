@@ -4,16 +4,15 @@ using TMPro;
 public class devTool : MonoBehaviour
 {
     [SerializeField] private GameObject menuTools;
+    [SerializeField] private TextMeshProUGUI textInfo;
     [SerializeField] private TMP_InputField InputFieldStage, InputFieldNewQuest, InputFieldToLocation, InputFieldSpawn;
     [SerializeField] private allScripts scripts;
 
     public void ActivateMenuTools() => menuTools.gameObject.SetActive(!menuTools.activeSelf);
 
-
     public void ActivateQuest() => scripts.quests.ActivateQuest(InputFieldNewQuest.text);
 
     public void ActivateLocation() => scripts.locations.ActivateLocation(InputFieldToLocation.text, InputFieldSpawn.text);
-
 
     public void ActivateStepQuest()
     {
@@ -30,10 +29,10 @@ public class devTool : MonoBehaviour
 
     public void AddItem() => scripts.inventory.AddItem("");
 
-
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.V))
             ActivateMenuTools();
+        textInfo.text = "dialogStep: " + scripts.dialogsManager.totalStep + "\ntotalLocation: " + scripts.locations.totalLocation.name + "\nplayerCanMove: " + scripts.player.canMove + "\ntotalQuest: " + scripts.quests.totalQuest.name + "\n";
     }
 }

@@ -14,7 +14,7 @@ public class dialogsManager : MonoBehaviour
     [SerializeField] private GameObject _buttonChoicePrefab;
     [SerializeField] private allScripts _scripts;
 
-    private int _totalStep;
+    public int totalStep;
     private string _totalMode;
     private bool _animatingText, _canStepNext;
     public dialog[] dialogs = new dialog[0];
@@ -24,8 +24,8 @@ public class dialogsManager : MonoBehaviour
 
     private void Start()
     {
-        dialogMenu.transform.Find("mainMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.001f);
-        dialogMenu.transform.Find("choiceMenu").GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.001f);
+        _mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
+        _choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
     }
 
     public void ActivateDialog(string name) // Старт диалога
@@ -90,23 +90,23 @@ public class dialogsManager : MonoBehaviour
     }
 
     public void DialogCLose()
-    {
+    {       
         _canStepNext = false;
         if (_activatedDialog.activatedCutsceneStepAtEnd != -1)
             _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activatedCutsceneStepAtEnd);
 
-        _totalStep = 0;
+        totalStep = 0;
         Sequence sequence = DOTween.Sequence();
         if (_activatedDialog.bigPicture != null && !_activatedDialog.disableFadeAtEnd)
         {
             sequence = sequence.Append(_noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
-            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.1f));
+            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f));
             sequence.Append(_bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
             sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
         }
         else
-            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(0f, 0f, 0f), 0.5f));
-        _choiceDialogMenu.GetComponent<RectTransform>().localScale = new Vector2(0f, 1f);
+            sequence.Append(_mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f));
+        _choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.5f);
 
         if (_activatedDialog.darkAfterEnd && !_activatedDialog.disableFadeAtEnd)
         {
@@ -148,7 +148,7 @@ public class dialogsManager : MonoBehaviour
             _selectedChoice.readed = true;
         _choiceDialogMenu.gameObject.SetActive(false);
         _mainDialogMenu.gameObject.SetActive(true);
-        _totalStep = 0;
+        totalStep = 0;
         _selectedStep = _selectedChoice.steps[0];
         if (_selectedStep.cameraTarget != null)
             _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
@@ -184,18 +184,18 @@ public class dialogsManager : MonoBehaviour
     {
         void AddStep()
         {
-            _totalStep++;
+            totalStep++;
             if (_totalMode == "dialog")
-                _selectedStep = _activatedDialog.steps[_totalStep];
+                _selectedStep = _activatedDialog.steps[totalStep];
             else
-                _selectedStep = _selectedChoice.steps[_totalStep];
+                _selectedStep = _selectedChoice.steps[totalStep];
             DialogUpdateAction();
         }
 
         if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
             GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
 
-        if (_totalMode == "dialog" && (_totalStep + 1) == _activatedDialog.steps.Length) // Окончание обычного диалога
+        if (_totalMode == "dialog" && (totalStep + 1) == _activatedDialog.steps.Length) // Окончание обычного диалога
         {
             if (_activatedDialog.dialogsChoices.Length == 0)
                 DialogCLose();
@@ -203,7 +203,7 @@ public class dialogsManager : MonoBehaviour
                 ActivateChoiceMenu(true);
             return;
         }
-        else if (_totalMode == "choice" && (_totalStep + 1) == _selectedChoice.steps.Length)
+        else if (_totalMode == "choice" && (totalStep + 1) == _selectedChoice.steps.Length)
         {
             if (_selectedChoice.returnToStartChoices)
                 ActivateChoiceMenu(true);
@@ -239,11 +239,11 @@ public class dialogsManager : MonoBehaviour
 
     private void OpenPanels()
     {
-        _mainDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+        _mainDialogMenu.GetComponent<RectTransform>().GetComponent<RectTransform>().DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart).OnComplete(() =>
         {
             _canStepNext = true;
         });
-        _choiceDialogMenu.GetComponent<RectTransform>().DOScale(new Vector3(1f, 1f, 1f), 0.4f).SetEase(Ease.InQuart).OnComplete(() =>
+        _choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart).OnComplete(() =>
         {
             _canStepNext = true;
         });

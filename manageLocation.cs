@@ -41,7 +41,7 @@ public class manageLocation : MonoBehaviour
             fadeAnimation.OnComplete(() =>
             {
                 LocationActivate(totalLocation);
-                //scripts.player.canMove = false; //Вкл на билд
+                scripts.player.canMove = false; //Вкл на билд
             });
             sequence.Append(fadeAnimation);
             sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));

@@ -36,8 +36,6 @@ public class NPC_movement : MonoBehaviour
                 GetComponent<SpriteRenderer>().flipX = true;
         }
         else
-        {
-            //GetComponent<Animator>().SetBool("walk", false);
-        }
+            GetComponent<Animator>().SetBool("walk", false);
     }
 }
