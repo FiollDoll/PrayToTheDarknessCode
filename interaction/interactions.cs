@@ -8,7 +8,6 @@ public class interactions : MonoBehaviour
     [SerializeField] private GameObject floorChangeMenu;
     [SerializeField] private Sprite iconDefault, iconLocation;
     [SerializeField] private TextMeshProUGUI interLabelText;
-    [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
     public extraInter selectedEI = null;
@@ -109,13 +108,7 @@ public class interactions : MonoBehaviour
                 {
                     scripts.inventory.AddItem(selectedEI.itemNameAdd);
                     if (selectedEI.darkAfterUse)
-                    {
-                        Sequence sequence = DOTween.Sequence();
-                        Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                        sequence.Append(fadeAnimation);
-                        sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-                    }
+                        scripts.main.ActivateNoVision(1f);
                     if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalQuest.totalStep)
                         scripts.quests.NextStep();
                     if (selectedEI.activateCutscene)

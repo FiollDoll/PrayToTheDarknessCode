@@ -20,7 +20,7 @@ public class manageLocation : MonoBehaviour
 
     public void ActivateLocation(string name, string spawn, bool withFade = true)
     {
-        void LocationActivate(location location)
+        void locationSetup(location location)
         {
             scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
             player.transform.position = location.GetSpawn(spawn).position;
@@ -40,8 +40,8 @@ public class manageLocation : MonoBehaviour
             Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
             fadeAnimation.OnComplete(() =>
             {
-                LocationActivate(totalLocation);
-                scripts.player.canMove = false; //Вкл на билд
+                locationSetup(totalLocation);
+                scripts.player.canMove = false;
             });
             sequence.Append(fadeAnimation);
             sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
@@ -49,7 +49,7 @@ public class manageLocation : MonoBehaviour
             sequence.OnComplete(() => { scripts.player.canMove = true; });
         }
         else
-            LocationActivate(totalLocation);
+            locationSetup(totalLocation);
     }
 
     public void FastMoveToLocation(string name) => ActivateLocation(name, "fromStairs"); // Для кнопок лестницы
@@ -95,7 +95,7 @@ public class location
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;
     public spawnInLocation[] spawns = new spawnInLocation[0];
-
+    public Transform transformOfStairs = null; // Если есть лестница
     public Transform GetSpawn(string name)
     {
         foreach (spawnInLocation spawn in spawns)

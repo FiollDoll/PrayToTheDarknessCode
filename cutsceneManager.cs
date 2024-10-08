@@ -69,8 +69,19 @@ public class cutsceneManager : MonoBehaviour
         foreach (cutscene.locationsLock locationsLock in totalCutscene.steps[step].locksLocations)
             scripts.locations.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
 
-        foreach (cutscene.NPC_moveToPlayer nPC_MoveToPlayer in totalCutscene.steps[step].npcMove)
+        foreach (cutscene.NPC_moveToPlayer nPC_MoveToPlayer in totalCutscene.steps[step].npcMoveToPlayer)
             GameObject.Find(nPC_MoveToPlayer.NPC_name).GetComponent<NPC_movement>().moveToPlayer = nPC_MoveToPlayer.move;
+        foreach (cutscene.humanMove humanMove in totalCutscene.steps[step].humansMove)
+        {
+            if (humanMove.human.GetComponent<NPC_movement>())
+            {
+                humanMove.human.GetComponent<NPC_movement>().moveToPoint = true;
+                humanMove.human.GetComponent<NPC_movement>().point = humanMove.pointMove;
+                humanMove.human.GetComponent<NPC_movement>().locationOfPointName = humanMove.human.GetComponent<NPC_movement>().totalLocation;
+            }
+            else if (humanMove.human.GetComponent<player>())
+                humanMove.human.GetComponent<player>().MoveTo(humanMove.pointMove);
+        }
 
         foreach (string quest in totalCutscene.steps[step].addQuests)
             scripts.quests.ActivateQuest(quest, true);
@@ -83,7 +94,7 @@ public class cutsceneManager : MonoBehaviour
     {
         if (step == -1)
             return;
-            
+
         if (totalCutscene.steps[step].timeDarkStart != 0)
         {
             Sequence sequence = DOTween.Sequence();
@@ -110,18 +121,21 @@ public class cutscene
         public string location;
         public bool lockLocation;
     }
+
     [System.Serializable]
     public class NPC_moveToPlayer
     {
         public string NPC_name;
         public bool move;
     }
+
     [System.Serializable]
     public class objectState
     {
         public GameObject obj;
         public bool newState;
     }
+
     [System.Serializable]
     public class objectTransform
     {
@@ -142,6 +156,13 @@ public class cutscene
         public Animator animator;
         public string boolName;
         public bool boolStatus;
+    }
+
+    [System.Serializable]
+    public class humanMove
+    {
+        public GameObject human;
+        public Transform pointMove;
     }
 
     [System.Serializable]
@@ -182,7 +203,8 @@ public class cutscene
 
 
         [Header("-Other")]
-        public NPC_moveToPlayer[] npcMove = new NPC_moveToPlayer[0];
+        public NPC_moveToPlayer[] npcMoveToPlayer = new NPC_moveToPlayer[0];
+        public humanMove[] humansMove = new humanMove[0];
         public float editCameraSize;
         public VolumeProfile newVolumeProfile;
         public float timeDarkStart;

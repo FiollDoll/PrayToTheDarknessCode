@@ -4,38 +4,64 @@ using UnityEngine;
 
 public class NPC_movement : MonoBehaviour
 {
-    public bool moveToPlayer;
+    public string totalLocation;
     [SerializeField] private float speed;
+    [SerializeField] private allScripts scripts;
     private bool playerInCollider;
     private Transform playerTransform;
+    private SpriteRenderer sr;
+    private Animator animator;
 
-    private void Start() => playerTransform = GameObject.Find("Player").transform;
+    [Header("Move to player")]
+    public bool moveToPlayer;
 
+    [Header("Move to point")]
+    public bool moveToPoint;
+    public bool waitPlayerAndMove; // TODO: реализовать
+    public Transform point;
+    public string locationOfPointName;
 
+    private void Start()
+    {
+        playerTransform = GameObject.Find("Player").transform;
+        sr = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.name == "Player")
+        Debug.Log(other.gameObject.name);
+        if (other.gameObject.name == "floorChange" && totalLocation != locationOfPointName && moveToPoint)
+        {
+            transform.position = scripts.locations.GetLocation(locationOfPointName).spawns[0].spawn.position;
+            totalLocation = locationOfPointName;
+        }
+        else if (other.gameObject.name == point.gameObject.name)
+            moveToPoint = false;
+        else if (other.gameObject.name == "Player")
             playerInCollider = true;
     }
 
-    public void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.name == "Player")
             playerInCollider = false;
     }
 
+    private void MoveTo(Transform target) => scripts.main.MoveTo(target, speed, transform, sr, animator);
+    
+
     private void Update()
     {
         if (!playerInCollider && moveToPlayer)
+            MoveTo(playerTransform);
+        
+        if (moveToPoint)
         {
-            transform.position = Vector3.MoveTowards(transform.position, playerTransform.position, speed * Time.deltaTime);
-            GetComponent<Animator>().SetBool("walk", true);
-            if (playerTransform.position.x > transform.position.x)
-                GetComponent<SpriteRenderer>().flipX = false;
+            if (locationOfPointName == totalLocation)
+                MoveTo(point);
             else
-                GetComponent<SpriteRenderer>().flipX = true;
+                MoveTo(scripts.locations.GetLocation(totalLocation).transformOfStairs);
         }
-        else
-            GetComponent<Animator>().SetBool("walk", false);
+        //GetComponent<Animator>().SetBool("walk", false);
     }
 }

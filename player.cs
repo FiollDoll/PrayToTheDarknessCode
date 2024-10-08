@@ -13,6 +13,7 @@ public class player : MonoBehaviour
     [HideInInspector] public float changeSpeed;
     private Animator animator;
     public CinemachineVirtualCamera virtualCamera;
+    [SerializeField] private allScripts scripts;
 
     private Rigidbody2D rb;
 
@@ -34,6 +35,8 @@ public class player : MonoBehaviour
         else
             animator.SetBool("noClothStyle", true);
     }
+
+    public void MoveTo(Transform target) => scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), animator);
 
     private void FixedUpdate()
     {
