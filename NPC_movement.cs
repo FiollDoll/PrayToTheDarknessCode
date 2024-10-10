@@ -17,7 +17,7 @@ public class NPC_movement : MonoBehaviour
 
     [Header("Move to point")]
     public bool moveToPoint;
-    public bool waitPlayerAndMove; // TODO: реализовать
+    public bool waitPlayerAndMove;
     public Transform point;
     public string locationOfPointName;
 
@@ -27,18 +27,18 @@ public class NPC_movement : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
     }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log(other.gameObject.name);
         if (other.gameObject.name == "floorChange" && totalLocation != locationOfPointName && moveToPoint)
         {
             transform.position = scripts.locations.GetLocation(locationOfPointName).spawns[0].spawn.position;
             totalLocation = locationOfPointName;
         }
-        else if (other.gameObject.name == point.gameObject.name)
-            moveToPoint = false;
         else if (other.gameObject.name == "Player")
             playerInCollider = true;
+        else if (other.gameObject.name == point.gameObject.name)
+            moveToPoint = false;
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -48,20 +48,25 @@ public class NPC_movement : MonoBehaviour
     }
 
     private void MoveTo(Transform target) => scripts.main.MoveTo(target, speed, transform, sr, animator);
-    
+
 
     private void Update()
     {
         if (!playerInCollider && moveToPlayer)
             MoveTo(playerTransform);
-        
-        if (moveToPoint)
+        else if (moveToPoint)
         {
-            if (locationOfPointName == totalLocation)
-                MoveTo(point);
+            if (!waitPlayerAndMove || (waitPlayerAndMove && playerInCollider))
+            {
+                if (locationOfPointName == totalLocation)
+                    MoveTo(point);
+                else
+                    MoveTo(scripts.locations.GetLocation(totalLocation).transformOfStairs);
+            }
             else
-                MoveTo(scripts.locations.GetLocation(totalLocation).transformOfStairs);
+                GetComponent<Animator>().SetBool("walk", false);
         }
-        //GetComponent<Animator>().SetBool("walk", false);
+        else
+            GetComponent<Animator>().SetBool("walk", false);
     }
 }
