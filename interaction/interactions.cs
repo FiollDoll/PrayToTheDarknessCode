@@ -6,7 +6,6 @@ using DG.Tweening;
 public class interactions : MonoBehaviour
 {
     [SerializeField] private GameObject floorChangeMenu;
-    [SerializeField] private Sprite iconDefault, iconLocation;
     [SerializeField] private TextMeshProUGUI interLabelText;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;

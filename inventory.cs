@@ -8,7 +8,7 @@ public class inventory : MonoBehaviour
     public List<item> playerItems = new List<item>();
     [SerializeField] private item[] gameItems = new item[0];
     [SerializeField] private GameObject inventorySlotPrefab;
-    [SerializeField] private GameObject itemInfoMenu;
+    [SerializeField] private GameObject itemInfoMenu, mainWatch, onlyIconWatch;
     [SerializeField] private TextMeshProUGUI newItemText;
     [SerializeField] private allScripts scripts;
 
@@ -54,9 +54,17 @@ public class inventory : MonoBehaviour
     public void WatchItem(int id)
     {
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
-        itemInfoMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
-        itemInfoMenu.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
-        itemInfoMenu.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+        mainWatch.gameObject.SetActive(!playerItems[id].watchIconOnly);
+        onlyIconWatch.gameObject.SetActive(playerItems[id].watchIconOnly);
+        if (playerItems[id].watchIconOnly)
+            onlyIconWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+        else
+        {
+            mainWatch.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
+            mainWatch.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
+            mainWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+        }
+
         Button button = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
         button.interactable = true; // Дефолт значение
         if (playerItems[id].canUse && (playerItems[id].useInInventory || playerItems[id].useInCollider))
@@ -162,7 +170,23 @@ public class item
                 return activationTextEn;
         }
     }
-    public Sprite icon;
+    [HideInInspector]
+    public Sprite icon
+    {
+        get
+        {
+            if (iconRu != null) // iconEn дефолт
+            {
+                if (PlayerPrefs.GetString("language") == "ru")
+                    return iconRu;
+                else 
+                    return iconEn;                
+            }
+            return iconEn;
+        }
+    }
+    public Sprite iconRu, iconEn;
+    public bool watchIconOnly;
 
     [Header("UseSettings")]
     public bool canUse;

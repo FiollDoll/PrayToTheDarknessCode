@@ -36,12 +36,12 @@ public class manageLocation : MonoBehaviour
         totalLocation = GetLocation(name);
         if (withFade)
         {
+            scripts.player.canMove = false;
             Sequence sequence = DOTween.Sequence();
             Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
             fadeAnimation.OnComplete(() =>
             {
                 locationSetup(totalLocation);
-                scripts.player.canMove = false;
             });
             sequence.Append(fadeAnimation);
             sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));

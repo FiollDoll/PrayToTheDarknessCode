@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -95,6 +96,12 @@ public class cutsceneManager : MonoBehaviour
         if (step == -1)
             return;
 
+        if (totalCutscene.steps[step].delayAndNext != 0)
+        {
+            StartCoroutine(delayAndNext(totalCutscene.steps[step].delayAndNext, step++));
+            return;
+        }
+
         if (totalCutscene.steps[step].timeDarkStart != 0)
         {
             Sequence sequence = DOTween.Sequence();
@@ -109,6 +116,12 @@ public class cutsceneManager : MonoBehaviour
         }
         else
             StepDo(step);
+    }
+
+    private IEnumerator delayAndNext(float delay, int newStep)
+    {
+        yield return new WaitForSeconds(delay);
+        ActivateCutsceneStep(newStep);
     }
 }
 
@@ -201,13 +214,13 @@ public class cutscene
         public objectSprite[] objectsChangeSprite = new objectSprite[0];
         public animations[] animatorsChanges = new animations[0];
 
-
         [Header("-Other")]
         public NPC_moveToPlayer[] npcMoveToPlayer = new NPC_moveToPlayer[0];
         public humanMove[] humansMove = new humanMove[0];
         public float editCameraSize;
         public VolumeProfile newVolumeProfile;
         public float timeDarkStart;
+        public float delayAndNext;
     }
 
     public string name;

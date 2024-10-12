@@ -6,8 +6,6 @@ using Cinemachine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class player : MonoBehaviour
 {
-    private int visualMode;
-    [SerializeField] private Sprite[] visualSprites = new Sprite[0];
     public bool canMove;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
@@ -26,8 +24,6 @@ public class player : MonoBehaviour
 
     public void ChangeVisual(int num)
     {
-        visualMode = num;
-        GetComponent<SpriteRenderer>().sprite = visualSprites[num];
         animator.SetBool("noClothStyle", false);
         animator.SetBool("standartStyle", false);
         if (num == 0)
