@@ -1,15 +1,43 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 public class interactions : MonoBehaviour
 {
+    private Dictionary<Collider2D, string> enteredColliders = new Dictionary<Collider2D, string>();
     [SerializeField] private GameObject floorChangeMenu;
     [SerializeField] private TextMeshProUGUI interLabelText;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
+    private int selectedColliderId;
     public extraInter selectedEI = null;
+
+    private void AddEnteredCollider(Collider2D other, string label)
+    {
+        selectedColliderId = 0;
+        if (!enteredColliders.ContainsKey(other))
+        {
+            enteredColliders.Add(other, label);
+            UpdateIntersMenu();
+        }
+    }
+
+    private void UpdateIntersMenu()
+    {
+        interLabelText.text = "";
+        int idx = 0;
+        foreach (string label in enteredColliders.Values)
+        {
+            if (selectedColliderId == idx)
+                interLabelText.text += ("> " + label + "\n");
+            else
+                interLabelText.text += (label + "\n");
+            idx++;
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -29,7 +57,7 @@ public class interactions : MonoBehaviour
                     if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
                         scripts.locations.ActivateLocation(totalColliderName, spawnName);
                     else
-                        interLabelText.text = selectedEI.interLabel;
+                        AddEnteredCollider(other, selectedEI.interLabel);
                 }
                 break;
             case "cutscene":
@@ -54,7 +82,7 @@ public class interactions : MonoBehaviour
                         }
                         selectedEI = EI.interactions[i];
                         other.gameObject.name = totalEI.interName; // Сделано плохо
-                        interLabelText.text = selectedEI.interLabel;
+                        AddEnteredCollider(other, selectedEI.interLabel);
                         break;
                     }
                     if (selectedEI == null)
@@ -78,7 +106,11 @@ public class interactions : MonoBehaviour
             case "interact":
             case "item":
             case "location":
-                interLabelText.text = "";
+                if (enteredColliders.ContainsKey(other))
+                {
+                    enteredColliders.Remove(other);
+                    UpdateIntersMenu();
+                }
                 break;
         }
         if (floorChangeMenu.gameObject.activeSelf)
@@ -89,15 +121,30 @@ public class interactions : MonoBehaviour
         spawnName = "";
     }
 
+    private void ChoiceInter(int mode)
+    {
+        if (enteredColliders.Keys.Count != selectedColliderId + mode && selectedColliderId + mode >= 0)
+        {
+            selectedColliderId += mode;
+            UpdateIntersMenu();
+        }
+    }
+
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            ChoiceInter(1);
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+            ChoiceInter(-1);
+            
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (totalColliderName != "")
+            if (enteredColliders.Keys.Count > 0)
             {
+                totalColliderName = enteredColliders.ElementAt(selectedColliderId).Key.gameObject.name;
                 if (totalColliderMode != "location")
                 {
-                    if (GameObject.Find(totalColliderName).GetComponent<extraInteraction>() != null)
+                    if (enteredColliders.ElementAt(selectedColliderId).Key.gameObject.GetComponent<extraInteraction>() != null)
                     {
                         if (selectedEI == null)
                             return;
@@ -123,9 +170,8 @@ public class interactions : MonoBehaviour
                 {
                     case "item":
                         scripts.inventory.AddItem(totalColliderName);
-
-                        interLabelText.text = "";
                         Destroy(GameObject.Find(totalColliderName));
+                        UpdateIntersMenu();
                         break;
                     case "location":
                         if (!scripts.locations.GetLocation(totalColliderName).locked)
