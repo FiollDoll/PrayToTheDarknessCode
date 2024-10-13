@@ -5,10 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+
 public class interactions : MonoBehaviour
 {
     private Dictionary<Collider2D, string> enteredColliders = new Dictionary<Collider2D, string>();
-    [SerializeField] private GameObject floorChangeMenu;
+    public GameObject floorChangeMenu;
     [SerializeField] private TextMeshProUGUI interLabelText;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
@@ -136,7 +137,7 @@ public class interactions : MonoBehaviour
             ChoiceInter(1);
         if (Input.GetKeyDown(KeyCode.DownArrow))
             ChoiceInter(-1);
-            
+
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (enteredColliders.Keys.Count > 0)
@@ -178,7 +179,7 @@ public class interactions : MonoBehaviour
                             scripts.locations.ActivateLocation(totalColliderName, selectedEI.moveToSpawn);
                         break;
                     default:
-                        if (totalColliderName == "floorChange")
+                        if (totalColliderName == "floorChange" && (!scripts.main.CheckAnyMenuOpen() || floorChangeMenu.gameObject.activeSelf))
                             floorChangeMenu.gameObject.SetActive(!floorChangeMenu.gameObject.activeSelf);
                         else
                         {
@@ -189,8 +190,9 @@ public class interactions : MonoBehaviour
                 }
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.Tab))
-            scripts.notebook.ManageNotePanel();
+            if (Input.GetKeyDown(KeyCode.I))
+                scripts.inventory.ManageInventoryPanel();
+            if (Input.GetKeyDown(KeyCode.Tab))
+                scripts.notebook.ManageNotePanel();
     }
 }

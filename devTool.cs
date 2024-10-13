@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 public class devTool : MonoBehaviour
 {
-    [SerializeField] private GameObject menuTools;
+    public GameObject menuTools;
     [SerializeField] private TextMeshProUGUI textInfo;
     [SerializeField] private TMP_InputField InputFieldStage, InputFieldNewQuest, InputFieldToLocation, InputFieldSpawn;
     [SerializeField] private allScripts scripts;

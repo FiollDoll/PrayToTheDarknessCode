@@ -69,7 +69,7 @@ public class cutsceneManager : MonoBehaviour
 
         foreach (cutscene.locationsLock locationsLock in totalCutscene.steps[step].locksLocations)
             scripts.locations.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
-
+        scripts.main.lockAnyMenu = totalCutscene.steps[step].lockAllMenu;
         foreach (cutscene.NPC_moveToPlayer nPC_MoveToPlayer in totalCutscene.steps[step].npcMoveToPlayer)
             GameObject.Find(nPC_MoveToPlayer.NPC_name).GetComponent<NPC_movement>().moveToPlayer = nPC_MoveToPlayer.move;
         foreach (cutscene.humanMove humanMove in totalCutscene.steps[step].humansMove)
@@ -203,8 +203,7 @@ public class cutscene
 
 
         [Header("-Locks")]
-        public bool lockNote;
-        public bool lockInventory;
+        public bool lockAllMenu;
         public locationsLock[] locksLocations = new locationsLock[0];
 
 

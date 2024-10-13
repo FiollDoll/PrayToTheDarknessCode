@@ -6,7 +6,8 @@ using TMPro;
 
 public class notebook : MonoBehaviour
 {
-    [SerializeField] private GameObject noteMenu, pageNote, pageQuest, pageReadNote, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
+    public GameObject noteMenu;
+    [SerializeField] private GameObject pageNote, pageQuest, pageReadNote, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
     [SerializeField] private GameObject buttonNotePrefab;
     [SerializeField] private GameObject newNoteNotify;
     [SerializeField] private note[] gameNotes = new note[0];
@@ -105,6 +106,8 @@ public class notebook : MonoBehaviour
 
     public void ManageNotePanel()
     {
+        if (scripts.main.CheckAnyMenuOpen() && !noteMenu.gameObject.activeSelf)
+            return;
         noteMenu.gameObject.SetActive(!noteMenu.gameObject.activeSelf);
         scripts.player.canMove = !noteMenu.gameObject.activeSelf;
         if (noteMenu.gameObject.activeSelf)

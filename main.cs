@@ -11,6 +11,8 @@ public class main : MonoBehaviour
     public Sprite nullSprite;
     private string charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
+    [SerializeField] private allScripts scripts;
+    public bool lockAnyMenu;
 
     public void ActivateNoVision(float time)
     {
@@ -29,6 +31,19 @@ public class main : MonoBehaviour
             spriteRenderer.flipX = false;
         else
             spriteRenderer.flipX = true;
+    }
+
+    public bool CheckAnyMenuOpen()
+    {
+        if (scripts.inventory.transform.Find("inventoryMenu").gameObject.activeSelf)
+            return true;
+        else if (scripts.notebook.noteMenu.activeSelf)
+            return true;
+        else if (scripts.interactions.floorChangeMenu.activeSelf)
+            return true;
+        else if (GameObject.Find("devTools").GetComponent<devTool>().menuTools.activeSelf)
+            return true;
+        return lockAnyMenu;
     }
 
     private string CursedText(int len)

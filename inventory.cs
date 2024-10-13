@@ -15,6 +15,8 @@ public class inventory : MonoBehaviour
     public void ManageInventoryPanel()
     {
         GameObject invMenu = transform.Find("inventoryMenu").gameObject;
+        if (scripts.main.CheckAnyMenuOpen() && !invMenu.activeSelf)
+            return;
         invMenu.SetActive(!invMenu.activeSelf);
         scripts.player.canMove = !invMenu.activeSelf;
         itemInfoMenu.SetActive(false);
@@ -115,12 +117,6 @@ public class inventory : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.I))
-            ManageInventoryPanel();
-    }
-
     private IEnumerator ActivateNotify(string name)
     {
         newItemText.gameObject.SetActive(true);
@@ -179,8 +175,8 @@ public class item
             {
                 if (PlayerPrefs.GetString("language") == "ru")
                     return iconRu;
-                else 
-                    return iconEn;                
+                else
+                    return iconEn;
             }
             return iconEn;
         }
