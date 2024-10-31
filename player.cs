@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class player : MonoBehaviour
 {
-    public bool canMove;
-    public GameObject playerMenu;
+    public float karma;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
-    private Animator animator;
+    public bool canMove;
+    public GameObject playerMenu;
     public CinemachineVirtualCamera virtualCamera;
+    public List<NPC> familiarNPC = new List<NPC>();
     [SerializeField] private allScripts scripts;
     private Rigidbody2D rb;
+    private Animator animator;
 
     private void Start()
     {
@@ -38,12 +39,14 @@ public class player : MonoBehaviour
     {
         scripts.notebook.ChoicePage(-1);
         scripts.inventory.ManageInventoryPanel(false);
-        if (page == 0) // Инв
+        if (page == 0)
             scripts.inventory.ManageInventoryPanel(true);
         else if (page == 1)
             scripts.notebook.ChoicePage(1);
         else if (page == 2)
             scripts.notebook.ChoicePage(0);
+        else if (page == 3)
+            scripts.notebook.ChoicePage(2);
     }
 
     private void FixedUpdate()
@@ -54,10 +57,7 @@ public class player : MonoBehaviour
         if (canMove)
         {
             rb.velocity = new Vector2(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed));
-            if (horiz != 0 || vert != 0)
-                animator.SetBool("walk", true);
-            else
-                animator.SetBool("walk", false);
+            animator.SetBool("walk", horiz != 0 || vert != 0);
             if (horiz > 0)
                 GetComponent<SpriteRenderer>().flipX = false;
             else if (horiz < 0)

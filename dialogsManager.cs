@@ -12,6 +12,7 @@ public class dialogsManager : MonoBehaviour
     public GameObject dialogMenu;
     [SerializeField] private GameObject _mainDialogMenu, _choiceDialogMenu, _choicesContainer;
     [SerializeField] private GameObject _buttonChoicePrefab;
+    [SerializeField] private NPC[] allNpc = new NPC[0];
     [SerializeField] private allScripts _scripts;
 
     public int totalStep;
@@ -90,7 +91,7 @@ public class dialogsManager : MonoBehaviour
     }
 
     public void DialogCLose()
-    {       
+    {
         _canStepNext = false;
         if (_activatedDialog.activatedCutsceneStepAtEnd != -1)
             _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activatedCutsceneStepAtEnd);
@@ -217,6 +218,18 @@ public class dialogsManager : MonoBehaviour
     private void DialogUpdateAction()
     {
         _textName.text = _selectedStep.totalNpc.name;
+        foreach (NPC totalNpc in allNpc)
+        {
+            if (totalNpc.name == _selectedStep.totalNpc.name)
+            {
+                if (!_scripts.player.familiarNPC.Contains(totalNpc))
+                {
+                    _scripts.player.familiarNPC.Add(totalNpc);
+                    break;
+                }
+            }
+        }
+
         if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
             GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
 
@@ -248,7 +261,7 @@ public class dialogsManager : MonoBehaviour
             _canStepNext = true;
         });
     }
-    
+
     private IEnumerator SetText(string text)
     {
         _textDialog.text = "";

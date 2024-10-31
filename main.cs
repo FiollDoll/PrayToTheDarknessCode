@@ -7,6 +7,7 @@ using DG.Tweening;
 
 public class main : MonoBehaviour
 {
+    public int hour, minute;
     [SerializeField] private Image noViewPanel;
     public Sprite nullSprite;
     private string charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";

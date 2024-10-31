@@ -17,6 +17,18 @@ public class NPC : ScriptableObject
     }
     public string ruName, enName;
     public string nameInWorld;
+    [HideInInspector]
+    public string description
+    {
+        get
+        {
+            if (PlayerPrefs.GetString("language") == "ru")
+                return ruDescription;
+            else
+                return enDescription;
+        }
+    }
+    public string ruDescription, enDescription;
     public icons icon;
 }
 

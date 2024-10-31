@@ -6,8 +6,8 @@ using TMPro;
 
 public class notebook : MonoBehaviour
 {
-    [SerializeField] private GameObject pageNote, pageQuest, pageReadNote, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
-    [SerializeField] private GameObject buttonNotePrefab;
+    [SerializeField] private GameObject pageNote, pageQuest, pageNPC, pageNPCcontainer, pageReadNote, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
+    [SerializeField] private GameObject buttonNotePrefab, buttonNPC;
     [SerializeField] private GameObject newNoteNotify;
     [SerializeField] private note[] gameNotes = new note[0];
     [SerializeField] private List<note> playerNotes = new List<note>();
@@ -31,13 +31,12 @@ public class notebook : MonoBehaviour
     {
         pageNote.gameObject.SetActive(false);
         pageQuest.gameObject.SetActive(false);
+        pageNPC.gameObject.SetActive(false);
         pageReadNote.gameObject.SetActive(false);
-        pageChoiceNote.gameObject.SetActive(false);
         buttonChoiceActiveQuest.gameObject.SetActive(false);
         if (num == 0)
         {
             pageNote.gameObject.SetActive(true);
-            pageChoiceNote.gameObject.SetActive(true);
             foreach (Transform child in pageChoiceNote.transform)
                 Destroy(child.gameObject);
 
@@ -56,7 +55,6 @@ public class notebook : MonoBehaviour
         else if (num == 1)
         {
             pageQuest.gameObject.SetActive(true);
-            pageChoiceQuest.gameObject.SetActive(true);
             foreach (Transform child in pageChoiceQuest.transform)
                 Destroy(child.gameObject);
 
@@ -73,6 +71,22 @@ public class notebook : MonoBehaviour
             }
             pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
+        else if (num == 2)
+        {
+            pageNPC.gameObject.SetActive(true);
+            foreach (Transform child in pageNPCcontainer.transform)
+                Destroy(child.gameObject);
+
+            for (int i = 0; i < scripts.player.familiarNPC.Count; i++)
+            {
+                var obj = Instantiate(buttonNPC, Vector3.zero, Quaternion.identity, pageNPCcontainer.transform);
+                obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = scripts.player.familiarNPC[i].name;
+                obj.transform.Find("Icon").GetComponent<Image>().sprite = scripts.player.familiarNPC[i].icon.standartIcon;
+                int number = i;
+                obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
+            }
+            pageNPC.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+        }
     }
 
     public void ReadNote(int num, int mode = 0)
@@ -88,7 +102,7 @@ public class notebook : MonoBehaviour
             if (!playerNotes[num].readed)
                 playerNotes[num].readed = true;
         }
-        else
+        else if (mode == 1)
         {
             quest selectedQuest = scripts.quests.activeQuests[num];
             header.text = selectedQuest.name;
@@ -102,6 +116,11 @@ public class notebook : MonoBehaviour
             }
             else
                 buttonChoiceActiveQuest.gameObject.SetActive(false);
+        }
+        else if (mode == 2)
+        {
+            header.text = scripts.player.familiarNPC[num].name;
+            note.text = scripts.player.familiarNPC[num].description;
         }
         pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick.AddListener(delegate { ChoicePage(mode); });
     }

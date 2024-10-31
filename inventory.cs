@@ -42,61 +42,64 @@ public class inventory : MonoBehaviour
             if (scripts.quests.FindQuest(playerItems[slot].questName) == scripts.quests.totalQuest)
                 scripts.quests.NextStep();
         }
-
         if (playerItems[slot].removeAfterUse)
             playerItems.RemoveAt(slot);
 
-        scripts.player.playerMenu.gameObject.SetActive(false);
+        WatchItem(-1); // Закрытие менюшки
+        UpdateInvUI();
     }
 
     public void WatchItem(int id)
     {
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
-        mainWatch.gameObject.SetActive(!playerItems[id].watchIconOnly);
-        onlyIconWatch.gameObject.SetActive(playerItems[id].watchIconOnly);
-        if (playerItems[id].watchIconOnly)
-            onlyIconWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
-        else
+        if (itemInfoMenu.gameObject.activeSelf)
         {
-            mainWatch.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
-            mainWatch.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
-            mainWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
-        }
-
-        Button button = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
-        button.interactable = true; // Дефолт значение
-        if (playerItems[id].canUse && (playerItems[id].useInInventory || playerItems[id].useInCollider))
-        {
-            if (playerItems[id].useInInventory)
+            mainWatch.gameObject.SetActive(!playerItems[id].watchIconOnly);
+            onlyIconWatch.gameObject.SetActive(playerItems[id].watchIconOnly);
+            if (playerItems[id].watchIconOnly)
+                onlyIconWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+            else
             {
-                if (playerItems[id].questName != "")
+                mainWatch.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
+                mainWatch.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
+                mainWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+            }
+
+            Button button = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
+            button.interactable = true; // Дефолт значение
+            if (playerItems[id].canUse && (playerItems[id].useInInventory || playerItems[id].useInCollider))
+            {
+                if (playerItems[id].useInInventory)
                 {
-                    if (playerItems[id].questName != scripts.quests.totalQuest.nameInGame)
-                        button.interactable = false;
-                    if (scripts.quests.totalQuest.totalStep != playerItems[id].questStage && playerItems[id].questStage > 0)
+                    if (playerItems[id].questName != "")
+                    {
+                        if (playerItems[id].questName != scripts.quests.totalQuest.nameInGame)
+                            button.interactable = false;
+                        if (scripts.quests.totalQuest.totalStep != playerItems[id].questStage && playerItems[id].questStage > 0)
+                            button.interactable = false;
+                    }
+                }
+                else if (playerItems[id].useInCollider)
+                {
+                    if (scripts.interactions.selectedEI == null
+                     || (scripts.interactions.selectedEI != null && scripts.interactions.selectedEI.itemNameUse != playerItems[id].nameInGame))
                         button.interactable = false;
                 }
             }
-            else if (playerItems[id].useInCollider)
-            {
-                if (scripts.interactions.selectedEI == null
-                 || (scripts.interactions.selectedEI != null && scripts.interactions.selectedEI.itemNameUse != playerItems[id].nameInGame))
-                    button.interactable = false;
-            }
-        }
-        else
-            button.interactable = false;
-
-        if (button.interactable)
-        {
-            button.onClick.AddListener(delegate { UseItem(id); });
-            if (playerItems[id].activationText != "")
-                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = playerItems[id].activationText;
             else
-                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "???";
+                button.interactable = false;
+
+            if (button.interactable)
+            {
+                button.onClick.AddListener(delegate { UseItem(id); });
+                if (playerItems[id].activationText != "")
+                    button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = playerItems[id].activationText;
+                else
+                    button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "???";
+            }
+            else
+                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "";
         }
-        else
-            button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "";
     }
 
     private void UpdateInvUI()

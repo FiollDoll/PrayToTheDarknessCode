@@ -50,7 +50,7 @@ public class NPC_movement : MonoBehaviour
     private void MoveTo(Transform target) => scripts.main.MoveTo(target, speed, transform, sr, animator);
 
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (!playerInCollider && moveToPlayer)
             MoveTo(playerTransform);
