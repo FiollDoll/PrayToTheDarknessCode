@@ -218,6 +218,11 @@ public class dialogsManager : MonoBehaviour
     private void DialogUpdateAction()
     {
         _textName.text = _selectedStep.totalNpc.name;
+        _iconImage.sprite = _selectedStep.icon;
+        if (_selectedStep.shakeIcon)
+            _iconImage.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(10, 10, 10), 2f, 10);
+        else
+            _iconImage.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
         foreach (NPC totalNpc in allNpc)
         {
             if (totalNpc.name == _selectedStep.totalNpc.name)
@@ -238,7 +243,6 @@ public class dialogsManager : MonoBehaviour
         else
             StartCoroutine(SetText(_selectedStep.text));
 
-        _iconImage.sprite = _selectedStep.icon;
         if (_selectedStep.cameraTarget != null)
             _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
         else
@@ -377,6 +381,7 @@ public class dialogStep
             };
         }
     }
+    public bool shakeIcon;
     public int activatedCutsceneStep = -1;
     public string questStart;
     public Transform cameraTarget;

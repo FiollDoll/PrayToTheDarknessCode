@@ -8,14 +8,13 @@ public class inventory : MonoBehaviour
     public List<item> playerItems = new List<item>();
     [SerializeField] private item[] gameItems = new item[0];
     [SerializeField] private GameObject inventorySlotPrefab;
-    [SerializeField] private GameObject itemInfoMenu, mainWatch, onlyIconWatch;
+    [SerializeField] private GameObject invMenu, itemInfoMenu, mainWatch, onlyIconWatch;
     [SerializeField] private TextMeshProUGUI newItemText;
     [SerializeField] private allScripts scripts;
 
     public void ManageInventoryPanel(bool state)
     {
-        GameObject invMenu = transform.Find("inventoryMenu").gameObject;
-        invMenu.SetActive(state);
+        invMenu.gameObject.SetActive(state);
         if (state)
             UpdateInvUI();
     }
@@ -47,6 +46,7 @@ public class inventory : MonoBehaviour
 
         WatchItem(-1); // Закрытие менюшки
         UpdateInvUI();
+        scripts.player.playerMenu.gameObject.SetActive(false);
     }
 
     public void WatchItem(int id)
@@ -73,9 +73,8 @@ public class inventory : MonoBehaviour
                 {
                     if (playerItems[id].questName != "")
                     {
-                        if (playerItems[id].questName != scripts.quests.totalQuest.nameInGame)
-                            button.interactable = false;
-                        if (scripts.quests.totalQuest.totalStep != playerItems[id].questStage && playerItems[id].questStage > 0)
+                        if (playerItems[id].questName != scripts.quests.totalQuest.nameInGame 
+                         || (scripts.quests.totalQuest.totalStep != playerItems[id].questStage && playerItems[id].questStage > 0))
                             button.interactable = false;
                     }
                 }
@@ -104,12 +103,12 @@ public class inventory : MonoBehaviour
 
     private void UpdateInvUI()
     {
-        foreach (Transform child in transform.Find("inventoryMenu").transform.Find("items"))
+        foreach (Transform child in invMenu.transform.Find("items"))
             Destroy(child.gameObject);
 
         for (int i = 0; i < playerItems.Count; i++)
         {
-            var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity, transform.Find("inventoryMenu").transform.Find("items"));
+            var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity, invMenu.transform.Find("items"));
             obj.GetComponent<Image>().sprite = playerItems[i].icon;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { WatchItem(num); });

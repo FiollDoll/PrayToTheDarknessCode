@@ -37,6 +37,7 @@ public class cutsceneManager : MonoBehaviour
 
     public void StepDo(int step) // Выполнить шаг катсцены.
     {
+        scripts.player.changeSpeed = totalCutscene.steps[step].editSpeed;
         if (totalCutscene.steps[step].moveToLocation != "")
             scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, totalCutscene.steps[step].moveToLocationSpawn, totalCutscene.steps[step].toLocationWithFade);
 
@@ -111,7 +112,7 @@ public class cutsceneManager : MonoBehaviour
                 StepDo(step);
             });
             sequence.Append(stepSequence);
-            sequence.Append(noViewPanel.DOFade(0f, 0f).SetEase(Ease.OutQuart));
+            sequence.Append(noViewPanel.DOFade(0f, totalCutscene.steps[step].timeDarkEnd).SetEase(Ease.OutQuart));
             sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
         }
         else
@@ -185,6 +186,7 @@ public class cutscene
 
         [Header("-DoInScripts")]
         public bool questStepNext;
+        public float editSpeed;
 
         [Header("-Dialogs")]
         public string activatedDialog;
@@ -219,6 +221,7 @@ public class cutscene
         public float editCameraSize;
         public VolumeProfile newVolumeProfile;
         public float timeDarkStart;
+        public float timeDarkEnd = 1f;
         public float delayAndNext;
     }
 
