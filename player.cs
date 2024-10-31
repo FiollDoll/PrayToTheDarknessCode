@@ -7,12 +7,12 @@ using Cinemachine;
 public class player : MonoBehaviour
 {
     public bool canMove;
+    public GameObject playerMenu;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     private Animator animator;
     public CinemachineVirtualCamera virtualCamera;
     [SerializeField] private allScripts scripts;
-
     private Rigidbody2D rb;
 
     private void Start()
@@ -33,6 +33,18 @@ public class player : MonoBehaviour
     }
 
     public void MoveTo(Transform target) => scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), animator);
+
+    public void ChoicePagePlayerMenu(int page)
+    {
+        scripts.notebook.ChoicePage(-1);
+        scripts.inventory.ManageInventoryPanel(false);
+        if (page == 0) // Инв
+            scripts.inventory.ManageInventoryPanel(true);
+        else if (page == 1)
+            scripts.notebook.ChoicePage(1);
+        else if (page == 2)
+            scripts.notebook.ChoicePage(0);
+    }
 
     private void FixedUpdate()
     {

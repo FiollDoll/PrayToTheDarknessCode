@@ -6,7 +6,6 @@ using TMPro;
 
 public class notebook : MonoBehaviour
 {
-    public GameObject noteMenu;
     [SerializeField] private GameObject pageNote, pageQuest, pageReadNote, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
     [SerializeField] private GameObject buttonNotePrefab;
     [SerializeField] private GameObject newNoteNotify;
@@ -45,7 +44,10 @@ public class notebook : MonoBehaviour
             for (int i = 0; i < playerNotes.Count; i++)
             {
                 var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceNote.transform);
-                obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerNotes[i].name;
+                if (playerNotes[i].readed)
+                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerNotes[i].name;
+                else
+                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = "(*)" + playerNotes[i].name;
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number); });
             }
@@ -76,8 +78,6 @@ public class notebook : MonoBehaviour
     public void ReadNote(int num, int mode = 0)
     {
         pageReadNote.gameObject.SetActive(true);
-        pageChoiceNote.gameObject.SetActive(false);
-        pageChoiceQuest.gameObject.SetActive(false);
         TextMeshProUGUI header = pageReadNote.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI note = pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
 
@@ -85,6 +85,8 @@ public class notebook : MonoBehaviour
         {
             header.text = playerNotes[num].name;
             note.text = playerNotes[num].description;
+            if (!playerNotes[num].readed)
+                playerNotes[num].readed = true;
         }
         else
         {
@@ -102,16 +104,6 @@ public class notebook : MonoBehaviour
                 buttonChoiceActiveQuest.gameObject.SetActive(false);
         }
         pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick.AddListener(delegate { ChoicePage(mode); });
-    }
-
-    public void ManageNotePanel()
-    {
-        if (scripts.main.CheckAnyMenuOpen() && !noteMenu.gameObject.activeSelf)
-            return;
-        noteMenu.gameObject.SetActive(!noteMenu.gameObject.activeSelf);
-        scripts.player.canMove = !noteMenu.gameObject.activeSelf;
-        if (noteMenu.gameObject.activeSelf)
-            ChoicePage(0);
     }
 
     private IEnumerator ActivateNotify()
@@ -149,4 +141,5 @@ public class note
                 return descriptionEn;
         }
     }
+    public bool readed;
 }

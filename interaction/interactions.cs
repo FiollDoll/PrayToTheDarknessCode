@@ -49,7 +49,8 @@ public class interactions : MonoBehaviour
                 break;
             case "location":
                 totalColliderName = other.gameObject.name;
-                totalColliderMode = "location";
+                totalColliderMode = other.gameObject.tag;
+
                 selectedEI = other.gameObject.GetComponent<extraInteraction>().interactions[0];
                 spawnName = selectedEI.moveToSpawn;
 
@@ -91,6 +92,7 @@ public class interactions : MonoBehaviour
                 }
                 totalColliderName = other.gameObject.name;
                 totalColliderMode = other.gameObject.tag;
+
                 break;
             case "cutsceneAuto":
                 scripts.cutsceneManager.ActivateCutscene(other.gameObject.name);
@@ -133,9 +135,9 @@ public class interactions : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-            ChoiceInter(1);
         if (Input.GetKeyDown(KeyCode.DownArrow))
+            ChoiceInter(1);
+        if (Input.GetKeyDown(KeyCode.UpArrow))
             ChoiceInter(-1);
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -143,6 +145,8 @@ public class interactions : MonoBehaviour
             if (enteredColliders.Keys.Count > 0)
             {
                 totalColliderName = enteredColliders.ElementAt(selectedColliderId).Key.gameObject.name;
+                totalColliderMode = GameObject.Find(totalColliderName).tag;
+                // TODO: totalColliderMode работает как-то немного отделньно?
                 if (totalColliderMode != "location")
                 {
                     if (enteredColliders.ElementAt(selectedColliderId).Key.gameObject.GetComponent<extraInteraction>() != null)
@@ -172,7 +176,6 @@ public class interactions : MonoBehaviour
                     case "item":
                         scripts.inventory.AddItem(totalColliderName);
                         Destroy(GameObject.Find(totalColliderName));
-                        UpdateIntersMenu();
                         break;
                     case "location":
                         if (!scripts.locations.GetLocation(totalColliderName).locked)
@@ -186,13 +189,20 @@ public class interactions : MonoBehaviour
                             if (!scripts.dialogsManager.dialogMenu.activeSelf)
                                 scripts.dialogsManager.ActivateDialog(totalColliderName);
                         }
+                        // TODO: в интеракциях, где можно много раз - это мешает.
+                        //enteredColliders.Remove(enteredColliders.ElementAt(selectedColliderId).Key);
                         break;
                 }
+                UpdateIntersMenu();
             }
         }
-            if (Input.GetKeyDown(KeyCode.I))
-                scripts.inventory.ManageInventoryPanel();
-            if (Input.GetKeyDown(KeyCode.Tab))
-                scripts.notebook.ManageNotePanel();
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (!scripts.main.CheckAnyMenuOpen())
+                scripts.player.playerMenu.gameObject.SetActive(true);
+            else
+                scripts.player.playerMenu.gameObject.SetActive(false);
+            scripts.player.canMove = !scripts.player.playerMenu.activeSelf;
+        }
     }
 }

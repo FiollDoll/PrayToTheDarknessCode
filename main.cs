@@ -35,13 +35,13 @@ public class main : MonoBehaviour
 
     public bool CheckAnyMenuOpen()
     {
-        if (scripts.inventory.transform.Find("inventoryMenu").gameObject.activeSelf)
-            return true;
-        else if (scripts.notebook.noteMenu.activeSelf)
+        if (scripts.player.playerMenu.gameObject.activeSelf)
             return true;
         else if (scripts.interactions.floorChangeMenu.activeSelf)
             return true;
         else if (GameObject.Find("devTools").GetComponent<devTool>().menuTools.activeSelf)
+            return true;
+        else if (scripts.dialogsManager.dialogMenu.activeSelf)
             return true;
         return lockAnyMenu;
     }

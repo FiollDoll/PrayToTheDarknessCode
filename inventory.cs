@@ -12,15 +12,11 @@ public class inventory : MonoBehaviour
     [SerializeField] private TextMeshProUGUI newItemText;
     [SerializeField] private allScripts scripts;
 
-    public void ManageInventoryPanel()
+    public void ManageInventoryPanel(bool state)
     {
         GameObject invMenu = transform.Find("inventoryMenu").gameObject;
-        if (scripts.main.CheckAnyMenuOpen() && !invMenu.activeSelf)
-            return;
-        invMenu.SetActive(!invMenu.activeSelf);
-        scripts.player.canMove = !invMenu.activeSelf;
-        itemInfoMenu.SetActive(false);
-        if (invMenu.activeSelf)
+        invMenu.SetActive(state);
+        if (state)
             UpdateInvUI();
     }
 
@@ -50,7 +46,7 @@ public class inventory : MonoBehaviour
         if (playerItems[slot].removeAfterUse)
             playerItems.RemoveAt(slot);
 
-        ManageInventoryPanel(); // Закрытие
+        scripts.player.playerMenu.gameObject.SetActive(false);
     }
 
     public void WatchItem(int id)

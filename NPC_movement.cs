@@ -37,7 +37,7 @@ public class NPC_movement : MonoBehaviour
         }
         else if (other.gameObject.name == "Player")
             playerInCollider = true;
-        else if (other.gameObject.name == point.gameObject.name)
+        else if (point != null & other.gameObject.name == point.gameObject.name)
             moveToPoint = false;
     }
 
