@@ -35,5 +35,5 @@ public class NPC : ScriptableObject
 [System.Serializable]
 public class icons
 {
-    public Sprite standartIcon, happyIcon, angryIcon, sadIcon, scaryIcon, wonderIcon, confusionIcon;
+    public Sprite standartIcon, happyIcon, angryIcon, sadIcon, scaryIcon, wonderIcon, confusionIcon, curseIcon;
 }

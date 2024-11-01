@@ -27,10 +27,14 @@ public class player : MonoBehaviour
     {
         animator.SetBool("noClothStyle", false);
         animator.SetBool("standartStyle", false);
+        animator.SetBool("curseStyle", false);
+
         if (num == 0)
             animator.SetBool("standartStyle", true);
-        else
+        else if (num == 1)
             animator.SetBool("noClothStyle", true);
+        else if (num == 2)
+            animator.SetBool("curseStyle", true);
     }
 
     public void MoveTo(Transform target) => scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), animator);

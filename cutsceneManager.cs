@@ -38,6 +38,8 @@ public class cutsceneManager : MonoBehaviour
     public void StepDo(int step) // Выполнить шаг катсцены.
     {
         scripts.player.changeSpeed = totalCutscene.steps[step].editSpeed;
+        if (totalCutscene.steps[step].changeVisualPlayer != -1)
+            scripts.player.ChangeVisual(totalCutscene.steps[step].changeVisualPlayer);
         if (totalCutscene.steps[step].moveToLocation != "")
             scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation, totalCutscene.steps[step].moveToLocationSpawn, totalCutscene.steps[step].toLocationWithFade);
 
@@ -187,6 +189,7 @@ public class cutscene
         [Header("-DoInScripts")]
         public bool questStepNext;
         public float editSpeed;
+        public int changeVisualPlayer = -1;
 
         [Header("-Dialogs")]
         public string activatedDialog;

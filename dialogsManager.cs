@@ -363,7 +363,7 @@ public class dialogStep
     public string ruText, enText;
     public bool cursedText;
     public bool animateTalking = true;
-    public enum iconMood { standart, happy, angry, sad, scary, wonder, confusion }
+    public enum iconMood { standart, happy, angry, sad, scary, wonder, confusion, curse }
     public iconMood iconMoodSelected;
     public Sprite icon
     {
@@ -378,6 +378,7 @@ public class dialogStep
                 iconMood.wonder => totalNpc.icon.wonderIcon,
                 iconMood.confusion => totalNpc.icon.confusionIcon,
                 iconMood.angry => totalNpc.icon.angryIcon,
+                iconMood.curse => totalNpc.icon.curseIcon,
             };
         }
     }

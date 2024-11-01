@@ -45,6 +45,8 @@ public class quests : MonoBehaviour
 
     public void NextStep()
     {
+        if (totalQuest == null)
+            return;
         totalQuest.totalStep++;
         if (totalQuest.totalStep == totalQuest.steps.Length) // Окончание
         {
