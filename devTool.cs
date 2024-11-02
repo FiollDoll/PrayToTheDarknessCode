@@ -10,9 +10,20 @@ public class devTool : MonoBehaviour
 
     public void ActivateMenuTools() => menuTools.gameObject.SetActive(!menuTools.activeSelf);
 
-    public void ActivateQuest() => scripts.quests.ActivateQuest(InputFieldNewQuest.text);
-
-    public void ActivateLocation() => scripts.locations.ActivateLocation(InputFieldToLocation.text, InputFieldSpawn.text);
+    public void ActivateQuest()
+    {
+        scripts.quests.ActivateQuest(InputFieldNewQuest.text);
+        InputFieldNewQuest.text = "";
+    }
+    public void ActivateLocation()
+    {
+        string gate = InputFieldSpawn.text;
+        if (gate == "")
+            gate = scripts.locations.GetLocation(InputFieldToLocation.text).spawns[0].name;
+        scripts.locations.ActivateLocation(InputFieldToLocation.text, gate);
+        InputFieldToLocation.text = "";
+        InputFieldToLocation.text = "";
+    }
 
     public void ActivateStepQuest()
     {
@@ -25,6 +36,7 @@ public class devTool : MonoBehaviour
                 break;
             }
         }
+        InputFieldStage.text = "";
     }
 
     public void AddItem() => scripts.inventory.AddItem("");

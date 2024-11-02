@@ -22,8 +22,9 @@ public class manageLocation : MonoBehaviour
     {
         void locationSetup(location location)
         {
-            scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
             player.transform.position = location.GetSpawn(spawn).position;
+            scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
+            scripts.player.canMove = false;
 
             NPC_movement[] NPCs = GameObject.FindObjectsOfType<NPC_movement>();
             foreach (NPC_movement totalNPC in NPCs)
@@ -36,9 +37,8 @@ public class manageLocation : MonoBehaviour
         totalLocation = GetLocation(name);
         if (withFade)
         {
-            scripts.player.canMove = false;
             Sequence sequence = DOTween.Sequence();
-            Tween fadeAnimation = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+            Tween fadeAnimation = noViewPanel.DOFade(100f, 0.2f).SetEase(Ease.InQuart);
             fadeAnimation.OnComplete(() =>
             {
                 locationSetup(totalLocation);
@@ -49,10 +49,17 @@ public class manageLocation : MonoBehaviour
             sequence.OnComplete(() => { scripts.player.canMove = true; });
         }
         else
+        {
             locationSetup(totalLocation);
+            scripts.player.canMove = true;
+        }
     }
 
-    public void FastMoveToLocation(string name) => ActivateLocation(name, "fromStairs"); // Для кнопок лестницы
+    public void FastMoveToLocation(string name)
+    {
+        ActivateLocation(name, "fromStairs"); // Для кнопок лестницы
+        scripts.interactions.floorChangeMenu.gameObject.SetActive(false);
+    }
 
     public void SetLockToLocation(string nameLocation, bool lockLocation) => GetLocation(nameLocation).locked = lockLocation;
 

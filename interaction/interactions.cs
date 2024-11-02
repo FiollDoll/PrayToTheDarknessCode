@@ -8,128 +8,104 @@ using DG.Tweening;
 
 public class interactions : MonoBehaviour
 {
-    private Dictionary<Collider2D, string> enteredColliders = new Dictionary<Collider2D, string>();
+    [SerializeField] private LayerMask layerMaskInteract;
+    [SerializeField] private Transform rayStart;
+    private RaycastHit2D[] enteredColliders = new RaycastHit2D[0];
     public GameObject floorChangeMenu;
+    [SerializeField] private int selectedColliderId;
     [SerializeField] private TextMeshProUGUI interLabelText;
     [SerializeField] private allScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
-    private int selectedColliderId;
     public extraInter selectedEI = null;
 
-    private void AddEnteredCollider(Collider2D other, string label)
+    private void UpdateIntersMenu(int idx, string label)
     {
-        selectedColliderId = 0;
-        if (!enteredColliders.ContainsKey(other))
-        {
-            enteredColliders.Add(other, label);
-            UpdateIntersMenu();
-        }
-    }
-
-    private void UpdateIntersMenu()
-    {
-        interLabelText.text = "";
-        int idx = 0;
-        foreach (string label in enteredColliders.Values)
-        {
-            if (selectedColliderId == idx)
-                interLabelText.text += ("> " + label + "\n");
-            else
-                interLabelText.text += (label + "\n");
-            idx++;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        switch (other.gameObject.tag)
-        {
-            case "dialog":
-                scripts.dialogsManager.ActivateDialog(other.gameObject.name);
-                break;
-            case "location":
-                totalColliderName = other.gameObject.name;
-                totalColliderMode = other.gameObject.tag;
-
-                selectedEI = other.gameObject.GetComponent<extraInteraction>().interactions[0];
-                spawnName = selectedEI.moveToSpawn;
-
-                if (!scripts.locations.GetLocation(totalColliderName).locked)
-                {
-                    if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
-                        scripts.locations.ActivateLocation(totalColliderName, spawnName);
-                    else
-                        AddEnteredCollider(other, selectedEI.interLabel);
-                }
-                break;
-            case "cutscene":
-            case "interact":
-            case "item":
-                if (other.gameObject.GetComponent<extraInteraction>() != null)
-                {
-                    extraInteraction EI = other.gameObject.GetComponent<extraInteraction>();
-                    for (int i = 0; i < EI.interactions.Length; i++)
-                    {
-                        extraInter totalEI = EI.interactions[i];
-                        if (scripts.quests.totalQuest != null)
-                        {
-                            if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
-                            {
-                                if (totalEI.nameQuestRequired != "")
-                                    continue;
-                            }
-
-                            if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
-                                continue;
-                        }
-                        selectedEI = EI.interactions[i];
-                        other.gameObject.name = totalEI.interName; // Сделано плохо
-                        AddEnteredCollider(other, selectedEI.interLabel);
-                        break;
-                    }
-                    if (selectedEI == null)
-                        return;
-                }
-                totalColliderName = other.gameObject.name;
-                totalColliderMode = other.gameObject.tag;
-
-                break;
-            case "cutsceneAuto":
-                scripts.cutsceneManager.ActivateCutscene(other.gameObject.name);
-                break;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        switch (other.gameObject.tag)
-        {
-            case "cutscene":
-            case "cutsceneAuto":
-            case "interact":
-            case "item":
-            case "location":
-                if (enteredColliders.ContainsKey(other))
-                {
-                    enteredColliders.Remove(other);
-                    UpdateIntersMenu();
-                }
-                break;
-        }
-        if (floorChangeMenu.gameObject.activeSelf)
-            floorChangeMenu.gameObject.SetActive(false);
-        selectedEI = null;
-        totalColliderName = "";
-        totalColliderMode = "";
-        spawnName = "";
+        if (selectedColliderId == idx)
+            interLabelText.text += ("> " + label + "\n");
+        else
+            interLabelText.text += (label + "\n");
     }
 
     private void ChoiceInter(int mode)
     {
-        if (enteredColliders.Keys.Count != selectedColliderId + mode && selectedColliderId + mode >= 0)
-        {
+        if (enteredColliders.Length != selectedColliderId + mode && selectedColliderId + mode >= 0)
             selectedColliderId += mode;
-            UpdateIntersMenu();
+    }
+
+    private void FixedUpdate()
+    {
+        selectedEI = null;
+        totalColliderName = "";
+        totalColliderMode = "";
+        spawnName = "";
+
+        enteredColliders = Physics2D.RaycastAll(rayStart.position, Vector2.up, 6.5f, layerMaskInteract);
+        interLabelText.text = "";
+        if (enteredColliders.Length > 0)
+        {
+            int idx = 0;
+            foreach (RaycastHit2D hit in enteredColliders)
+            {
+                switch (hit.collider.tag)
+                {
+                    case "dialog":
+                        scripts.dialogsManager.ActivateDialog(hit.collider.name);
+                        break;
+                    case "location":
+                        totalColliderName = hit.collider.name;
+                        totalColliderMode = hit.collider.tag;
+
+                        selectedEI = hit.collider.gameObject.GetComponent<extraInteraction>().interactions[0];
+                        spawnName = selectedEI.moveToSpawn;
+
+                        if (!scripts.locations.GetLocation(totalColliderName).locked)
+                        {
+                            if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
+                                scripts.locations.ActivateLocation(totalColliderName, spawnName);
+                            else
+                                UpdateIntersMenu(idx, selectedEI.interLabel);
+                        }
+                        break;
+                    case "cutscene":
+                    case "interact":
+                    case "item":
+                        if (hit.collider.gameObject.GetComponent<extraInteraction>() != null)
+                        {
+                            extraInteraction EI = hit.collider.gameObject.GetComponent<extraInteraction>();
+                            for (int i = 0; i < EI.interactions.Length; i++)
+                            {
+                                extraInter totalEI = EI.interactions[i];
+                                if (scripts.quests.totalQuest != null)
+                                {
+                                    if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
+                                    {
+                                        if (totalEI.nameQuestRequired != "")
+                                            continue;
+                                    }
+
+                                    if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
+                                        continue;
+                                }
+                                selectedEI = EI.interactions[i];
+                                hit.collider.gameObject.name = totalEI.interName; // Сделано плохо
+                                UpdateIntersMenu(idx, selectedEI.interLabel);
+                                break;
+                            }
+                            if (selectedEI == null)
+                                return;
+                        }
+                        totalColliderName = hit.collider.gameObject.name;
+                        totalColliderMode = hit.collider.gameObject.tag;
+
+                        break;
+                    case "cutsceneAuto":
+                        scripts.cutsceneManager.ActivateCutscene(hit.collider.gameObject.name);
+                        break;
+                }
+                if (hit.collider.name != "Player" && hit.collider.name != "Player")
+                    idx++;
+                Debug.DrawLine(transform.position, hit.point, Color.red);
+            }
         }
     }
 
@@ -142,14 +118,13 @@ public class interactions : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (enteredColliders.Keys.Count > 0)
+            if (enteredColliders.Length > 0)
             {
-                totalColliderName = enteredColliders.ElementAt(selectedColliderId).Key.gameObject.name;
+                totalColliderName = enteredColliders.ElementAt(selectedColliderId).collider.gameObject.name;
                 totalColliderMode = GameObject.Find(totalColliderName).tag;
-                // TODO: totalColliderMode работает как-то немного отделньно?
                 if (totalColliderMode != "location")
                 {
-                    if (enteredColliders.ElementAt(selectedColliderId).Key.gameObject.GetComponent<extraInteraction>() != null)
+                    if (enteredColliders.ElementAt(selectedColliderId).collider.gameObject.GetComponent<extraInteraction>() != null)
                     {
                         if (selectedEI == null)
                             return;
@@ -193,7 +168,6 @@ public class interactions : MonoBehaviour
                         //enteredColliders.Remove(enteredColliders.ElementAt(selectedColliderId).Key);
                         break;
                 }
-                UpdateIntersMenu();
             }
         }
         if (Input.GetKeyDown(KeyCode.Tab))
