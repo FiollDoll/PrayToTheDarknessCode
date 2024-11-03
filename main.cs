@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using Cinemachine;
 
 public class main : MonoBehaviour
 {
@@ -14,6 +15,12 @@ public class main : MonoBehaviour
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
     [SerializeField] private allScripts scripts;
     public bool lockAnyMenu;
+    public float startCameraSize;
+
+    public void Start()
+    {
+        startCameraSize = scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
+    }
 
     public void ActivateNoVision(float time)
     {

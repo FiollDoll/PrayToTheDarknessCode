@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Cinemachine;
 
 public class player : MonoBehaviour
@@ -9,7 +10,9 @@ public class player : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     public bool canMove;
+    [SerializeField] private string[] playerVisuals = new string[0];
     public GameObject playerMenu;
+    [SerializeField] private RectTransform[] buttonsPlayerMenu = new RectTransform[0];
     public CinemachineVirtualCamera virtualCamera;
     public List<NPC> familiarNPC = new List<NPC>();
     [SerializeField] private allScripts scripts;
@@ -21,6 +24,7 @@ public class player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         ChangeVisual(1);
+        ChoicePagePlayerMenu(0);
     }
 
     public void ChangeVisual(int num)
@@ -29,18 +33,17 @@ public class player : MonoBehaviour
         animator.SetBool("standartStyle", false);
         animator.SetBool("curseStyle", false);
 
-        if (num == 0)
-            animator.SetBool("standartStyle", true);
-        else if (num == 1)
-            animator.SetBool("noClothStyle", true);
-        else if (num == 2)
-            animator.SetBool("curseStyle", true);
+        animator.SetBool(playerVisuals[num], true);
     }
 
     public void MoveTo(Transform target) => scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), animator);
 
     public void ChoicePagePlayerMenu(int page)
     {
+        foreach (RectTransform rt in buttonsPlayerMenu)
+            rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 189.4f);
+        buttonsPlayerMenu[page].anchoredPosition = new Vector2(buttonsPlayerMenu[page].anchoredPosition.x, 195f);
+        
         scripts.notebook.ChoicePage(-1);
         scripts.inventory.ManageInventoryPanel(false);
         if (page == 0)

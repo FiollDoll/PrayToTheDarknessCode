@@ -25,6 +25,7 @@ public class manageLocation : MonoBehaviour
             player.transform.position = location.GetSpawn(spawn).position;
             scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
             scripts.player.canMove = false;
+            scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = scripts.main.startCameraSize + location.modifCamera;
 
             NPC_movement[] NPCs = GameObject.FindObjectsOfType<NPC_movement>();
             foreach (NPC_movement totalNPC in NPCs)
@@ -101,6 +102,7 @@ public class location
     public string ruName, enName;
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;
+    public float modifCamera;
     public spawnInLocation[] spawns = new spawnInLocation[0];
     public Transform transformOfStairs = null; // Если есть лестница
     public Transform GetSpawn(string name)

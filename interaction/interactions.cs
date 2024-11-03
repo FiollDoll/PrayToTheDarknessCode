@@ -8,6 +8,7 @@ using DG.Tweening;
 
 public class interactions : MonoBehaviour
 {
+    public bool lockInter;
     [SerializeField] private LayerMask layerMaskInteract;
     [SerializeField] private Transform rayStart;
     private RaycastHit2D[] enteredColliders = new RaycastHit2D[0];
@@ -41,7 +42,7 @@ public class interactions : MonoBehaviour
 
         enteredColliders = Physics2D.RaycastAll(rayStart.position, Vector2.up, 6.5f, layerMaskInteract);
         interLabelText.text = "";
-        if (enteredColliders.Length > 0)
+        if (enteredColliders.Length > 0 && !lockInter)
         {
             int idx = 0;
             foreach (RaycastHit2D hit in enteredColliders)

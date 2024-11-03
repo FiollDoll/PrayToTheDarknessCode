@@ -14,12 +14,10 @@ public class cutsceneManager : MonoBehaviour
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private Volume volume;
-    private float startCameraSize;
 
     private void Start()
     {
         volume = playerCamera.GetComponent<Volume>();
-        startCameraSize = virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
     }
 
     public void ActivateCutscene(string name)
@@ -59,7 +57,7 @@ public class cutsceneManager : MonoBehaviour
             volume.profile = totalCutscene.steps[step].newVolumeProfile;
 
         if (totalCutscene.steps[step].editCameraSize != 0)
-            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = startCameraSize + totalCutscene.steps[step].editCameraSize;
+            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize = scripts.main.startCameraSize + totalCutscene.steps[step].editCameraSize;
 
         foreach (cutscene.objectState objState in totalCutscene.steps[step].objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
@@ -73,6 +71,7 @@ public class cutsceneManager : MonoBehaviour
         foreach (cutscene.locationsLock locationsLock in totalCutscene.steps[step].locksLocations)
             scripts.locations.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
         scripts.main.lockAnyMenu = totalCutscene.steps[step].lockAllMenu;
+
         foreach (cutscene.NPC_moveToPlayer nPC_MoveToPlayer in totalCutscene.steps[step].npcMoveToPlayer)
             GameObject.Find(nPC_MoveToPlayer.NPC_name).GetComponent<NPC_movement>().moveToPlayer = nPC_MoveToPlayer.move;
         foreach (cutscene.humanMove humanMove in totalCutscene.steps[step].humansMove)

@@ -40,6 +40,7 @@ public class dialogsManager : MonoBehaviour
                     _activatedDialog = totalDialog;
                     dialogMenu.gameObject.SetActive(true);
                     _canStepNext = false;
+                    _scripts.interactions.lockInter = true;
                     if (_activatedDialog.steps.Length > 0)
                     {
                         _mainDialogMenu.gameObject.SetActive(true);
@@ -93,6 +94,7 @@ public class dialogsManager : MonoBehaviour
     public void DialogCLose()
     {
         _canStepNext = false;
+        _scripts.interactions.lockInter = false;
         if (_activatedDialog.activatedCutsceneStepAtEnd != -1)
             _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activatedCutsceneStepAtEnd);
 
