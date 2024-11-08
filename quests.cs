@@ -12,7 +12,7 @@ public class quests : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
     [SerializeField] private allScripts scripts;
 
-    private void Start() => ActivateQuest("Good morning");
+    private void Start() => ActivateQuest("FindFamily");
 
     public void ActivateQuest(string name, bool extraActivate = false)
     {

@@ -14,7 +14,7 @@ public class manageLocation : MonoBehaviour
 
     private void Start()
     {
-        totalLocation = GetLocation("mainMark");
+        totalLocation = GetLocation("lea");
         player = GameObject.Find("Player");
     }
 

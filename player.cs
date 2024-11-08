@@ -23,15 +23,14 @@ public class player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        ChangeVisual(1);
+        ChangeVisual(3);
         ChoicePagePlayerMenu(0);
     }
 
     public void ChangeVisual(int num)
     {
-        animator.SetBool("noClothStyle", false);
-        animator.SetBool("standartStyle", false);
-        animator.SetBool("curseStyle", false);
+        foreach (string style in playerVisuals)
+            animator.SetBool(style, false);
 
         animator.SetBool(playerVisuals[num], true);
     }
@@ -43,7 +42,7 @@ public class player : MonoBehaviour
         foreach (RectTransform rt in buttonsPlayerMenu)
             rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 189.4f);
         buttonsPlayerMenu[page].anchoredPosition = new Vector2(buttonsPlayerMenu[page].anchoredPosition.x, 195f);
-        
+
         scripts.notebook.ChoicePage(-1);
         scripts.inventory.ManageInventoryPanel(false);
         if (page == 0)
