@@ -14,7 +14,7 @@ public class manageLocation : MonoBehaviour
 
     private void Start()
     {
-        totalLocation = GetLocation("lea");
+        totalLocation = GetLocation("lea2");
         player = GameObject.Find("Player");
     }
 

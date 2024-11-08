@@ -100,6 +100,18 @@ public class interactions : MonoBehaviour
 
                         break;
                     case "cutsceneAuto":
+                        if (hit.collider.gameObject.GetComponent<extraInteraction>() != null)
+                        {
+                            extraInter totalEI = hit.collider.gameObject.GetComponent<extraInteraction>().interactions[0];
+                            if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
+                            {
+                                if (totalEI.nameQuestRequired != "")
+                                    break;
+                            }
+
+                            if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
+                                break;
+                        }
                         scripts.cutsceneManager.ActivateCutscene(hit.collider.gameObject.name);
                         break;
                 }

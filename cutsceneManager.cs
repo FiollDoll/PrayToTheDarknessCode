@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using TMPro;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using DG.Tweening;
@@ -11,6 +12,8 @@ public class cutsceneManager : MonoBehaviour
     public cutscene totalCutscene;
     [SerializeField] private GameObject playerCamera, virtualCamera;
     [SerializeField] private cutscene[] cutsceneInGame = new cutscene[0];
+    [SerializeField] private GameObject startViewMenu;
+    [SerializeField] private bool SV_block; // dev only
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private Volume volume;
@@ -18,6 +21,19 @@ public class cutsceneManager : MonoBehaviour
     private void Start()
     {
         volume = playerCamera.GetComponent<Volume>();
+        if (!SV_block) // dev only
+            startViewMenu.gameObject.SetActive(true);
+        startViewMenuActivate();
+    }
+
+    public void startViewMenuActivate(string newText = "")
+    {
+        if (!SV_block)
+        {
+            if (newText != "")
+                startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = newText;
+            startViewMenu.GetComponent<Animator>().Play("startGameInGame");            
+        }
     }
 
     public void ActivateCutscene(string name)
@@ -35,6 +51,8 @@ public class cutsceneManager : MonoBehaviour
 
     public void StepDo(int step) // Выполнить шаг катсцены.
     {
+        if (totalCutscene.steps[step].startViewMenuActivate != "")
+            startViewMenuActivate(totalCutscene.steps[step].startViewMenuActivate);
         scripts.player.changeSpeed = totalCutscene.steps[step].editSpeed;
         if (totalCutscene.steps[step].changeVisualPlayer != -1)
             scripts.player.ChangeVisual(totalCutscene.steps[step].changeVisualPlayer);
@@ -218,6 +236,7 @@ public class cutscene
         public animations[] animatorsChanges = new animations[0];
 
         [Header("-Other")]
+        public string startViewMenuActivate;
         public NPC_moveToPlayer[] npcMoveToPlayer = new NPC_moveToPlayer[0];
         public humanMove[] humansMove = new humanMove[0];
         public float editCameraSize;

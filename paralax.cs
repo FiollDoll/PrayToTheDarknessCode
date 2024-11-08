@@ -14,7 +14,7 @@ public class paralax : MonoBehaviour
     {
         if (scripts.locations.totalLocation.gameName == locationName || locationName == "")
         {
-            float distX = (cam.transform.position.x * (1 - Parallax));
+            float distX = (cam.transform.position.x - startPosX) * (1 - Parallax);
             transform.localPosition = new Vector3(startPosX + distX, transform.localPosition.y, transform.localPosition.z);
         }
     }

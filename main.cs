@@ -85,7 +85,7 @@ public class main : MonoBehaviour
         if (cursedTextCoroutines.TryGetValue(text, out Coroutine coroutine))
         {
             StopCoroutine(coroutine);
-            cursedTextCoroutines.Remove(text); // Удаляем запись
+            cursedTextCoroutines.Remove(text);
         }
     }
 
