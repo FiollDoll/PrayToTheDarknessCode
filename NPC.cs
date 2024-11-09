@@ -17,18 +17,35 @@ public class NPC : ScriptableObject
     }
     public string ruName, enName;
     public string nameInWorld;
+
     [HideInInspector]
     public string description
     {
         get
         {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return ruDescription;
+            if (!playerCloseMeet)
+            {
+                if (PlayerPrefs.GetString("language") == "ru")
+                    return ruDescription;
+                else
+                    return enDescription;
+            }
             else
-                return enDescription;
+            {
+                if (PlayerPrefs.GetString("language") == "ru")
+                    return ruCloseDescription;
+                else
+                    return enCloseDescription;
+            }
         }
     }
     public string ruDescription, enDescription;
+
+    [Header("-Closed description NPC")]
+    public bool playerCloseMeet;
+    public string ruCloseDescription, enCloseDescription;
+
+    [Header("Icons NPC")]
     public icons icon;
 }
 

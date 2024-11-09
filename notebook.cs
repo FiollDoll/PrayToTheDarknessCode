@@ -6,7 +6,8 @@ using TMPro;
 
 public class notebook : MonoBehaviour
 {
-    [SerializeField] private GameObject pageNote, pageQuest, pageNPC, pageNPCcontainer, pageReadNote, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
+    [SerializeField] private GameObject pageNote, pageQuest, pageNPC, pageNPCcontainer, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
+    [SerializeField] private GameObject pageReadNote, pageReadHuman, pageReadMain;
     [SerializeField] private GameObject buttonNotePrefab, buttonNPC;
     [SerializeField] private GameObject newNoteNotify;
     [SerializeField] private note[] gameNotes = new note[0];
@@ -33,6 +34,8 @@ public class notebook : MonoBehaviour
         pageQuest.gameObject.SetActive(false);
         pageNPC.gameObject.SetActive(false);
         pageReadNote.gameObject.SetActive(false);
+        pageReadMain.gameObject.SetActive(false);
+        pageReadHuman.gameObject.SetActive(false);
         buttonChoiceActiveQuest.gameObject.SetActive(false);
         if (num == 0)
         {
@@ -92,11 +95,23 @@ public class notebook : MonoBehaviour
     public void ReadNote(int num, int mode = 0)
     {
         pageReadNote.gameObject.SetActive(true);
-        TextMeshProUGUI header = pageReadNote.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI note = pageReadNote.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
-
+        TextMeshProUGUI header = null;
+        TextMeshProUGUI note = null;
+        Image icon = null;
+        if (mode == 0 || mode == 1)
+        {
+            header = pageReadMain.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
+            note = pageReadMain.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
+        }
+        else
+        {
+            header = pageReadHuman.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+            note = pageReadHuman.transform.Find("TextInfo").GetComponent<TextMeshProUGUI>();
+            icon = pageReadHuman.transform.Find("Icon").GetComponent<Image>();
+        }
         if (mode == 0)
         {
+            pageReadMain.gameObject.SetActive(true);
             header.text = playerNotes[num].name;
             note.text = playerNotes[num].description;
             if (!playerNotes[num].readed)
@@ -104,6 +119,7 @@ public class notebook : MonoBehaviour
         }
         else if (mode == 1)
         {
+            pageReadMain.gameObject.SetActive(true);
             quest selectedQuest = scripts.quests.activeQuests[num];
             header.text = selectedQuest.name;
             note.text = selectedQuest.description;
@@ -119,8 +135,10 @@ public class notebook : MonoBehaviour
         }
         else if (mode == 2)
         {
+            pageReadHuman.gameObject.SetActive(true);
             header.text = scripts.player.familiarNPC[num].name;
             note.text = scripts.player.familiarNPC[num].description;
+            icon.sprite = scripts.player.familiarNPC[num].icon.standartIcon;
         }
         pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick.AddListener(delegate { ChoicePage(mode); });
     }

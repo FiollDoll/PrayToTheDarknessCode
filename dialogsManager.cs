@@ -236,6 +236,8 @@ public class dialogsManager : MonoBehaviour
                 }
             }
         }
+        if (_selectedStep.setCloseMeet)
+            _selectedStep.totalNpc.playerCloseMeet = true;
 
         if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
             GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
@@ -365,6 +367,7 @@ public class dialogStep
     public string ruText, enText;
     public bool cursedText;
     public bool animateTalking = true;
+    public bool setCloseMeet;
     public enum iconMood { standart, happy, angry, sad, scary, wonder, confusion, curse }
     public iconMood iconMoodSelected;
     public Sprite icon
