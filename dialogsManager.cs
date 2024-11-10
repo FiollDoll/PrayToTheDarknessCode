@@ -7,10 +7,10 @@ using DG.Tweening;
 
 public class dialogsManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _textName, _textDialog;
+    private TextMeshProUGUI _textName, _textDialog;
     [SerializeField] private Image _iconImage, _bigPicture, _noViewPanel;
     public GameObject dialogMenu;
-    [SerializeField] private GameObject _mainDialogMenu, _choiceDialogMenu, _choicesContainer;
+    [SerializeField] private GameObject _mainDialogMenu, _choiceDialogMenu, _subDialogMenu, _choicesContainer;
     [SerializeField] private GameObject _buttonChoicePrefab;
     [SerializeField] private NPC[] allNpc = new NPC[0];
     [SerializeField] private allScripts _scripts;
@@ -40,10 +40,20 @@ public class dialogsManager : MonoBehaviour
                     _activatedDialog = totalDialog;
                     dialogMenu.gameObject.SetActive(true);
                     _canStepNext = false;
-                    _scripts.interactions.lockInter = true;
+                    _scripts.interactions.lockInter = !totalDialog.canInter;
                     if (_activatedDialog.steps.Length > 0)
                     {
-                        _mainDialogMenu.gameObject.SetActive(true);
+                        if (_activatedDialog.styleOfDialog == dialog.dialogStyle.main)
+                        {
+                            _mainDialogMenu.gameObject.SetActive(true);
+                            _textName = _mainDialogMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+                            _textDialog = _mainDialogMenu.transform.Find("TextDialog").GetComponent<TextMeshProUGUI>();
+                        }
+                        else
+                        {
+                            _subDialogMenu.gameObject.SetActive(true);
+                            _textDialog = _subDialogMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+                        }
                         _selectedStep = _activatedDialog.steps[0];
                         _totalMode = "dialog";
                     }
@@ -79,7 +89,7 @@ public class dialogsManager : MonoBehaviour
 
                     if (!_activatedDialog.moreRead)
                         _activatedDialog.readed = true;
-                    _scripts.player.canMove = false;
+                    _scripts.player.canMove = totalDialog.canMove;
 
                     if (_totalMode == "dialog")
                         DialogUpdateAction();
@@ -128,6 +138,8 @@ public class dialogsManager : MonoBehaviour
         sequence.OnComplete(() =>
         {
             dialogMenu.gameObject.SetActive(false);
+            _mainDialogMenu.gameObject.SetActive(false);
+            _subDialogMenu.gameObject.SetActive(false);
             if (_activatedDialog.nextStepQuest)
                 _scripts.quests.NextStep();
             _scripts.player.canMove = true;
@@ -219,12 +231,16 @@ public class dialogsManager : MonoBehaviour
 
     private void DialogUpdateAction()
     {
-        _textName.text = _selectedStep.totalNpc.name;
-        _iconImage.sprite = _selectedStep.icon;
-        if (_selectedStep.shakeIcon)
-            _iconImage.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(10, 10, 10), 2f, 10);
-        else
-            _iconImage.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+        if (_activatedDialog.styleOfDialog == dialog.dialogStyle.main)
+        {
+            _textName.text = _selectedStep.totalNpc.name;
+            _iconImage.sprite = _selectedStep.icon;
+            if (_selectedStep.shakeIcon)
+                _iconImage.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(10, 10, 10), 2f, 10);
+            else
+                _iconImage.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+        }
+
         foreach (NPC totalNpc in allNpc)
         {
             if (totalNpc.name == _selectedStep.totalNpc.name)
@@ -284,6 +300,14 @@ public class dialogsManager : MonoBehaviour
             }
         }
         _animatingText = false;
+        if (_selectedStep.delayAfterNext != 0)
+        {
+            yield return new WaitForSeconds(_selectedStep.delayAfterNext);
+            if (_totalMode == "dialog" && (totalStep + 1) == _activatedDialog.steps.Length)
+                DialogCLose();
+            else
+                DialogMoveNext();
+        }
     }
 
     private IEnumerator bigPictureAnimate(dialog totalDialog)
@@ -310,18 +334,21 @@ public class dialogsManager : MonoBehaviour
     {
         if (_activatedDialog != null)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (_selectedStep.delayAfterNext == 0)
             {
-                if (_canStepNext)
+                if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    if (_animatingText)
+                    if (_canStepNext)
                     {
-                        _animatingText = false;
-                        StopAllCoroutines();
-                        _textDialog.text = _selectedStep.text;
+                        if (_animatingText)
+                        {
+                            _animatingText = false;
+                            StopAllCoroutines();
+                            _textDialog.text = _selectedStep.text;
+                        }
+                        else
+                            DialogMoveNext();
                     }
-                    else
-                        DialogMoveNext();
                 }
             }
         }
@@ -333,6 +360,9 @@ public class dialog
 {
     [Header("Main")]
     public string nameDialog;
+    public enum dialogStyle { main, subMain };
+    public dialogStyle styleOfDialog;
+    public bool canMove, canInter;
     [Tooltip("Обычные этапы диалога")] public dialogStep[] steps = new dialogStep[0];
     [Tooltip("Диалоги с выбором варианта. Начинается после steps")] public dialogStepChoice[] dialogsChoices = new dialogStepChoice[0];
     [Header("AfterEnd")]
@@ -368,6 +398,7 @@ public class dialogStep
     public bool cursedText;
     public bool animateTalking = true;
     public bool setCloseMeet;
+    public float delayAfterNext;
     public enum iconMood { standart, happy, angry, sad, scary, wonder, confusion, curse }
     public iconMood iconMoodSelected;
     public Sprite icon
