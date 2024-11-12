@@ -85,6 +85,7 @@ public class notebook : MonoBehaviour
                 var obj = Instantiate(buttonNPC, Vector3.zero, Quaternion.identity, pageNPCcontainer.transform);
                 obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = scripts.player.familiarNPC[i].name;
                 obj.transform.Find("Icon").GetComponent<Image>().sprite = scripts.player.familiarNPC[i].icon.standartIcon;
+                obj.transform.Find("Icon").GetComponent<Image>().SetNativeSize();
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
             }
@@ -139,6 +140,7 @@ public class notebook : MonoBehaviour
             header.text = scripts.player.familiarNPC[num].name;
             note.text = scripts.player.familiarNPC[num].description;
             icon.sprite = scripts.player.familiarNPC[num].icon.standartIcon;
+            icon.SetNativeSize();
         }
         pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick.AddListener(delegate { ChoicePage(mode); });
     }

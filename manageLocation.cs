@@ -45,6 +45,7 @@ public class manageLocation : MonoBehaviour
                 locationSetup(totalLocation);
             });
             sequence.Append(fadeAnimation);
+            sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart)); // Задержка
             sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
             sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
             sequence.OnComplete(() => { scripts.player.canMove = true; });

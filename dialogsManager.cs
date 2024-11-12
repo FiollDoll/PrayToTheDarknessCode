@@ -76,6 +76,7 @@ public class dialogsManager : MonoBehaviour
                                 StartCoroutine(bigPictureAnimate(_activatedDialog));
                         });
                         sequence.Append(stepSequence);
+                        sequence.Append(_bigPicture.DOFade(100f, 0.001f).SetEase(Ease.InQuart));
                         sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
                         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
                     }
@@ -235,6 +236,7 @@ public class dialogsManager : MonoBehaviour
         {
             _textName.text = _selectedStep.totalNpc.name;
             _iconImage.sprite = _selectedStep.icon;
+            _iconImage.SetNativeSize();
             if (_selectedStep.shakeIcon)
                 _iconImage.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(10, 10, 10), 2f, 10);
             else
