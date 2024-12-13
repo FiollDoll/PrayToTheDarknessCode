@@ -121,7 +121,7 @@ public class notebook : MonoBehaviour
         else if (mode == 1)
         {
             pageReadMain.gameObject.SetActive(true);
-            quest selectedQuest = scripts.quests.activeQuests[num];
+            Quest selectedQuest = scripts.quests.activeQuests[num];
             header.text = selectedQuest.name;
             note.text = selectedQuest.description;
             if (selectedQuest.steps[selectedQuest.totalStep].name != "")
@@ -151,34 +151,4 @@ public class notebook : MonoBehaviour
         yield return new WaitForSeconds(3);
         newNoteNotify.gameObject.SetActive(false);
     }
-}
-
-[System.Serializable]
-public class note
-{
-    public string nameRu, nameEn;
-    [HideInInspector]
-    public string name
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return nameRu;
-            else
-                return nameEn;
-        }
-    }
-    public string descriptionRu, descriptionEn;
-    [HideInInspector]
-    public string description
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return descriptionRu;
-            else
-                return descriptionEn;
-        }
-    }
-    public bool readed;
 }

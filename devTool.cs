@@ -27,7 +27,7 @@ public class devTool : MonoBehaviour
 
     public void ActivateStepQuest()
     {
-        foreach (quest quest in scripts.quests.gameQuests)
+        foreach (Quest quest in scripts.quests.gameQuests)
         {
             if (quest.nameInGame == scripts.quests.totalQuest.nameInGame) // Ссылки смешно работают
             {

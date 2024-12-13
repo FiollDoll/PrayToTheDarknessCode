@@ -5,8 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 public class inventory : MonoBehaviour
 {
-    public List<item> playerItems = new List<item>();
-    [SerializeField] private item[] gameItems = new item[0];
+    public List<Item> playerItems = new List<Item>();
+    [SerializeField] private Item[] gameItems = new Item[0];
     [SerializeField] private GameObject inventorySlotPrefab;
     [SerializeField] private GameObject invMenu, itemInfoMenu, mainWatch, onlyIconWatch;
     [SerializeField] private TextMeshProUGUI newItemText;
@@ -21,7 +21,7 @@ public class inventory : MonoBehaviour
 
     public void AddItem(string name)
     {
-        foreach (item item in gameItems)
+        foreach (Item item in gameItems)
         {
             if (item.nameInGame == name)
             {
@@ -122,75 +122,4 @@ public class inventory : MonoBehaviour
         yield return new WaitForSeconds(2);
         newItemText.gameObject.SetActive(false);
     }
-}
-
-[System.Serializable]
-public class item
-{
-    public string nameInGame;
-    public string nameRu, nameEn;
-    [HideInInspector]
-    public string name
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return nameRu;
-            else
-                return nameEn;
-        }
-    }
-    public string descriptionRu, descriptionEn;
-    [HideInInspector]
-    public string description
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return descriptionRu;
-            else
-                return descriptionEn;
-        }
-    }
-    public string activationTextRu, activationTextEn;
-    [HideInInspector]
-    public string activationText
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return activationTextRu;
-            else
-                return activationTextEn;
-        }
-    }
-    [HideInInspector]
-    public Sprite icon
-    {
-        get
-        {
-            if (iconRu != null) // iconEn дефолт
-            {
-                if (PlayerPrefs.GetString("language") == "ru")
-                    return iconRu;
-                else
-                    return iconEn;
-            }
-            return iconEn;
-        }
-    }
-    public Sprite iconRu, iconEn;
-    public bool watchIconOnly;
-
-    [Header("UseSettings")]
-    public bool canUse;
-    public bool removeAfterUse = true;
-    public bool useInInventory;
-    public bool useInCollider;
-
-    [Header("UseInInventorySetting")]
-    public string activateNameDialog;
-    public string questName;
-    public int questStage = -1;
-    public bool questNextStep;
 }

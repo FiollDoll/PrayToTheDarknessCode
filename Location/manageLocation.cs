@@ -6,21 +6,24 @@ using DG.Tweening;
 using Cinemachine;
 public class manageLocation : MonoBehaviour
 {
-    public location totalLocation;
-    public location[] locations = new location[0];
+    public Location totalLocation;
+    public Location[] locations = new Location[0];
     [SerializeField] private Image noViewPanel;
     [SerializeField] private allScripts scripts;
     private GameObject player;
 
     private void Start()
     {
-        totalLocation = GetLocation("lea2");
+        // отключено для разработки
+        // totalLocation = GetLocation("lea2");
+        // Dev значение
+        totalLocation = GetLocation("mainMark");
         player = GameObject.Find("Player");
     }
 
     public void ActivateLocation(string name, string spawn, bool withFade = true)
     {
-        void locationSetup(location location)
+        void locationSetup(Location location)
         {
             player.transform.position = location.GetSpawn(spawn).position;
             scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
@@ -66,54 +69,12 @@ public class manageLocation : MonoBehaviour
     public void SetLockToLocation(string nameLocation, bool lockLocation) => GetLocation(nameLocation).locked = lockLocation;
 
 
-    public location GetLocation(string name)
+    public Location GetLocation(string name)
     {
-        foreach (location location in locations)
+        foreach (Location location in locations)
         {
             if (location.gameName == name)
                 return location;
-        }
-        return null;
-    }
-}
-
-
-[System.Serializable]
-public class location
-{
-    [System.Serializable]
-    public class spawnInLocation
-    {
-        public string name;
-        public Transform spawn;
-    }
-
-    public string gameName;
-    [HideInInspector]
-    public string name
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return ruName;
-            else
-                return enName;
-        }
-    }
-    public string ruName, enName;
-    public bool locked, autoEnter;
-    public Collider2D wallsForCamera;
-    public float modifCamera;
-    public spawnInLocation[] spawns = new spawnInLocation[0];
-    public Transform transformOfStairs = null; // Если есть лестница
-    public Transform GetSpawn(string name)
-    {
-        foreach (spawnInLocation spawn in spawns)
-        {
-            if (spawn.name == name)
-            {
-                return spawn.spawn;
-            }
         }
         return null;
     }

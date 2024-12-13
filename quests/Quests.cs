@@ -4,19 +4,21 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 
-public class quests : MonoBehaviour
+public class Quests : MonoBehaviour
 {
-    public quest totalQuest;
-    public List<quest> activeQuests = new List<quest>();
-    public quest[] gameQuests = new quest[0];
+    public Quest totalQuest;
+    public List<Quest> activeQuests = new List<Quest>();
+    public Quest[] gameQuests = new Quest[0];
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
     [SerializeField] private allScripts scripts;
 
-    private void Start() => ActivateQuest("FindFamily");
+    // Отключено для разработки
+    //private void Start() => ActivateQuest("FindFamily");
+    private void Start() => ActivateQuest("Good morning");
 
     public void ActivateQuest(string name, bool extraActivate = false)
     {
-        quest newQuest = FindQuest(name);
+        Quest newQuest = FindQuest(name);
         if (newQuest != null)
         {
             if (totalQuest != null || extraActivate)
@@ -33,9 +35,9 @@ public class quests : MonoBehaviour
         scripts.notebook.ChoicePage(1);
     }
 
-    public quest FindQuest(string name)
+    public Quest FindQuest(string name)
     {
-        foreach (quest quest in gameQuests)
+        foreach (Quest quest in gameQuests)
         {
             if (quest.nameInGame == name)
                 return quest;
@@ -106,69 +108,4 @@ public class quests : MonoBehaviour
         yield return new WaitForSeconds(delay);
         NextStep();
     }
-}
-
-[System.Serializable]
-public class quest
-{
-    public string nameInGame;
-    public string nameRu, nameEn;
-    [HideInInspector]
-    public string name
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return nameRu;
-            else
-                return nameEn;
-        }
-    }
-
-    public string descriptionRu, descriptionEn;
-    [HideInInspector]
-    public string description
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return descriptionRu;
-            else
-                return descriptionEn;
-        }
-    }
-    public step[] steps = new step[0];
-    public int totalStep;
-    public bool cursedText;
-}
-
-[System.Serializable]
-public class step
-{
-    public string nameRu, nameEn;
-    [HideInInspector]
-    public string name
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return nameRu;
-            else
-                return nameEn;
-        }
-    }
-    public string descriptionRu, descriptionEn;
-    [HideInInspector]
-    public string description
-    {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return descriptionRu;
-            else
-                return descriptionEn;
-        }
-    }
-    public float delayNextStep;
-    public string startDialog;
 }
