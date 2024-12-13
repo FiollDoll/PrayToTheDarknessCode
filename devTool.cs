@@ -1,50 +1,59 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Serialization;
+
 public class DevTool : MonoBehaviour
 {
     public GameObject menuTools;
     [SerializeField] private TextMeshProUGUI textInfo;
-    [SerializeField] private TMP_InputField InputFieldStage, InputFieldNewQuest, InputFieldToLocation, InputFieldSpawn;
-    [SerializeField] private AllScripts scripts;
+    [SerializeField] private TMP_InputField inputFieldStage, inputFieldNewQuest, inputFieldToLocation, inputFieldSpawn;
+    private AllScripts _scripts;
+
+    private void Start() => _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
 
     public void ActivateMenuTools() => menuTools.gameObject.SetActive(!menuTools.activeSelf);
 
     public void ActivateQuest()
     {
-        scripts.questsSystem.ActivateQuest(InputFieldNewQuest.text);
-        InputFieldNewQuest.text = "";
+        _scripts.questsSystem.ActivateQuest(inputFieldNewQuest.text);
+        inputFieldNewQuest.text = "";
     }
+
     public void ActivateLocation()
     {
-        string gate = InputFieldSpawn.text;
+        string gate = inputFieldSpawn.text;
         if (gate == "")
-            gate = scripts.locations.GetLocation(InputFieldToLocation.text).spawns[0].name;
-        scripts.locations.ActivateLocation(InputFieldToLocation.text, gate);
-        InputFieldToLocation.text = "";
-        InputFieldToLocation.text = "";
+            gate = _scripts.manageLocation.GetLocation(inputFieldToLocation.text).spawns[0].name;
+        _scripts.manageLocation.ActivateLocation(inputFieldToLocation.text, gate);
+        inputFieldToLocation.text = "";
+        inputFieldToLocation.text = "";
     }
 
     public void ActivateStepQuest()
     {
-        foreach (Quest quest in scripts.questsSystem.gameQuests)
+        foreach (Quest quest in _scripts.questsSystem.gameQuests)
         {
-            if (quest.nameInGame == scripts.questsSystem.totalQuest.nameInGame) // Ссылки смешно работают
+            if (quest.nameInGame == _scripts.questsSystem.totalQuest.nameInGame) // Ссылки смешно работают
             {
-                quest.totalStep = int.Parse(InputFieldStage.text);
-                scripts.questsSystem.UpdateQuestUI();
+                quest.totalStep = int.Parse(inputFieldStage.text);
+                _scripts.questsSystem.UpdateQuestUI();
                 break;
             }
         }
-        InputFieldStage.text = "";
+
+        inputFieldStage.text = "";
     }
 
-    public void AddItem() => scripts.inventory.AddItem("");
+    public void AddItem() => _scripts.inventory.AddItem("");
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.V))
             ActivateMenuTools();
-        textInfo.text = "dialogStep: " + scripts.dialogsManager.totalStep + "\ntotalLocation: " + scripts.locations.totalLocation.name + "\nplayerCanMove: " + scripts.player.canMove + "\ntotalQuest: " + scripts.questsSystem.totalQuest.name + "\n";
+        textInfo.text = "dialogStep: " + _scripts.dialogsManager.totalStep + "\ntotalLocation: " +
+                        _scripts.manageLocation.totalLocation.name + "\nplayerCanMove: " + _scripts.player.canMove +
+                        "\ntotalQuest: " + _scripts.questsSystem.totalQuest.name + "\n";
     }
 }

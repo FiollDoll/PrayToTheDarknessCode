@@ -10,11 +10,16 @@ public class QuestsSystem : MonoBehaviour
     public List<Quest> activeQuests = new List<Quest>();
     public Quest[] gameQuests = new Quest[0];
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
-    [SerializeField] private AllScripts scripts;
+    private AllScripts _scripts;
 
     // Отключено для разработки
     //private void Start() => ActivateQuest("FindFamily");
-    private void Start() => ActivateQuest("Good morning");
+    private void Start()
+    {
+        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        _scripts.questsSystem = this;
+        ActivateQuest("Good morning");
+    }
 
     public void ActivateQuest(string questName, bool extraActivate = false)
     {
@@ -32,7 +37,7 @@ public class QuestsSystem : MonoBehaviour
     {
         totalQuest = FindQuest(questName);
         UpdateQuestUI();
-        scripts.notebook.ChoicePage(1);
+        _scripts.notebook.ChoicePage(1);
     }
 
     public Quest FindQuest(string questName)
@@ -76,7 +81,7 @@ public class QuestsSystem : MonoBehaviour
         if (totalQuest.steps[totalQuest.totalStep].delayNextStep != 0)
             StartCoroutine(StartStepDelay(totalQuest.steps[totalQuest.totalStep].delayNextStep));
         if (totalQuest.steps[totalQuest.totalStep].startDialog != "")
-            scripts.dialogsManager.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
+            _scripts.dialogsManager.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
     }
 
     public void UpdateQuestUI()
@@ -85,13 +90,13 @@ public class QuestsSystem : MonoBehaviour
         {
             if (totalQuest.cursedText)
             {
-                scripts.main.SetCursedText(textNameQuest, Random.Range(5, 15));
-                scripts.main.SetCursedText(textQuest, Random.Range(5, 15));
+                _scripts.main.SetCursedText(textNameQuest, Random.Range(5, 15));
+                _scripts.main.SetCursedText(textQuest, Random.Range(5, 15));
             }
             else
             {
-                scripts.main.EndCursedText(textNameQuest);
-                scripts.main.EndCursedText(textQuest);
+                _scripts.main.EndCursedText(textNameQuest);
+                _scripts.main.EndCursedText(textQuest);
                 textNameQuest.text = totalQuest.name;
                 textQuest.text = totalQuest.steps[totalQuest.totalStep].name;
             }

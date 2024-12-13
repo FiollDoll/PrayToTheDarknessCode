@@ -16,11 +16,13 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] private GameObject startViewMenu;
     [SerializeField] private bool svBlock; // dev only
     [SerializeField] private Image noViewPanel;
-    [SerializeField] private AllScripts scripts;
+    private AllScripts _scripts;
     private Volume _volume;
 
     private void Start()
     {
+        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        _scripts.cutsceneManager = this;
         _volume = playerCamera.GetComponent<Volume>();
         if (!svBlock) // dev only
             startViewMenu.gameObject.SetActive(true);
@@ -52,31 +54,31 @@ public class CutsceneManager : MonoBehaviour
     {
         if (totalCutscene.steps[step].startViewMenuActivate != "")
             StartViewMenuActivate(totalCutscene.steps[step].startViewMenuActivate);
-        scripts.player.changeSpeed = totalCutscene.steps[step].editSpeed;
+        _scripts.player.changeSpeed = totalCutscene.steps[step].editSpeed;
         if (totalCutscene.steps[step].changeVisualPlayer != -1)
-            scripts.player.ChangeVisual(totalCutscene.steps[step].changeVisualPlayer);
+            _scripts.player.ChangeVisual(totalCutscene.steps[step].changeVisualPlayer);
         if (totalCutscene.steps[step].moveToLocation != "")
-            scripts.locations.ActivateLocation(totalCutscene.steps[step].moveToLocation,
+            _scripts.manageLocation.ActivateLocation(totalCutscene.steps[step].moveToLocation,
                 totalCutscene.steps[step].moveToLocationSpawn, totalCutscene.steps[step].toLocationWithFade);
 
         if (totalCutscene.steps[step].closeDialogMenu)
-            scripts.dialogsManager.DialogCLose();
+            _scripts.dialogsManager.DialogCLose();
 
         if (totalCutscene.steps[step].activatedDialog != "")
-            scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
+            _scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
 
         if (totalCutscene.steps[step].addNote != "")
-            scripts.notebook.AddNote(totalCutscene.steps[step].addNote);
+            _scripts.notebook.AddNote(totalCutscene.steps[step].addNote);
 
         if (totalCutscene.steps[step].questStepNext)
-            scripts.questsSystem.NextStep();
+            _scripts.questsSystem.NextStep();
 
         if (totalCutscene.steps[step].newVolumeProfile != null)
             _volume.profile = totalCutscene.steps[step].newVolumeProfile;
 
         if (totalCutscene.steps[step].editCameraSize != 0)
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize =
-                scripts.main.startCameraSize + totalCutscene.steps[step].editCameraSize;
+                _scripts.main.startCameraSize + totalCutscene.steps[step].editCameraSize;
 
         foreach (Cutscene.ObjectState objState in totalCutscene.steps[step].objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
@@ -88,8 +90,8 @@ public class CutsceneManager : MonoBehaviour
             animations.animator.SetBool(animations.boolName, animations.boolStatus);
 
         foreach (Cutscene.LocationsLock locationsLock in totalCutscene.steps[step].locksLocations)
-            scripts.locations.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
-        scripts.main.lockAnyMenu = totalCutscene.steps[step].lockAllMenu;
+            _scripts.manageLocation.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
+        _scripts.main.lockAnyMenu = totalCutscene.steps[step].lockAllMenu;
 
         foreach (Cutscene.NPC_moveToPlayer nPC_MoveToPlayer in totalCutscene.steps[step].npcMoveToPlayer)
             GameObject.Find(nPC_MoveToPlayer.NPC_name).GetComponent<NPC_movement>().moveToPlayer =
@@ -108,9 +110,9 @@ public class CutsceneManager : MonoBehaviour
         }
 
         foreach (string quest in totalCutscene.steps[step].addQuests)
-            scripts.questsSystem.ActivateQuest(quest, true);
+            _scripts.questsSystem.ActivateQuest(quest, true);
         foreach (string item in totalCutscene.steps[step].addItem)
-            scripts.inventory.AddItem(item);
+            _scripts.inventory.AddItem(item);
     }
 
     public void ActivateCutsceneStep(int step)

@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
-        ChangeVisual(0); 
+        ChangeVisual(1); 
         ChoicePagePlayerMenu(0);
     }
 

@@ -31,7 +31,7 @@ public class NPC_movement : MonoBehaviour
         switch (other.gameObject.name)
         {
             case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
-                transform.position = scripts.locations.GetLocation(locationOfPointName).spawns[0].spawn.position;
+                transform.position = scripts.manageLocation.GetLocation(locationOfPointName).spawns[0].spawn.position;
                 totalLocation = locationOfPointName;
                 break;
             case "Player":
@@ -65,12 +65,12 @@ public class NPC_movement : MonoBehaviour
                 if (locationOfPointName == totalLocation)
                     MoveTo(point);
                 else
-                    MoveTo(scripts.locations.GetLocation(totalLocation).transformOfStairs);
+                    MoveTo(scripts.manageLocation.GetLocation(totalLocation).transformOfStairs);
             }
             else
-                GetComponent<Animator>().SetBool("walk", false);
+                _animator.SetBool("walk", false);
         }
         else
-            GetComponent<Animator>().SetBool("walk", false);
+            _animator.SetBool("walk", false);
     }
 }

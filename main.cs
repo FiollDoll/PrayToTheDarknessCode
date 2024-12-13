@@ -13,13 +13,15 @@ public class Main : MonoBehaviour
     public Sprite nullSprite;
     private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
-    [SerializeField] private AllScripts scripts;
+    private AllScripts _scripts;
     public bool lockAnyMenu;
     public float startCameraSize;
 
     public void Start()
     {
-        startCameraSize = scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
+        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        _scripts.main = this;
+        startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
     }
 
     public void ActivateNoVision(float time)
@@ -40,13 +42,13 @@ public class Main : MonoBehaviour
 
     public bool CheckAnyMenuOpen()
     {
-        if (scripts.player.playerMenu.gameObject.activeSelf)
+        if (_scripts.player.playerMenu.gameObject.activeSelf)
             return true;
-        else if (scripts.interactions.floorChangeMenu.activeSelf)
+        else if (_scripts.interactions.floorChangeMenu.activeSelf)
             return true;
         else if (GameObject.Find("devTools").GetComponent<DevTool>().menuTools.activeSelf)
             return true;
-        else if (scripts.dialogsManager.dialogMenu.activeSelf)
+        else if (_scripts.dialogsManager.dialogMenu.activeSelf)
             return true;
         return lockAnyMenu;
     }

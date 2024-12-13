@@ -13,7 +13,7 @@ public class Paralax : MonoBehaviour
 
     private void Update()
     {
-        if (scripts.locations.totalLocation.gameName != locationName && locationName != "") return;
+        if (scripts.manageLocation.totalLocation.gameName != locationName && locationName != "") return;
         float distX = (cam.transform.position.x - _startPosX) * (1 - parallax);
         transform.localPosition = new Vector3(_startPosX + distX, transform.localPosition.y, transform.localPosition.z);
     }

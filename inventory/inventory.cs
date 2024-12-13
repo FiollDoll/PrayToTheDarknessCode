@@ -11,8 +11,18 @@ public class Inventory : MonoBehaviour
     [SerializeField] private GameObject inventorySlotPrefab;
     [SerializeField] private GameObject invMenu, itemInfoMenu, mainWatch, onlyIconWatch;
     [SerializeField] private TextMeshProUGUI newItemText;
-    [SerializeField] private AllScripts scripts;
+    private AllScripts _scripts;
 
+    private void Start()
+    {
+        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        _scripts.inventory = this;
+    }
+
+    /// <summary>
+    /// Управление показом инвентаря
+    /// </summary>
+    /// <param name="state"></param>
     public void ManageInventoryPanel(bool state)
     {
         invMenu.gameObject.SetActive(state);
@@ -20,6 +30,10 @@ public class Inventory : MonoBehaviour
             UpdateInvUI();
     }
 
+    /// <summary>
+    /// Выдача предмета
+    /// </summary>
+    /// <param name="nameItem">Название предмета</param>
     public void AddItem(string nameItem)
     {
         foreach (Item item in gameItems)
@@ -31,14 +45,18 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Использование предмета из инвентаря
+    /// </summary>
+    /// <param name="slot">Индекс предмета</param>
     public void UseItem(int slot)
     {
         if (playerItems[slot].activateNameDialog != "")
-            scripts.dialogsManager.ActivateDialog(playerItems[slot].activateNameDialog);
+            _scripts.dialogsManager.ActivateDialog(playerItems[slot].activateNameDialog);
         if (playerItems[slot].questName != "" && playerItems[slot].questNextStep)
         {
-            if (scripts.questsSystem.FindQuest(playerItems[slot].questName) == scripts.questsSystem.totalQuest)
-                scripts.questsSystem.NextStep();
+            if (_scripts.questsSystem.FindQuest(playerItems[slot].questName) == _scripts.questsSystem.totalQuest)
+                _scripts.questsSystem.NextStep();
         }
 
         if (playerItems[slot].removeAfterUse)
@@ -46,9 +64,13 @@ public class Inventory : MonoBehaviour
 
         WatchItem(-1); // Закрытие менюшки
         UpdateInvUI();
-        scripts.player.playerMenu.gameObject.SetActive(false);
+        _scripts.player.playerMenu.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Просмотр определенного меню
+    /// </summary>
+    /// <param name="id"></param>
     private void WatchItem(int id)
     {
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
@@ -74,16 +96,16 @@ public class Inventory : MonoBehaviour
                 {
                     if (playerItems[id].questName != "")
                     {
-                        if (playerItems[id].questName != scripts.questsSystem.totalQuest.nameInGame
-                            || (scripts.questsSystem.totalQuest.totalStep != playerItems[id].questStage &&
+                        if (playerItems[id].questName != _scripts.questsSystem.totalQuest.nameInGame
+                            || (_scripts.questsSystem.totalQuest.totalStep != playerItems[id].questStage &&
                                 playerItems[id].questStage > 0))
                             button.interactable = false;
                     }
                 }
                 else if (playerItems[id].useInCollider)
                 {
-                    if (scripts.interactions.selectedEI == null
-                        || (scripts.interactions.selectedEI != null && scripts.interactions.selectedEI.itemNameUse !=
+                    if (_scripts.interactions.selectedEI == null
+                        || (_scripts.interactions.selectedEI != null && _scripts.interactions.selectedEI.itemNameUse !=
                             playerItems[id].nameInGame))
                         button.interactable = false;
                 }
