@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
 
-public class player : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public float karma;
     [SerializeField] private float moveSpeed;
@@ -15,7 +15,7 @@ public class player : MonoBehaviour
     [SerializeField] private RectTransform[] buttonsPlayerMenu = new RectTransform[0];
     public CinemachineVirtualCamera virtualCamera;
     public List<NPC> familiarNPC = new List<NPC>();
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
     private Rigidbody2D rb;
     private Animator animator;
 

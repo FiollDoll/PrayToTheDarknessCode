@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class eyes : MonoBehaviour
+public class Eyes : MonoBehaviour
 {
     private Transform Target;
 

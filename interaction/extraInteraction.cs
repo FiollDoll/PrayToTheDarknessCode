@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class extraInteraction : MonoBehaviour
+public class ExtraInteraction : MonoBehaviour
 {
     public extraInter[] interactions = new extraInter[0];
 }

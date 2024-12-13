@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class language : MonoBehaviour
+public class Language : MonoBehaviour
 {
     private string text
     {

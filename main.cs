@@ -6,14 +6,14 @@ using TMPro;
 using DG.Tweening;
 using Cinemachine;
 
-public class main : MonoBehaviour
+public class Main : MonoBehaviour
 {
     public int hour, minute;
     [SerializeField] private Image noViewPanel;
     public Sprite nullSprite;
     private string charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
     public bool lockAnyMenu;
     public float startCameraSize;
 
@@ -47,7 +47,7 @@ public class main : MonoBehaviour
             return true;
         else if (scripts.interactions.floorChangeMenu.activeSelf)
             return true;
-        else if (GameObject.Find("devTools").GetComponent<devTool>().menuTools.activeSelf)
+        else if (GameObject.Find("devTools").GetComponent<DevTool>().menuTools.activeSelf)
             return true;
         else if (scripts.dialogsManager.dialogMenu.activeSelf)
             return true;

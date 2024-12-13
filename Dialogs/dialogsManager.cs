@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
-public class dialogsManager : MonoBehaviour
+public class DialogsManager : MonoBehaviour
 {
     private TextMeshProUGUI _textName, _textDialog;
     [SerializeField] private Image _iconImage, _bigPicture, _noViewPanel;
@@ -13,7 +13,7 @@ public class dialogsManager : MonoBehaviour
     [SerializeField] private GameObject _mainDialogMenu, _choiceDialogMenu, _subDialogMenu, _choicesContainer;
     [SerializeField] private GameObject _buttonChoicePrefab;
     [SerializeField] private NPC[] allNpc = new NPC[0];
-    [SerializeField] private allScripts _scripts;
+    [SerializeField] private AllScripts _scripts;
 
     public int totalStep;
     private string _totalMode;

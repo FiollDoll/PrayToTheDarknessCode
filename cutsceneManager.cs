@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 using DG.Tweening;
 using Cinemachine;
 
-public class cutsceneManager : MonoBehaviour
+public class CutsceneManager : MonoBehaviour
 {
     public cutscene totalCutscene;
     [SerializeField] private GameObject playerCamera, virtualCamera;
@@ -15,7 +15,7 @@ public class cutsceneManager : MonoBehaviour
     [SerializeField] private GameObject startViewMenu;
     [SerializeField] private bool SV_block; // dev only
     [SerializeField] private Image noViewPanel;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
     private Volume volume;
 
     private void Start()
@@ -100,8 +100,8 @@ public class cutsceneManager : MonoBehaviour
                 humanMove.human.GetComponent<NPC_movement>().point = humanMove.pointMove;
                 humanMove.human.GetComponent<NPC_movement>().locationOfPointName = humanMove.human.GetComponent<NPC_movement>().totalLocation;
             }
-            else if (humanMove.human.GetComponent<player>())
-                humanMove.human.GetComponent<player>().MoveTo(humanMove.pointMove);
+            else if (humanMove.human.GetComponent<Player>())
+                humanMove.human.GetComponent<Player>().MoveTo(humanMove.pointMove);
         }
 
         foreach (string quest in totalCutscene.steps[step].addQuests)

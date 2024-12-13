@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
-public class interactions : MonoBehaviour
+public class Interactions : MonoBehaviour
 {
     public bool lockInter;
     [SerializeField] private LayerMask layerMaskInteract;
@@ -15,7 +15,7 @@ public class interactions : MonoBehaviour
     public GameObject floorChangeMenu;
     [SerializeField] private int selectedColliderId;
     [SerializeField] private TextMeshProUGUI interLabelText;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
     public extraInter selectedEI = null;
 
@@ -56,7 +56,7 @@ public class interactions : MonoBehaviour
                         totalColliderName = hit.collider.name;
                         totalColliderMode = hit.collider.tag;
 
-                        selectedEI = hit.collider.gameObject.GetComponent<extraInteraction>().interactions[0];
+                        selectedEI = hit.collider.gameObject.GetComponent<ExtraInteraction>().interactions[0];
                         spawnName = selectedEI.moveToSpawn;
 
                         if (!scripts.locations.GetLocation(totalColliderName).locked)
@@ -70,9 +70,9 @@ public class interactions : MonoBehaviour
                     case "cutscene":
                     case "interact":
                     case "item":
-                        if (hit.collider.gameObject.GetComponent<extraInteraction>() != null)
+                        if (hit.collider.gameObject.GetComponent<ExtraInteraction>() != null)
                         {
-                            extraInteraction EI = hit.collider.gameObject.GetComponent<extraInteraction>();
+                            ExtraInteraction EI = hit.collider.gameObject.GetComponent<ExtraInteraction>();
                             for (int i = 0; i < EI.interactions.Length; i++)
                             {
                                 extraInter totalEI = EI.interactions[i];
@@ -100,9 +100,9 @@ public class interactions : MonoBehaviour
 
                         break;
                     case "cutsceneAuto":
-                        if (hit.collider.gameObject.GetComponent<extraInteraction>() != null)
+                        if (hit.collider.gameObject.GetComponent<ExtraInteraction>() != null)
                         {
-                            extraInter totalEI = hit.collider.gameObject.GetComponent<extraInteraction>().interactions[0];
+                            extraInter totalEI = hit.collider.gameObject.GetComponent<ExtraInteraction>().interactions[0];
                             if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
                             {
                                 if (totalEI.nameQuestRequired != "")
@@ -137,7 +137,7 @@ public class interactions : MonoBehaviour
                 totalColliderMode = GameObject.Find(totalColliderName).tag;
                 if (totalColliderMode != "location")
                 {
-                    if (enteredColliders.ElementAt(selectedColliderId).collider.gameObject.GetComponent<extraInteraction>() != null)
+                    if (enteredColliders.ElementAt(selectedColliderId).collider.gameObject.GetComponent<ExtraInteraction>() != null)
                     {
                         if (selectedEI == null)
                             return;

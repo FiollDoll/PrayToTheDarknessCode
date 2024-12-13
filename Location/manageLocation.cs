@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using Cinemachine;
-public class manageLocation : MonoBehaviour
+public class ManageLocation : MonoBehaviour
 {
     public Location totalLocation;
     public Location[] locations = new Location[0];
     [SerializeField] private Image noViewPanel;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
     private GameObject player;
 
     private void Start()

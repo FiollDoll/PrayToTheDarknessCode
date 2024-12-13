@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class inventory : MonoBehaviour
+public class Inventory : MonoBehaviour
 {
     public List<Item> playerItems = new List<Item>();
     [SerializeField] private Item[] gameItems = new Item[0];
     [SerializeField] private GameObject inventorySlotPrefab;
     [SerializeField] private GameObject invMenu, itemInfoMenu, mainWatch, onlyIconWatch;
     [SerializeField] private TextMeshProUGUI newItemText;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
 
     public void ManageInventoryPanel(bool state)
     {

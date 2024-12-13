@@ -10,7 +10,7 @@ public class Quests : MonoBehaviour
     public List<Quest> activeQuests = new List<Quest>();
     public Quest[] gameQuests = new Quest[0];
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
 
     // Отключено для разработки
     //private void Start() => ActivateQuest("FindFamily");

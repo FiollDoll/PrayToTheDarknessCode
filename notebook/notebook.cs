@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class notebook : MonoBehaviour
+public class Notebook : MonoBehaviour
 {
     [SerializeField] private GameObject pageNote, pageQuest, pageNPC, pageNPCcontainer, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
     [SerializeField] private GameObject pageReadNote, pageReadHuman, pageReadMain;
@@ -12,7 +12,7 @@ public class notebook : MonoBehaviour
     [SerializeField] private GameObject newNoteNotify;
     [SerializeField] private note[] gameNotes = new note[0];
     [SerializeField] private List<note> playerNotes = new List<note>();
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
 
 
     public void AddNote(string name)

@@ -6,7 +6,7 @@ public class NPC_movement : MonoBehaviour
 {
     public string totalLocation;
     [SerializeField] private float speed;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
     private bool playerInCollider;
     private Transform playerTransform;
     private SpriteRenderer sr;

@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class paralax : MonoBehaviour
+public class Paralax : MonoBehaviour
 {
     [SerializeField] private GameObject cam;
     [SerializeField] private float Parallax;
     [SerializeField] private string locationName;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
     private float startPosX;
 
     private void Start() => startPosX = transform.localPosition.x;

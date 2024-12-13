@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class devTool : MonoBehaviour
+public class DevTool : MonoBehaviour
 {
     public GameObject menuTools;
     [SerializeField] private TextMeshProUGUI textInfo;
     [SerializeField] private TMP_InputField InputFieldStage, InputFieldNewQuest, InputFieldToLocation, InputFieldSpawn;
-    [SerializeField] private allScripts scripts;
+    [SerializeField] private AllScripts scripts;
 
     public void ActivateMenuTools() => menuTools.gameObject.SetActive(!menuTools.activeSelf);
 
