@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 
-public class Quests : MonoBehaviour
+public class QuestsSystem : MonoBehaviour
 {
     public Quest totalQuest;
     public List<Quest> activeQuests = new List<Quest>();
@@ -16,9 +16,9 @@ public class Quests : MonoBehaviour
     //private void Start() => ActivateQuest("FindFamily");
     private void Start() => ActivateQuest("Good morning");
 
-    public void ActivateQuest(string name, bool extraActivate = false)
+    public void ActivateQuest(string questName, bool extraActivate = false)
     {
-        Quest newQuest = FindQuest(name);
+        Quest newQuest = FindQuest(questName);
         if (newQuest != null)
         {
             if (totalQuest != null || extraActivate)
@@ -28,20 +28,21 @@ public class Quests : MonoBehaviour
         }
     }
 
-    public void ChoiceActiveQuest(string name)
+    public void ChoiceActiveQuest(string questName)
     {
-        totalQuest = FindQuest(name);
+        totalQuest = FindQuest(questName);
         UpdateQuestUI();
         scripts.notebook.ChoicePage(1);
     }
 
-    public Quest FindQuest(string name)
+    public Quest FindQuest(string questName)
     {
         foreach (Quest quest in gameQuests)
         {
-            if (quest.nameInGame == name)
+            if (quest.nameInGame == questName)
                 return quest;
         }
+
         return null;
     }
 
@@ -61,13 +62,12 @@ public class Quests : MonoBehaviour
 
         Sequence sequence = DOTween.Sequence();
 
-        Tween fadeAnimation = textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-600, 0.5f).SetEase(Ease.InQuart);
-        fadeAnimation.OnComplete(() =>
-        {
-            UpdateQuestUI();
-        });
+        Tween fadeAnimation = textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-600, 0.5f)
+            .SetEase(Ease.InQuart);
+        fadeAnimation.OnComplete(UpdateQuestUI);
         sequence.Append(fadeAnimation);
-        sequence.Append(textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
+        sequence.Append(
+            textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
 
         if (totalQuest == null)

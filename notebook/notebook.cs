@@ -6,20 +6,27 @@ using TMPro;
 
 public class Notebook : MonoBehaviour
 {
-    [SerializeField] private GameObject pageNote, pageQuest, pageNPC, pageNPCcontainer, pageChoiceNote, pageChoiceQuest, buttonChoiceActiveQuest;
+    [SerializeField] private GameObject pageNote,
+        pageQuest,
+        pageNPC,
+        pageNPCcontainer,
+        pageChoiceNote,
+        pageChoiceQuest,
+        buttonChoiceActiveQuest;
+
     [SerializeField] private GameObject pageReadNote, pageReadHuman, pageReadMain;
     [SerializeField] private GameObject buttonNotePrefab, buttonNPC;
     [SerializeField] private GameObject newNoteNotify;
-    [SerializeField] private note[] gameNotes = new note[0];
-    [SerializeField] private List<note> playerNotes = new List<note>();
+    [SerializeField] private Note[] gameNotes = new Note[0];
+    [SerializeField] private List<Note> playerNotes = new List<Note>();
     [SerializeField] private AllScripts scripts;
 
 
-    public void AddNote(string name)
+    public void AddNote(string nameNote)
     {
-        foreach (note note in gameNotes)
+        foreach (Note note in gameNotes)
         {
-            if (name == note.nameEn)
+            if (nameNote == note.nameEn)
             {
                 playerNotes.Add(note);
                 StartCoroutine(ActivateNotify());
@@ -53,6 +60,7 @@ public class Notebook : MonoBehaviour
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number); });
             }
+
             pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
         else if (num == 1)
@@ -61,17 +69,18 @@ public class Notebook : MonoBehaviour
             foreach (Transform child in pageChoiceQuest.transform)
                 Destroy(child.gameObject);
 
-            for (int i = 0; i < scripts.quests.activeQuests.Count; i++)
+            for (int i = 0; i < scripts.questsSystem.activeQuests.Count; i++)
             {
                 var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceQuest.transform);
                 TextMeshProUGUI textName = obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-                if (scripts.quests.activeQuests[i] == scripts.quests.totalQuest)
-                    textName.text = "-> " + scripts.quests.activeQuests[i].name;
+                if (scripts.questsSystem.activeQuests[i] == scripts.questsSystem.totalQuest)
+                    textName.text = "-> " + scripts.questsSystem.activeQuests[i].name;
                 else
-                    textName.text = scripts.quests.activeQuests[i].name;
+                    textName.text = scripts.questsSystem.activeQuests[i].name;
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
             }
+
             pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
         else if (num == 2)
@@ -83,17 +92,20 @@ public class Notebook : MonoBehaviour
             for (int i = 0; i < scripts.player.familiarNPC.Count; i++)
             {
                 var obj = Instantiate(buttonNPC, Vector3.zero, Quaternion.identity, pageNPCcontainer.transform);
-                obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = scripts.player.familiarNPC[i].name;
-                obj.transform.Find("Icon").GetComponent<Image>().sprite = scripts.player.familiarNPC[i].icon.standartIcon;
+                obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
+                    scripts.player.familiarNPC[i].nameOfNpc;
+                obj.transform.Find("Icon").GetComponent<Image>().sprite =
+                    scripts.player.familiarNPC[i].icon.standartIcon;
                 obj.transform.Find("Icon").GetComponent<Image>().SetNativeSize();
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
             }
+
             pageNPC.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
     }
 
-    public void ReadNote(int num, int mode = 0)
+    private void ReadNote(int num, int mode = 0)
     {
         pageReadNote.gameObject.SetActive(true);
         TextMeshProUGUI header = null;
@@ -110,39 +122,51 @@ public class Notebook : MonoBehaviour
             note = pageReadHuman.transform.Find("TextInfo").GetComponent<TextMeshProUGUI>();
             icon = pageReadHuman.transform.Find("Icon").GetComponent<Image>();
         }
-        if (mode == 0)
+
+        switch (mode)
         {
-            pageReadMain.gameObject.SetActive(true);
-            header.text = playerNotes[num].name;
-            note.text = playerNotes[num].description;
-            if (!playerNotes[num].readed)
-                playerNotes[num].readed = true;
-        }
-        else if (mode == 1)
-        {
-            pageReadMain.gameObject.SetActive(true);
-            Quest selectedQuest = scripts.quests.activeQuests[num];
-            header.text = selectedQuest.name;
-            note.text = selectedQuest.description;
-            if (selectedQuest.steps[selectedQuest.totalStep].name != "")
-                note.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" + selectedQuest.steps[selectedQuest.totalStep].description;
-            if (selectedQuest != scripts.quests.totalQuest)
+            case 0:
             {
-                buttonChoiceActiveQuest.gameObject.SetActive(true);
-                buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate { scripts.quests.ChoiceActiveQuest(selectedQuest.nameInGame); });
+                pageReadMain.gameObject.SetActive(true);
+                header.text = playerNotes[num].name;
+                note.text = playerNotes[num].description;
+                if (!playerNotes[num].readed)
+                    playerNotes[num].readed = true;
+                break;
             }
-            else
-                buttonChoiceActiveQuest.gameObject.SetActive(false);
+            case 1:
+            {
+                pageReadMain.gameObject.SetActive(true);
+                Quest selectedQuest = scripts.questsSystem.activeQuests[num];
+                header.text = selectedQuest.name;
+                note.text = selectedQuest.description;
+                if (selectedQuest.steps[selectedQuest.totalStep].name != "")
+                    note.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" +
+                                 selectedQuest.steps[selectedQuest.totalStep].description;
+                if (selectedQuest != scripts.questsSystem.totalQuest)
+                {
+                    buttonChoiceActiveQuest.gameObject.SetActive(true);
+                    buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate
+                    {
+                        scripts.questsSystem.ChoiceActiveQuest(selectedQuest.nameInGame);
+                    });
+                }
+                else
+                    buttonChoiceActiveQuest.gameObject.SetActive(false);
+
+                break;
+            }
+            case 2:
+                pageReadHuman.gameObject.SetActive(true);
+                header.text = scripts.player.familiarNPC[num].nameOfNpc;
+                note.text = scripts.player.familiarNPC[num].description;
+                icon.sprite = scripts.player.familiarNPC[num].icon.standartIcon;
+                icon.SetNativeSize();
+                break;
         }
-        else if (mode == 2)
-        {
-            pageReadHuman.gameObject.SetActive(true);
-            header.text = scripts.player.familiarNPC[num].name;
-            note.text = scripts.player.familiarNPC[num].description;
-            icon.sprite = scripts.player.familiarNPC[num].icon.standartIcon;
-            icon.SetNativeSize();
-        }
-        pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick.AddListener(delegate { ChoicePage(mode); });
+
+        pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick
+            .AddListener(delegate { ChoicePage(mode); });
     }
 
     private IEnumerator ActivateNotify()

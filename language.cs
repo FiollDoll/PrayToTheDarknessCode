@@ -1,18 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
 public class Language : MonoBehaviour
 {
     private string text
     {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return textRu;
-            else
-                return textEn;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? textRu : textEn; }
     }
+
     [SerializeField] private string textRu, textEn;
 
     private void Start() => UpdateText();

@@ -16,13 +16,13 @@ public class Player : MonoBehaviour
     public CinemachineVirtualCamera virtualCamera;
     public List<NPC> familiarNPC = new List<NPC>();
     [SerializeField] private AllScripts scripts;
-    private Rigidbody2D rb;
-    private Animator animator;
+    private Rigidbody2D _rb;
+    private Animator _animator;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
         ChangeVisual(0); 
         ChoicePagePlayerMenu(0);
     }
@@ -30,14 +30,14 @@ public class Player : MonoBehaviour
     public void ChangeVisual(int num)
     {
         foreach (string style in playerVisuals)
-            animator.SetBool(style, false);
+            _animator.SetBool(style, false);
 
-        animator.SetBool(playerVisuals[num], true);
+        _animator.SetBool(playerVisuals[num], true);
     }
 
-    public void MoveTo(Transform target) => scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), animator);
+    public void MoveTo(Transform target) => scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), _animator);
 
-    public void ChoicePagePlayerMenu(int page)
+    private void ChoicePagePlayerMenu(int page)
     {
         foreach (RectTransform rt in buttonsPlayerMenu)
             rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 189.4f);
@@ -45,14 +45,21 @@ public class Player : MonoBehaviour
 
         scripts.notebook.ChoicePage(-1);
         scripts.inventory.ManageInventoryPanel(false);
-        if (page == 0)
-            scripts.inventory.ManageInventoryPanel(true);
-        else if (page == 1)
-            scripts.notebook.ChoicePage(1);
-        else if (page == 2)
-            scripts.notebook.ChoicePage(0);
-        else if (page == 3)
-            scripts.notebook.ChoicePage(2);
+        switch (page)
+        {
+            case 0:
+                scripts.inventory.ManageInventoryPanel(true);
+                break;
+            case 1:
+                scripts.notebook.ChoicePage(1);
+                break;
+            case 2:
+                scripts.notebook.ChoicePage(0);
+                break;
+            case 3:
+                scripts.notebook.ChoicePage(2);
+                break;
+        }
     }
 
     private void FixedUpdate()
@@ -62,8 +69,8 @@ public class Player : MonoBehaviour
 
         if (canMove)
         {
-            rb.velocity = new Vector2(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed));
-            animator.SetBool("walk", horiz != 0 || vert != 0);
+            _rb.velocity = new Vector2(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed));
+            _animator.SetBool("walk", horiz != 0 || vert != 0);
             if (horiz > 0)
                 GetComponent<SpriteRenderer>().flipX = false;
             else if (horiz < 0)
@@ -71,8 +78,8 @@ public class Player : MonoBehaviour
         }
         else
         {
-            rb.velocity = Vector2.zero;
-            animator.SetBool("walk", false);
+            _rb.velocity = Vector2.zero;
+            _animator.SetBool("walk", false);
         }
     }
 }

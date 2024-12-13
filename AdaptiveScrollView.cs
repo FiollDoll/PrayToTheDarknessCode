@@ -4,9 +4,10 @@ using UnityEngine.UI;
 [RequireComponent(typeof(ScrollRect))]
 public class AdaptiveScrollView : MonoBehaviour
 {
-    public RectTransform content; 
+    public RectTransform content;
 
     private void OnEnabled() => UpdateContentSize();
+
     public void UpdateContentSize()
     {
         content.sizeDelta = Vector2.zero;
@@ -18,7 +19,8 @@ public class AdaptiveScrollView : MonoBehaviour
                 content.sizeDelta.y + child.sizeDelta.y + LayoutUtility.GetMargin(child)
             );
         }
-        content.sizeDelta = new Vector2(content.sizeDelta.x,content.sizeDelta.y / 1.8f);
+
+        content.sizeDelta = new Vector2(content.sizeDelta.x, content.sizeDelta.y / 1.8f);
     }
 }
 

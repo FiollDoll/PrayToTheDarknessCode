@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
 public class Inventory : MonoBehaviour
 {
     public List<Item> playerItems = new List<Item>();
@@ -19,16 +20,14 @@ public class Inventory : MonoBehaviour
             UpdateInvUI();
     }
 
-    public void AddItem(string name)
+    public void AddItem(string nameItem)
     {
         foreach (Item item in gameItems)
         {
-            if (item.nameInGame == name)
-            {
-                playerItems.Add(item);
-                StartCoroutine(ActivateNotify(item.name));
-                break;
-            }
+            if (item.nameInGame != nameItem) continue;
+            playerItems.Add(item);
+            StartCoroutine(ActivateNotify(item.name));
+            break;
         }
     }
 
@@ -38,9 +37,10 @@ public class Inventory : MonoBehaviour
             scripts.dialogsManager.ActivateDialog(playerItems[slot].activateNameDialog);
         if (playerItems[slot].questName != "" && playerItems[slot].questNextStep)
         {
-            if (scripts.quests.FindQuest(playerItems[slot].questName) == scripts.quests.totalQuest)
-                scripts.quests.NextStep();
+            if (scripts.questsSystem.FindQuest(playerItems[slot].questName) == scripts.questsSystem.totalQuest)
+                scripts.questsSystem.NextStep();
         }
+
         if (playerItems[slot].removeAfterUse)
             playerItems.RemoveAt(slot);
 
@@ -49,7 +49,7 @@ public class Inventory : MonoBehaviour
         scripts.player.playerMenu.gameObject.SetActive(false);
     }
 
-    public void WatchItem(int id)
+    private void WatchItem(int id)
     {
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
         if (itemInfoMenu.gameObject.activeSelf)
@@ -61,7 +61,8 @@ public class Inventory : MonoBehaviour
             else
             {
                 mainWatch.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
-                mainWatch.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text = playerItems[id].description;
+                mainWatch.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text =
+                    playerItems[id].description;
                 mainWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
             }
 
@@ -73,15 +74,17 @@ public class Inventory : MonoBehaviour
                 {
                     if (playerItems[id].questName != "")
                     {
-                        if (playerItems[id].questName != scripts.quests.totalQuest.nameInGame 
-                         || (scripts.quests.totalQuest.totalStep != playerItems[id].questStage && playerItems[id].questStage > 0))
+                        if (playerItems[id].questName != scripts.questsSystem.totalQuest.nameInGame
+                            || (scripts.questsSystem.totalQuest.totalStep != playerItems[id].questStage &&
+                                playerItems[id].questStage > 0))
                             button.interactable = false;
                     }
                 }
                 else if (playerItems[id].useInCollider)
                 {
                     if (scripts.interactions.selectedEI == null
-                     || (scripts.interactions.selectedEI != null && scripts.interactions.selectedEI.itemNameUse != playerItems[id].nameInGame))
+                        || (scripts.interactions.selectedEI != null && scripts.interactions.selectedEI.itemNameUse !=
+                            playerItems[id].nameInGame))
                         button.interactable = false;
                 }
             }
@@ -91,10 +94,8 @@ public class Inventory : MonoBehaviour
             if (button.interactable)
             {
                 button.onClick.AddListener(delegate { UseItem(id); });
-                if (playerItems[id].activationText != "")
-                    button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = playerItems[id].activationText;
-                else
-                    button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "???";
+                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
+                    playerItems[id].activationText != "" ? playerItems[id].activationText : "???";
             }
             else
                 button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "";
@@ -108,17 +109,18 @@ public class Inventory : MonoBehaviour
 
         for (int i = 0; i < playerItems.Count; i++)
         {
-            var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity, invMenu.transform.Find("items"));
+            var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity,
+                invMenu.transform.Find("items"));
             obj.GetComponent<Image>().sprite = playerItems[i].icon;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { WatchItem(num); });
         }
     }
 
-    private IEnumerator ActivateNotify(string name)
+    private IEnumerator ActivateNotify(string notifyName)
     {
         newItemText.gameObject.SetActive(true);
-        newItemText.text = "+" + name;
+        newItemText.text = "+" + notifyName;
         yield return new WaitForSeconds(2);
         newItemText.gameObject.SetActive(false);
     }

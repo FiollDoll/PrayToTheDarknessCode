@@ -1,41 +1,38 @@
 ﻿using UnityEngine;
+
 [System.Serializable]
 public class Location
 {
     [System.Serializable]
-    public class spawnInLocation
+    public class SpawnInLocation
     {
         public string name;
         public Transform spawn;
     }
 
     public string gameName;
+
     [HideInInspector]
     public string name
     {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return ruName;
-            else
-                return enName;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? ruName : enName; }
     }
+
     public string ruName, enName;
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;
     public float modifCamera;
-    public spawnInLocation[] spawns = new spawnInLocation[0];
+    public SpawnInLocation[] spawns = new SpawnInLocation[0];
     public Transform transformOfStairs = null; // Если есть лестница
-    public Transform GetSpawn(string name)
+
+    public Transform GetSpawn(string spawnName)
     {
-        foreach (spawnInLocation spawn in spawns)
+        foreach (SpawnInLocation spawn in spawns)
         {
-            if (spawn.name == name)
-            {
+            if (spawn.name == spawnName)
                 return spawn.spawn;
-            }
         }
+
         return null;
     }
 }

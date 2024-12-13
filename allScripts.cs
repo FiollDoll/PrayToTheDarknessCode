@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class AllScripts : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class AllScripts : MonoBehaviour
     public ManageLocation locations;
     public Inventory inventory;
     public Notebook notebook;
-    public Quests quests;
+    [FormerlySerializedAs("quests")] public QuestsSystem questsSystem;
     public CutsceneManager cutsceneManager;
     public Main main;
 }

@@ -1,31 +1,23 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class note
+public class Note
 {
     public string nameRu, nameEn;
+
     [HideInInspector]
     public string name
     {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return nameRu;
-            else
-                return nameEn;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn; }
     }
+
     public string descriptionRu, descriptionEn;
+
     [HideInInspector]
     public string description
     {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return descriptionRu;
-            else
-                return descriptionEn;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn; }
     }
+
     public bool readed;
 }

@@ -3,19 +3,25 @@
 [System.Serializable]
 public class Dialog
 {
-    [Header("Main")]
-    public string nameDialog;
-    public enum dialogStyle { main, subMain };
-    public dialogStyle styleOfDialog;
+    [Header("Main")] public string nameDialog;
+
+    public enum DialogStyle
+    {
+        Main,
+        SubMain
+    };
+
+    public DialogStyle styleOfDialog;
     public bool canMove, canInter;
-    [Tooltip("Обычные этапы диалога")] public DialogStep[] steps = new DialogStep[0];
-    [Tooltip("Диалоги с выбором варианта. Начинается после steps")] public DialogStepChoice[] dialogsChoices = new DialogStepChoice[0];
-    [Header("AfterEnd")]
-    public string startNewDialogAfterEnd;
+    public DialogStep[] steps = new DialogStep[0]; // Обычные этапы диалога
+    public DialogStepChoice[] dialogsChoices = new DialogStepChoice[0]; // Этапы с выбором
+    [Header("AfterEnd")] public string startNewDialogAfterEnd;
     public bool darkAfterEnd;
-    [Tooltip("Работает только с darkAfterEnd")] public Transform posAfterEnd;
-    [Header("Other")]
-    public string noteAdd;
+
+    [Tooltip("Работает только с darkAfterEnd")]
+    public Transform posAfterEnd;
+
+    [Header("Other")] public string noteAdd;
     public Sprite bigPicture, bigPictureSecond, bigPictureThird;
     public int activatedCutsceneStepAtEnd = -1;
     public bool disableFadeAtEnd;
@@ -28,41 +34,51 @@ public class Dialog
 public class DialogStep
 {
     public NPC totalNpc;
+
     [HideInInspector]
     public string text
     {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return ruText;
-            else
-                return enText;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? ruText : enText; }
     }
+
     public string ruText, enText;
     public bool cursedText;
     public bool animateTalking = true;
     public bool setCloseMeet;
     public float delayAfterNext;
-    public enum iconMood { standart, happy, angry, sad, scary, wonder, confusion, curse }
-    public iconMood iconMoodSelected;
+
+    public enum IconMood
+    {
+        Standart,
+        Happy,
+        Angry,
+        Sad,
+        Scary,
+        Wonder,
+        Confusion,
+        Curse
+    }
+
+    public IconMood iconMoodSelected;
+
     public Sprite icon
     {
         get
         {
             return iconMoodSelected switch
             {
-                iconMood.standart => totalNpc.icon.standartIcon,
-                iconMood.happy => totalNpc.icon.happyIcon,
-                iconMood.sad => totalNpc.icon.sadIcon,
-                iconMood.scary => totalNpc.icon.scaryIcon,
-                iconMood.wonder => totalNpc.icon.wonderIcon,
-                iconMood.confusion => totalNpc.icon.confusionIcon,
-                iconMood.angry => totalNpc.icon.angryIcon,
-                iconMood.curse => totalNpc.icon.curseIcon,
+                IconMood.Standart => totalNpc.icon.standartIcon,
+                IconMood.Happy => totalNpc.icon.happyIcon,
+                IconMood.Sad => totalNpc.icon.sadIcon,
+                IconMood.Scary => totalNpc.icon.scaryIcon,
+                IconMood.Wonder => totalNpc.icon.wonderIcon,
+                IconMood.Confusion => totalNpc.icon.confusionIcon,
+                IconMood.Angry => totalNpc.icon.angryIcon,
+                IconMood.Curse => totalNpc.icon.curseIcon,
             };
         }
     }
+
     public bool shakeIcon;
     public int activatedCutsceneStep = -1;
     public string questStart;
@@ -75,14 +91,9 @@ public class DialogStepChoice
     [HideInInspector]
     public string textQuestion
     {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return ruTextQuestion;
-            else
-                return enTextQuestion;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? ruTextQuestion : enTextQuestion; }
     }
+
     public string ruTextQuestion, enTextQuestion;
     public DialogStep[] steps = new DialogStep[0];
     public bool readed, moreRead;

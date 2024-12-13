@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
 
 public class Interactions : MonoBehaviour
 {
@@ -17,7 +13,7 @@ public class Interactions : MonoBehaviour
     [SerializeField] private TextMeshProUGUI interLabelText;
     [SerializeField] private AllScripts scripts;
     private string totalColliderName, totalColliderMode, spawnName;
-    public extraInter selectedEI = null;
+    public ExtraInter selectedEI = null;
 
     private void UpdateIntersMenu(int idx, string label)
     {
@@ -61,11 +57,13 @@ public class Interactions : MonoBehaviour
 
                         if (!scripts.locations.GetLocation(totalColliderName).locked)
                         {
-                            if (scripts.locations.GetLocation(totalColliderName).autoEnter && scripts.locations.totalLocation.autoEnter)
+                            if (scripts.locations.GetLocation(totalColliderName).autoEnter &&
+                                scripts.locations.totalLocation.autoEnter)
                                 scripts.locations.ActivateLocation(totalColliderName, spawnName);
                             else
                                 UpdateIntersMenu(idx, selectedEI.interLabel);
                         }
+
                         break;
                     case "cutscene":
                     case "interact":
@@ -75,26 +73,30 @@ public class Interactions : MonoBehaviour
                             ExtraInteraction EI = hit.collider.gameObject.GetComponent<ExtraInteraction>();
                             for (int i = 0; i < EI.interactions.Length; i++)
                             {
-                                extraInter totalEI = EI.interactions[i];
-                                if (scripts.quests.totalQuest != null)
+                                ExtraInter totalEI = EI.interactions[i];
+                                if (scripts.questsSystem.totalQuest != null)
                                 {
-                                    if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
+                                    if (totalEI.nameQuestRequired != scripts.questsSystem.totalQuest.nameInGame)
                                     {
                                         if (totalEI.nameQuestRequired != "")
                                             continue;
                                     }
 
-                                    if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
+                                    if (totalEI.stageInter != scripts.questsSystem.totalQuest.totalStep &&
+                                        totalEI.nameQuestRequired != "")
                                         continue;
                                 }
+
                                 selectedEI = EI.interactions[i];
                                 hit.collider.gameObject.name = totalEI.interName; // Сделано плохо
                                 UpdateIntersMenu(idx, selectedEI.interLabel);
                                 break;
                             }
+
                             if (selectedEI == null)
                                 return;
                         }
+
                         totalColliderName = hit.collider.gameObject.name;
                         totalColliderMode = hit.collider.gameObject.tag;
 
@@ -102,19 +104,23 @@ public class Interactions : MonoBehaviour
                     case "cutsceneAuto":
                         if (hit.collider.gameObject.GetComponent<ExtraInteraction>() != null)
                         {
-                            extraInter totalEI = hit.collider.gameObject.GetComponent<ExtraInteraction>().interactions[0];
-                            if (totalEI.nameQuestRequired != scripts.quests.totalQuest.nameInGame)
+                            ExtraInter totalEI = hit.collider.gameObject.GetComponent<ExtraInteraction>()
+                                .interactions[0];
+                            if (totalEI.nameQuestRequired != scripts.questsSystem.totalQuest.nameInGame)
                             {
                                 if (totalEI.nameQuestRequired != "")
                                     break;
                             }
 
-                            if (totalEI.stageInter != scripts.quests.totalQuest.totalStep && totalEI.nameQuestRequired != "")
+                            if (totalEI.stageInter != scripts.questsSystem.totalQuest.totalStep &&
+                                totalEI.nameQuestRequired != "")
                                 break;
                         }
+
                         scripts.cutsceneManager.ActivateCutscene(hit.collider.gameObject.name);
                         break;
                 }
+
                 if (hit.collider.name != "Player" && hit.collider.name != "Player")
                     idx++;
                 Debug.DrawLine(transform.position, hit.point, Color.red);
@@ -137,19 +143,21 @@ public class Interactions : MonoBehaviour
                 totalColliderMode = GameObject.Find(totalColliderName).tag;
                 if (totalColliderMode != "location")
                 {
-                    if (enteredColliders.ElementAt(selectedColliderId).collider.gameObject.GetComponent<ExtraInteraction>() != null)
+                    if (enteredColliders.ElementAt(selectedColliderId).collider.gameObject
+                            .GetComponent<ExtraInteraction>() != null)
                     {
                         if (selectedEI == null)
                             return;
                     }
                 }
+
                 if (selectedEI != null)
                 {
                     scripts.inventory.AddItem(selectedEI.itemNameAdd);
                     if (selectedEI.darkAfterUse)
                         scripts.main.ActivateNoVision(1f);
-                    if (selectedEI.NextStep && selectedEI.stageInter == scripts.quests.totalQuest.totalStep)
-                        scripts.quests.NextStep();
+                    if (selectedEI.nextStep && selectedEI.stageInter == scripts.questsSystem.totalQuest.totalStep)
+                        scripts.questsSystem.NextStep();
                     if (selectedEI.activateCutscene)
                         scripts.cutsceneManager.ActivateCutscene(totalColliderName);
                     if (selectedEI.swapPlayerVisual)
@@ -159,6 +167,7 @@ public class Interactions : MonoBehaviour
                     if (selectedEI.moveToSpawn != "")
                         scripts.locations.ActivateLocation(totalColliderName, selectedEI.moveToSpawn);
                 }
+
                 switch (totalColliderMode)
                 {
                     case "item":
@@ -170,19 +179,22 @@ public class Interactions : MonoBehaviour
                             scripts.locations.ActivateLocation(totalColliderName, selectedEI.moveToSpawn);
                         break;
                     default:
-                        if (totalColliderName == "floorChange" && (!scripts.main.CheckAnyMenuOpen() || floorChangeMenu.gameObject.activeSelf))
+                        if (totalColliderName == "floorChange" &&
+                            (!scripts.main.CheckAnyMenuOpen() || floorChangeMenu.gameObject.activeSelf))
                             floorChangeMenu.gameObject.SetActive(!floorChangeMenu.gameObject.activeSelf);
                         else
                         {
                             if (!scripts.dialogsManager.dialogMenu.activeSelf)
                                 scripts.dialogsManager.ActivateDialog(totalColliderName);
                         }
+
                         // TODO: в интеракциях, где можно много раз - это мешает.
                         //enteredColliders.Remove(enteredColliders.ElementAt(selectedColliderId).Key);
                         break;
                 }
             }
         }
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (!scripts.main.CheckAnyMenuOpen())

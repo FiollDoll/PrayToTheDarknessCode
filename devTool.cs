@@ -12,7 +12,7 @@ public class DevTool : MonoBehaviour
 
     public void ActivateQuest()
     {
-        scripts.quests.ActivateQuest(InputFieldNewQuest.text);
+        scripts.questsSystem.ActivateQuest(InputFieldNewQuest.text);
         InputFieldNewQuest.text = "";
     }
     public void ActivateLocation()
@@ -27,12 +27,12 @@ public class DevTool : MonoBehaviour
 
     public void ActivateStepQuest()
     {
-        foreach (Quest quest in scripts.quests.gameQuests)
+        foreach (Quest quest in scripts.questsSystem.gameQuests)
         {
-            if (quest.nameInGame == scripts.quests.totalQuest.nameInGame) // Ссылки смешно работают
+            if (quest.nameInGame == scripts.questsSystem.totalQuest.nameInGame) // Ссылки смешно работают
             {
                 quest.totalStep = int.Parse(InputFieldStage.text);
-                scripts.quests.UpdateQuestUI();
+                scripts.questsSystem.UpdateQuestUI();
                 break;
             }
         }
@@ -45,6 +45,6 @@ public class DevTool : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.V))
             ActivateMenuTools();
-        textInfo.text = "dialogStep: " + scripts.dialogsManager.totalStep + "\ntotalLocation: " + scripts.locations.totalLocation.name + "\nplayerCanMove: " + scripts.player.canMove + "\ntotalQuest: " + scripts.quests.totalQuest.name + "\n";
+        textInfo.text = "dialogStep: " + scripts.dialogsManager.totalStep + "\ntotalLocation: " + scripts.locations.totalLocation.name + "\nplayerCanMove: " + scripts.player.canMove + "\ntotalQuest: " + scripts.questsSystem.totalQuest.name + "\n";
     }
 }

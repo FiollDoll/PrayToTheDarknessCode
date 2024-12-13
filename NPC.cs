@@ -1,20 +1,14 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
 public class NPC : ScriptableObject
 {
     [HideInInspector]
-    public string name
+    public string nameOfNpc
     {
-        get
-        {
-            if (PlayerPrefs.GetString("language") == "ru")
-                return ruName;
-            else
-                return enName;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? ruName : enName; }
     }
+
     public string ruName, enName;
     public string nameInWorld;
 
@@ -24,33 +18,22 @@ public class NPC : ScriptableObject
         get
         {
             if (!playerCloseMeet)
-            {
-                if (PlayerPrefs.GetString("language") == "ru")
-                    return ruDescription;
-                else
-                    return enDescription;
-            }
+                return PlayerPrefs.GetString("language") == "ru" ? ruDescription : enDescription;
             else
-            {
-                if (PlayerPrefs.GetString("language") == "ru")
-                    return ruCloseDescription;
-                else
-                    return enCloseDescription;
-            }
+                return PlayerPrefs.GetString("language") == "ru" ? ruCloseDescription : enCloseDescription;
         }
     }
+
     public string ruDescription, enDescription;
 
-    [Header("-Closed description NPC")]
-    public bool playerCloseMeet;
+    [Header("-Closed description NPC")] public bool playerCloseMeet;
     public string ruCloseDescription, enCloseDescription;
 
-    [Header("Icons NPC")]
-    public icons icon;
+    [Header("Icons NPC")] public Icons icon;
 }
 
 [System.Serializable]
-public class icons
+public class Icons
 {
     public Sprite standartIcon, happyIcon, angryIcon, sadIcon, scaryIcon, wonderIcon, confusionIcon, curseIcon;
 }

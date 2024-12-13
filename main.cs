@@ -11,7 +11,7 @@ public class Main : MonoBehaviour
     public int hour, minute;
     [SerializeField] private Image noViewPanel;
     public Sprite nullSprite;
-    private string charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
+    private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
     [SerializeField] private AllScripts scripts;
     public bool lockAnyMenu;
@@ -35,10 +35,7 @@ public class Main : MonoBehaviour
     {
         pos.position = Vector3.MoveTowards(pos.position, target.position, speed * Time.deltaTime);
         animator.SetBool("walk", true);
-        if (target.position.x > pos.position.x)
-            spriteRenderer.flipX = false;
-        else
-            spriteRenderer.flipX = true;
+        spriteRenderer.flipX = !(target.position.x > pos.position.x);
     }
 
     public bool CheckAnyMenuOpen()
@@ -57,7 +54,7 @@ public class Main : MonoBehaviour
     private string CursedText(int len)
     {
         string totalString = "";
-        char[] chars = charsOnString.ToCharArray();
+        char[] chars = _charsOnString.ToCharArray();
 
         for (int i = 0; i < len; i++)
         {
@@ -66,6 +63,7 @@ public class Main : MonoBehaviour
             else
                 totalString += char.ToLower(chars[Random.Range(0, chars.Length)]);
         }
+
         return totalString;
     }
 
@@ -76,6 +74,7 @@ public class Main : MonoBehaviour
             StopCoroutine(cursedTextCoroutines[text]);
             cursedTextCoroutines.Remove(text);
         }
+
         Coroutine newCoroutine = StartCoroutine(GenerateCursedText(text, len));
         cursedTextCoroutines[text] = newCoroutine;
     }
