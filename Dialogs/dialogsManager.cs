@@ -15,16 +15,19 @@ public class DialogsManager : MonoBehaviour
     [SerializeField] private NPC[] allNpc = new NPC[0];
     [SerializeField] private Image iconImage;
     [SerializeField] private Image bigPicture;
-    [SerializeField] private Image noViewPanel;
-    private AllScripts _scripts;
-
+    
+    public Dialog[] dialogs = new Dialog[0];
+    
     public int totalStep;
     private string _totalMode;
     private bool _animatingText, _canStepNext;
-    public Dialog[] dialogs = new Dialog[0];
+    
     private Dialog _activatedDialog;
     private DialogStepChoice _selectedChoice;
     private DialogStep _selectedStep;
+    
+    private Image _noViewPanel;
+    private AllScripts _scripts;
 
     private void Start()
     {
@@ -32,6 +35,7 @@ public class DialogsManager : MonoBehaviour
         choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _scripts.dialogsManager = this;
+        _noViewPanel = _scripts.main.noViewPanel;
     }
 
     /// <summary>
@@ -57,70 +61,72 @@ public class DialogsManager : MonoBehaviour
     /// <param name="nameDialog">Название диалога</param>
     public void ActivateDialog(string nameDialog) // Старт диалога
     {
-        if (_activatedDialog == null)
+        if (_activatedDialog != null) return;
+        
+        Dialog newDialog = GetDialog((nameDialog));
+        if (newDialog == null) return;
+        
+        _activatedDialog = newDialog;
+        dialogMenu.gameObject.SetActive(true);
+        _canStepNext = false;
+        _scripts.interactions.lockInter = _activatedDialog.canInter;
+        if (_activatedDialog.steps.Length > 0)
         {
-            _activatedDialog = GetDialog((nameDialog));
-            dialogMenu.gameObject.SetActive(true);
-            _canStepNext = false;
-            _scripts.interactions.lockInter = _activatedDialog.canInter;
-            if (_activatedDialog.steps.Length > 0)
+            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
             {
-                if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                {
-                    mainDialogMenu.gameObject.SetActive(true);
-                    _textName = mainDialogMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-                    _textDialog = mainDialogMenu.transform.Find("TextDialog").GetComponent<TextMeshProUGUI>();
-                }
-                else
-                {
-                    subDialogMenu.gameObject.SetActive(true);
-                    _textDialog = subDialogMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-                }
-
-                _selectedStep = _activatedDialog.steps[0];
-                _totalMode = "dialog";
+                mainDialogMenu.gameObject.SetActive(true);
+                _textName = mainDialogMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+                _textDialog = mainDialogMenu.transform.Find("TextDialog").GetComponent<TextMeshProUGUI>();
             }
             else
             {
-                choiceDialogMenu.gameObject.SetActive(true);
-                _totalMode = "choice";
+                subDialogMenu.gameObject.SetActive(true);
+                _textDialog = subDialogMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
             }
 
-            _scripts.main.EndCursedText(_textDialog);
-
-            if (_activatedDialog.bigPicture != null)
-            {
-                Sequence sequence = DOTween.Sequence();
-                Tween stepSequence = noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-                stepSequence.OnComplete(() =>
-                {
-                    bigPicture.sprite = _activatedDialog.bigPicture;
-                    if (_activatedDialog.bigPictureSecond != null)
-                        StartCoroutine(BigPictureAnimate(_activatedDialog));
-                });
-                sequence.Append(stepSequence);
-                sequence.Append(bigPicture.DOFade(100f, 0.001f).SetEase(Ease.InQuart));
-                sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-                sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-            }
-            else
-                bigPicture.sprite = _scripts.main.nullSprite;
-
-            if (_activatedDialog.mainPanelStartDelay == 0)
-                OpenPanels();
-            else
-                StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog,
-                    _activatedDialog.mainPanelStartDelay));
-
-            if (!_activatedDialog.moreRead)
-                _activatedDialog.readed = true;
-            _scripts.player.canMove = _activatedDialog.canMove;
-
-            if (_totalMode == "dialog")
-                DialogUpdateAction();
-            else
-                ActivateChoiceMenu();
+            _selectedStep = _activatedDialog.steps[0];
+            _totalMode = "dialog";
         }
+        else
+        {
+            choiceDialogMenu.gameObject.SetActive(true);
+            _totalMode = "choice";
+        }
+
+        _scripts.main.EndCursedText(_textDialog);
+
+        if (_activatedDialog.bigPicture != null)
+        {
+            Sequence sequence = DOTween.Sequence();
+            Tween stepSequence = _noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
+            stepSequence.OnComplete(() =>
+            {
+                bigPicture.sprite = _activatedDialog.bigPicture;
+                if (_activatedDialog.bigPictureSecond != null)
+                    StartCoroutine(BigPictureAnimate(_activatedDialog));
+            });
+            sequence.Append(stepSequence);
+            sequence.Append(bigPicture.DOFade(100f, 0.001f).SetEase(Ease.InQuart));
+            sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+            sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+        }
+        else
+            bigPicture.sprite = _scripts.main.nullSprite;
+
+        if (_activatedDialog.mainPanelStartDelay == 0)
+            OpenPanels();
+        else
+            StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog,
+                _activatedDialog.mainPanelStartDelay));
+
+        if (!_activatedDialog.moreRead)
+            _activatedDialog.readed = true;
+        _scripts.player.canMove = _activatedDialog.canMove;
+
+        if (_totalMode == "dialog")
+            DialogUpdateAction();
+        else
+            ActivateChoiceMenu();
     }
 
     /// <summary>
@@ -137,10 +143,10 @@ public class DialogsManager : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
         if (_activatedDialog.bigPicture != null && !_activatedDialog.disableFadeAtEnd)
         {
-            sequence = sequence.Append(noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
+            sequence = sequence.Append(_noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
             sequence.Append(mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f));
             sequence.Append(bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
-            sequence.Append(noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
+            sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
         }
         else
             sequence.Append(mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f));
@@ -149,7 +155,7 @@ public class DialogsManager : MonoBehaviour
 
         if (_activatedDialog.darkAfterEnd && !_activatedDialog.disableFadeAtEnd)
         {
-            Tween extraSequence = noViewPanel.DOFade(100f, 0.7f).SetEase(Ease.InQuart);
+            Tween extraSequence = _noViewPanel.DOFade(100f, 0.7f).SetEase(Ease.InQuart);
             if (_activatedDialog.posAfterEnd != null)
             {
                 extraSequence.OnComplete(() =>
@@ -159,7 +165,7 @@ public class DialogsManager : MonoBehaviour
             }
 
             sequence.Append(extraSequence);
-            sequence.Append(noViewPanel.DOFade(0f, 0.7f).SetEase(Ease.OutQuart));
+            sequence.Append(_noViewPanel.DOFade(0f, 0.7f).SetEase(Ease.OutQuart));
         }
 
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));

@@ -9,7 +9,8 @@ public class Inventory : MonoBehaviour
     public List<Item> playerItems = new List<Item>();
     [SerializeField] private Item[] gameItems = new Item[0];
     [SerializeField] private GameObject inventorySlotPrefab;
-    [SerializeField] private GameObject invMenu, itemInfoMenu, mainWatch, onlyIconWatch;
+    [SerializeField] private GameObject invMenu, itemInfoMenu;
+    private GameObject _mainStyle, _onlyIconStyle;
     [SerializeField] private TextMeshProUGUI newItemText;
     private AllScripts _scripts;
 
@@ -26,6 +27,7 @@ public class Inventory : MonoBehaviour
     public void ManageInventoryPanel(bool state)
     {
         invMenu.gameObject.SetActive(state);
+        itemInfoMenu.gameObject.SetActive(false);
         if (state)
             UpdateInvUI();
     }
@@ -62,7 +64,7 @@ public class Inventory : MonoBehaviour
         if (playerItems[slot].removeAfterUse)
             playerItems.RemoveAt(slot);
 
-        WatchItem(-1); // Закрытие менюшки
+        itemInfoMenu.gameObject.SetActive(false);
         UpdateInvUI();
         _scripts.player.playerMenu.gameObject.SetActive(false);
     }
@@ -74,18 +76,24 @@ public class Inventory : MonoBehaviour
     private void WatchItem(int id)
     {
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
+        if (_mainStyle == null || _onlyIconStyle == null) // Первое присвоение
+        {
+            _mainStyle = itemInfoMenu.transform.Find("main").gameObject;
+            _onlyIconStyle = itemInfoMenu.transform.Find("onlyIcon").gameObject;
+        }
+        
         if (itemInfoMenu.gameObject.activeSelf)
         {
-            mainWatch.gameObject.SetActive(!playerItems[id].watchIconOnly);
-            onlyIconWatch.gameObject.SetActive(playerItems[id].watchIconOnly);
+            _mainStyle.gameObject.SetActive(!playerItems[id].watchIconOnly);
+            _onlyIconStyle.gameObject.SetActive(playerItems[id].watchIconOnly);
             if (playerItems[id].watchIconOnly)
-                onlyIconWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+                _onlyIconStyle.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
             else
             {
-                mainWatch.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
-                mainWatch.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text =
+                _mainStyle.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerItems[id].name;
+                _mainStyle.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text =
                     playerItems[id].description;
-                mainWatch.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
+                _mainStyle.transform.Find("ItemIcon").GetComponent<Image>().sprite = playerItems[id].icon;
             }
 
             Button button = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();

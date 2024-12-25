@@ -9,7 +9,7 @@ using Cinemachine;
 public class Main : MonoBehaviour
 {
     public int hour, minute;
-    [SerializeField] private Image noViewPanel;
+    public Image noViewPanel;
     public Sprite nullSprite;
     private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();

@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
 
         if (canMove)
         {
-            _rb.velocity = new Vector2(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed));
+            _rb.linearVelocity = new Vector2(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed));
             _animator.SetBool("walk", horiz != 0 || vert != 0);
             if (horiz > 0)
                 GetComponent<SpriteRenderer>().flipX = false;
@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            _rb.velocity = Vector2.zero;
+            _rb.linearVelocity = Vector2.zero;
             _animator.SetBool("walk", false);
         }
     }
