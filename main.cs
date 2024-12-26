@@ -11,6 +11,7 @@ public class Main : MonoBehaviour
     public int hour, minute;
     public Image noViewPanel;
     public Sprite nullSprite;
+    public NPC[] allNpc = new NPC[0];
     private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
     private AllScripts _scripts;
