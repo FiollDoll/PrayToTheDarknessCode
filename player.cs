@@ -9,6 +9,9 @@ public class Player : MonoBehaviour
     public float karma;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
+    [SerializeField] private Transform rayStart;
+    [SerializeField] private LayerMask layerMaskInteractAuto;
+
     public bool canMove;
     [SerializeField] private string[] playerVisuals = new string[0];
     public GameObject playerMenu;
@@ -16,14 +19,15 @@ public class Player : MonoBehaviour
     public CinemachineVirtualCamera virtualCamera;
     public List<NPC> familiarNPC = new List<NPC>();
     [SerializeField] private AllScripts scripts;
-    private Rigidbody2D _rb;
+    private RaycastHit _enteredCollider;
+    private Rigidbody _rb;
     private Animator _animator;
 
     private void Start()
     {
-        _rb = GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
-        ChangeVisual(1); 
+        ChangeVisual(1);
         ChoicePagePlayerMenu(0);
     }
 
@@ -35,7 +39,8 @@ public class Player : MonoBehaviour
         _animator.SetBool(playerVisuals[num], true);
     }
 
-    public void MoveTo(Transform target) => scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), _animator);
+    public void MoveTo(Transform target) =>
+        scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), _animator);
 
     private void ChoicePagePlayerMenu(int page)
     {
@@ -62,14 +67,19 @@ public class Player : MonoBehaviour
         }
     }
 
+
     private void FixedUpdate()
     {
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
 
+        if (Physics.Raycast(rayStart.position, Vector3.up, out _enteredCollider, 12f, layerMaskInteractAuto) &&
+            !scripts.interactions.lockInter)
+            scripts.interactions.ActivateInteractionAuto(_enteredCollider);
+
         if (canMove)
         {
-            _rb.linearVelocity = new Vector2(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed));
+            _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed), 0);
             _animator.SetBool("walk", horiz != 0 || vert != 0);
             if (horiz > 0)
                 GetComponent<SpriteRenderer>().flipX = false;
@@ -78,7 +88,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            _rb.linearVelocity = Vector2.zero;
+            _rb.linearVelocity = Vector3.zero;
             _animator.SetBool("walk", false);
         }
     }
