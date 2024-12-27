@@ -309,8 +309,8 @@ public class DialogsManager : MonoBehaviour
         foreach (NPC totalNpc in _scripts.main.allNpc)
         {
             if (totalNpc.nameOfNpc != _selectedStep.totalNpc.nameOfNpc) continue;
-            if (_scripts.player.familiarNPC.Contains(totalNpc)) continue;
-            _scripts.player.familiarNPC.Add(totalNpc);
+            if (_scripts.player.familiarNpc.Contains(totalNpc)) continue;
+            _scripts.player.familiarNpc.Add(totalNpc);
             break;
         }
 

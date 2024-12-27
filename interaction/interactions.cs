@@ -4,15 +4,16 @@ using TMPro;
 
 public class Interactions : MonoBehaviour
 {
-    public bool lockInter;
+    public ExtraInter selectedEI;
+    [Header("Настройки")]
     [SerializeField] private LayerMask layerMaskInteract;
-    private RaycastHit _selectedCollider, _enteredCollider;
-    public GameObject floorChangeMenu;
-    [SerializeField] private int selectedColliderId;
+    public bool lockInter;
     [SerializeField] private TextMeshProUGUI interLabelText;
+    public GameObject floorChangeMenu;
+    
+    private RaycastHit _selectedCollider, _enteredCollider;
     private AllScripts _scripts;
     private string _totalColliderName, _totalColliderMode, _spawnName;
-    public ExtraInter selectedEI = null;
 
     private void Start()
     {

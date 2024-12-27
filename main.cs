@@ -8,6 +8,7 @@ using Cinemachine;
 
 public class Main : MonoBehaviour
 {
+    public float karma;
     public int hour, minute;
     public Image noViewPanel;
     public Sprite nullSprite;

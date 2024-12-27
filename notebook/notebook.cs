@@ -104,13 +104,13 @@ public class Notebook : MonoBehaviour
             foreach (Transform child in pageNpCcontainer.transform)
                 Destroy(child.gameObject);
 
-            for (int i = 0; i < _scripts.player.familiarNPC.Count; i++)
+            for (int i = 0; i < _scripts.player.familiarNpc.Count; i++)
             {
                 var obj = Instantiate(buttonNPC, Vector3.zero, Quaternion.identity, pageNpCcontainer.transform);
                 obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
-                    _scripts.player.familiarNPC[i].nameOfNpc;
+                    _scripts.player.familiarNpc[i].nameOfNpc;
                 obj.transform.Find("Icon").GetComponent<Image>().sprite =
-                    _scripts.player.familiarNPC[i].icon.standartIcon;
+                    _scripts.player.familiarNpc[i].icon.standartIcon;
                 obj.transform.Find("Icon").GetComponent<Image>().SetNativeSize();
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
@@ -173,9 +173,9 @@ public class Notebook : MonoBehaviour
             }
             case 2:
                 _pageReadHuman.gameObject.SetActive(true);
-                header.text = _scripts.player.familiarNPC[num].nameOfNpc;
-                note.text = _scripts.player.familiarNPC[num].description;
-                icon.sprite = _scripts.player.familiarNPC[num].icon.standartIcon;
+                header.text = _scripts.player.familiarNpc[num].nameOfNpc;
+                note.text = _scripts.player.familiarNpc[num].description;
+                icon.sprite = _scripts.player.familiarNpc[num].icon.standartIcon;
                 icon.SetNativeSize();
                 break;
         }
