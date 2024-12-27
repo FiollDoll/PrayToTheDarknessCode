@@ -1,31 +1,40 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Serialization;
 
 public class Notebook : MonoBehaviour
 {
-    [SerializeField] private GameObject pageNote,
-        pageQuest,
-        pageNPC,
-        pageNPCcontainer,
-        pageChoiceNote,
-        pageChoiceQuest,
-        buttonChoiceActiveQuest;
+    [Header("Настройки")] [SerializeField] private GameObject notebookMenu;
 
-    [SerializeField] private GameObject pageReadNote, pageReadHuman, pageReadMain;
+    private GameObject _pageNote, _pageQuest, _pageNpc;
+    private GameObject _pageReadNote, _pageReadHuman, _pageReadMain;
+    
+    [SerializeField] private GameObject buttonChoiceActiveQuest, pageNpCcontainer, pageChoiceNote, pageChoiceQuest;
     [SerializeField] private GameObject buttonNotePrefab, buttonNPC;
     [SerializeField] private GameObject newNoteNotify;
-    [SerializeField] private Note[] gameNotes = new Note[0];
-    [SerializeField] private List<Note> playerNotes = new List<Note>();
+
+    [Header("Записки игрока")] [SerializeField]
+    private List<Note> playerNotes = new List<Note>();
+
+    [Header("Записки в игре")] [SerializeField]
+    private Note[] gameNotes = new Note[0];
+
     private AllScripts _scripts;
 
     private void Start()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _scripts.notebook = this;
+        
+        _pageNote = notebookMenu.transform.Find("pageNotes").gameObject;
+        _pageQuest = notebookMenu.transform.Find("pageQuests").gameObject;
+        _pageNpc = notebookMenu.transform.Find("pageNPC").gameObject;
+        _pageReadNote = notebookMenu.transform.Find("pageRead").gameObject;
+        _pageReadHuman = _pageReadNote.transform.Find("human").gameObject;
+        _pageReadMain = _pageReadNote.transform.Find("noteQuest").gameObject;
     }
 
     public void AddNote(string nameNote)
@@ -43,16 +52,16 @@ public class Notebook : MonoBehaviour
 
     public void ChoicePage(int num)
     {
-        pageNote.gameObject.SetActive(false);
-        pageQuest.gameObject.SetActive(false);
-        pageNPC.gameObject.SetActive(false);
-        pageReadNote.gameObject.SetActive(false);
-        pageReadMain.gameObject.SetActive(false);
-        pageReadHuman.gameObject.SetActive(false);
+        _pageNote.gameObject.SetActive(false);
+        _pageQuest.gameObject.SetActive(false);
+        _pageNpc.gameObject.SetActive(false);
+        _pageReadNote.gameObject.SetActive(false);
+        _pageReadMain.gameObject.SetActive(false);
+        _pageReadHuman.gameObject.SetActive(false);
         buttonChoiceActiveQuest.gameObject.SetActive(false);
         if (num == 0)
         {
-            pageNote.gameObject.SetActive(true);
+            _pageNote.gameObject.SetActive(true);
             foreach (Transform child in pageChoiceNote.transform)
                 Destroy(child.gameObject);
 
@@ -67,11 +76,11 @@ public class Notebook : MonoBehaviour
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number); });
             }
 
-            pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+            _pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
         else if (num == 1)
         {
-            pageQuest.gameObject.SetActive(true);
+            _pageQuest.gameObject.SetActive(true);
             foreach (Transform child in pageChoiceQuest.transform)
                 Destroy(child.gameObject);
 
@@ -87,17 +96,17 @@ public class Notebook : MonoBehaviour
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
             }
 
-            pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+            _pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
         else if (num == 2)
         {
-            pageNPC.gameObject.SetActive(true);
-            foreach (Transform child in pageNPCcontainer.transform)
+            _pageNpc.gameObject.SetActive(true);
+            foreach (Transform child in pageNpCcontainer.transform)
                 Destroy(child.gameObject);
 
             for (int i = 0; i < _scripts.player.familiarNPC.Count; i++)
             {
-                var obj = Instantiate(buttonNPC, Vector3.zero, Quaternion.identity, pageNPCcontainer.transform);
+                var obj = Instantiate(buttonNPC, Vector3.zero, Quaternion.identity, pageNpCcontainer.transform);
                 obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
                     _scripts.player.familiarNPC[i].nameOfNpc;
                 obj.transform.Find("Icon").GetComponent<Image>().sprite =
@@ -107,33 +116,33 @@ public class Notebook : MonoBehaviour
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
             }
 
-            pageNPC.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+            _pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
         }
     }
 
     private void ReadNote(int num, int mode = 0)
     {
-        pageReadNote.gameObject.SetActive(true);
+        _pageReadNote.gameObject.SetActive(true);
         TextMeshProUGUI header = null;
         TextMeshProUGUI note = null;
         Image icon = null;
         if (mode == 0 || mode == 1)
         {
-            header = pageReadMain.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
-            note = pageReadMain.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
+            header = _pageReadMain.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
+            note = _pageReadMain.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
         }
         else
         {
-            header = pageReadHuman.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-            note = pageReadHuman.transform.Find("TextInfo").GetComponent<TextMeshProUGUI>();
-            icon = pageReadHuman.transform.Find("Icon").GetComponent<Image>();
+            header = _pageReadHuman.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+            note = _pageReadHuman.transform.Find("TextInfo").GetComponent<TextMeshProUGUI>();
+            icon = _pageReadHuman.transform.Find("Icon").GetComponent<Image>();
         }
 
         switch (mode)
         {
             case 0:
             {
-                pageReadMain.gameObject.SetActive(true);
+                _pageReadMain.gameObject.SetActive(true);
                 header.text = playerNotes[num].name;
                 note.text = playerNotes[num].description;
                 if (!playerNotes[num].readed)
@@ -142,7 +151,7 @@ public class Notebook : MonoBehaviour
             }
             case 1:
             {
-                pageReadMain.gameObject.SetActive(true);
+                _pageReadMain.gameObject.SetActive(true);
                 Quest selectedQuest = _scripts.questsSystem.activeQuests[num];
                 header.text = selectedQuest.name;
                 note.text = selectedQuest.description;
@@ -163,7 +172,7 @@ public class Notebook : MonoBehaviour
                 break;
             }
             case 2:
-                pageReadHuman.gameObject.SetActive(true);
+                _pageReadHuman.gameObject.SetActive(true);
                 header.text = _scripts.player.familiarNPC[num].nameOfNpc;
                 note.text = _scripts.player.familiarNPC[num].description;
                 icon.sprite = _scripts.player.familiarNPC[num].icon.standartIcon;
@@ -171,7 +180,7 @@ public class Notebook : MonoBehaviour
                 break;
         }
 
-        pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick
+        _pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick
             .AddListener(delegate { ChoicePage(mode); });
     }
 

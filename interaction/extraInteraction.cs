@@ -10,11 +10,7 @@ public class ExtraInter
 {
     public string interName;
 
-    [HideInInspector]
-    public string interLabel
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? ruLabelName : enLabelName; }
-    }
+    public string interLabel => PlayerPrefs.GetString("language") == "ru" ? ruLabelName : enLabelName;
 
     public string ruLabelName, enLabelName;
 

@@ -5,19 +5,11 @@ public class Note
 {
     public string nameRu, nameEn;
 
-    [HideInInspector]
-    public string name
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn; }
-    }
+    public string name => PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn;
 
-    public string descriptionRu, descriptionEn;
+    [TextArea] public string descriptionRu, descriptionEn;
 
-    [HideInInspector]
-    public string description
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn; }
-    }
+    public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
 
     public bool readed;
 }

@@ -22,7 +22,7 @@ public class Dialog
     public Transform posAfterEnd;
 
     [Header("Other")] public string noteAdd;
-    public Sprite bigPicture, bigPictureSecond, bigPictureThird;
+    public Sprite bigPicture;
     public int activatedCutsceneStepAtEnd = -1;
     public bool disableFadeAtEnd;
     public float mainPanelStartDelay; // Задержка
@@ -34,14 +34,10 @@ public class Dialog
 public class DialogStep
 {
     public NPC totalNpc;
+    
+    public string text => PlayerPrefs.GetString("language") == "ru" ? ruText : enText;
 
-    [HideInInspector]
-    public string text
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? ruText : enText; }
-    }
-
-    public string ruText, enText;
+    [TextArea] public string ruText, enText;
     public bool cursedText;
     public bool animateTalking = true;
     public bool setCloseMeet;
@@ -88,11 +84,7 @@ public class DialogStep
 [System.Serializable]
 public class DialogStepChoice
 {
-    [HideInInspector]
-    public string textQuestion
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? ruTextQuestion : enTextQuestion; }
-    }
+    public string textQuestion => PlayerPrefs.GetString("language") == "ru" ? ruTextQuestion : enTextQuestion;
 
     public string ruTextQuestion, enTextQuestion;
     public DialogStep[] steps = new DialogStep[0];

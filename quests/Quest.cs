@@ -5,20 +5,10 @@ public class Quest
 {
     public string nameInGame;
     public string nameRu, nameEn;
+    public string name => PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn;
 
-    [HideInInspector]
-    public string name
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn; }
-    }
-
-    public string descriptionRu, descriptionEn;
-
-    [HideInInspector]
-    public string description
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn; }
-    }
+    [TextArea]public string descriptionRu, descriptionEn;
+    public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
 
     public Step[] steps = new Step[0];
     public int totalStep;
@@ -29,20 +19,10 @@ public class Quest
 public class Step
 {
     public string nameRu, nameEn;
+    public string name => PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn;
 
-    [HideInInspector]
-    public string name
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn; }
-    }
-
-    public string descriptionRu, descriptionEn;
-
-    [HideInInspector]
-    public string description
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn; }
-    }
+    [TextArea]public string descriptionRu, descriptionEn;
+    public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
 
     public float delayNextStep;
     public string startDialog;

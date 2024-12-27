@@ -10,15 +10,11 @@ public class Location
         public Transform spawn;
     }
 
+    [Header("Основные настройки")]
     public string gameName;
-
-    [HideInInspector]
-    public string name
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? ruName : enName; }
-    }
-
+    public string name => PlayerPrefs.GetString("language") == "ru" ? ruName : enName;
     public string ruName, enName;
+    
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;
     public float modifCamera;

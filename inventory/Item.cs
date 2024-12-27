@@ -5,38 +5,22 @@ public class Item
 {
     public string nameInGame;
     public string nameRu, nameEn;
+    public string name => PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn;
 
-    [HideInInspector]
-    public string name
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn; }
-    }
 
-    public string descriptionRu, descriptionEn;
+    [TextArea] public string descriptionRu, descriptionEn;
+    public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
 
-    [HideInInspector]
-    public string description
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn; }
-    }
 
-    public string activationTextRu, activationTextEn;
+    [TextArea] public string activationTextRu, activationTextEn;
+    public string activationText => PlayerPrefs.GetString("language") == "ru" ? activationTextRu : activationTextEn;
 
-    [HideInInspector]
-    public string activationText
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? activationTextRu : activationTextEn; }
-    }
-
-    [HideInInspector]
     public Sprite icon
     {
         get
         {
             if (iconRu != null) // iconEn дефолт
-            {
                 return PlayerPrefs.GetString("language") == "ru" ? iconRu : iconEn;
-            }
 
             return iconEn;
         }

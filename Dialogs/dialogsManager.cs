@@ -1,11 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
-using JetBrains.Annotations;
-using UnityEngine.Serialization;
 
 public class DialogsManager : MonoBehaviour
 {
@@ -72,7 +69,7 @@ public class DialogsManager : MonoBehaviour
                 return totalDialog;
         }
 
-        Debug.Log("Dialog " + nameDialog + "don`t find");
+        Debug.Log("Dialog " + nameDialog + "don`t find or readed");
         return null;
     }
 
@@ -113,12 +110,7 @@ public class DialogsManager : MonoBehaviour
         {
             Sequence sequence = DOTween.Sequence();
             Tween stepSequence = _noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-            stepSequence.OnComplete(() =>
-            {
-                _bigPicture.sprite = ActivatedDialog.bigPicture;
-                if (ActivatedDialog.bigPictureSecond != null)
-                    StartCoroutine(BigPictureAnimate(ActivatedDialog));
-            });
+            stepSequence.OnComplete(() => { _bigPicture.sprite = ActivatedDialog.bigPicture; });
             sequence.Append(stepSequence);
             sequence.Append(_bigPicture.DOFade(100f, 0.001f).SetEase(Ease.InQuart));
             sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
@@ -130,7 +122,7 @@ public class DialogsManager : MonoBehaviour
         if (ActivatedDialog.mainPanelStartDelay == 0)
             OpenPanels();
         else
-            StartCoroutine(ActivateUIMainMenuWithDelay(ActivatedDialog,
+            StartCoroutine(ActivateUIMainMenuWithDelay(
                 ActivatedDialog.mainPanelStartDelay));
 
         if (!ActivatedDialog.moreRead)
@@ -343,8 +335,12 @@ public class DialogsManager : MonoBehaviour
             _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activatedCutsceneStep);
     }
 
+    /// <summary>
+    /// Включение анимаций появления менюшек
+    /// </summary>
     private void OpenPanels()
     {
+        // TODO: переделать
         mainDialogMenu.GetComponent<RectTransform>().GetComponent<RectTransform>().DOPivotY(0.5f, 0.3f)
             .SetEase(Ease.InQuart).OnComplete(() => { _canStepNext = true; });
         choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart).OnComplete(() =>
@@ -377,6 +373,11 @@ public class DialogsManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    ///  Посимвольная установка текста
+    /// </summary>
+    /// <param name="text">Текст</param>
+    /// <returns></returns>
     private IEnumerator SetText(string text)
     {
         _textDialogMain.text = "";
@@ -404,22 +405,7 @@ public class DialogsManager : MonoBehaviour
         }
     }
 
-    private IEnumerator BigPictureAnimate(Dialog totalDialog)
-    {
-        _bigPicture.sprite = totalDialog.bigPicture;
-        yield return new WaitForSeconds(0.35f);
-        _bigPicture.sprite = totalDialog.bigPictureSecond;
-        yield return new WaitForSeconds(0.35f);
-        if (totalDialog.bigPictureThird != null)
-        {
-            _bigPicture.sprite = totalDialog.bigPictureThird;
-            yield return new WaitForSeconds(0.35f);
-        }
-
-        StartCoroutine(BigPictureAnimate(totalDialog));
-    }
-
-    private IEnumerator ActivateUIMainMenuWithDelay(Dialog totalDialog, float delay)
+    private IEnumerator ActivateUIMainMenuWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         OpenPanels();

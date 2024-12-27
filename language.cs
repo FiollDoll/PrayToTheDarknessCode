@@ -4,12 +4,9 @@ using TMPro;
 
 public class Language : MonoBehaviour
 {
-    private string text
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? textRu : textEn; }
-    }
+    private string text => PlayerPrefs.GetString("language") == "ru" ? textRu : textEn;
 
-    [SerializeField] private string textRu, textEn;
+    [TextArea][SerializeField] private string textRu, textEn;
 
     private void Start() => UpdateText();
 

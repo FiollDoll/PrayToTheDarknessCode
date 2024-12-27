@@ -3,10 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using DG.Tweening;
 using Cinemachine;
-using UnityEngine.Serialization;
 
 public class CutsceneManager : MonoBehaviour
 {
