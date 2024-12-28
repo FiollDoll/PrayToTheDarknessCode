@@ -87,7 +87,7 @@ public class Player : MonoBehaviour
 
         if (canMove)
         {
-            _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), vert * (moveSpeed + changeSpeed), 0);
+            _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
             _animator.SetBool("walk", horiz != 0 || vert != 0);
             if (horiz > 0)
                 _sr.flipX = false;
