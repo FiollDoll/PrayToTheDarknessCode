@@ -29,6 +29,7 @@ public class ManageLocation : MonoBehaviour
     {
         void LocationSetup(Location location)
         {
+            Debug.Log("LocationSetup:\nplayer: " + _player + "\nlocation: " + location.name + "\n" + "spawn:" + spawn);
             _player.transform.position = location.GetSpawn(spawn).position;
             _cinemachineConfiner2D.m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
             _scripts.player.canMove = false;

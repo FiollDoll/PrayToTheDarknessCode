@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
     }
 
     public void MoveTo(Transform target) =>
-        _scripts.main.MoveTo(target, moveSpeed, transform, GetComponent<SpriteRenderer>(), _animator);
+        _scripts.main.MoveTo(target, moveSpeed, transform, _sr, _animator);
 
     private void ChoicePagePlayerMenu(int page)
     {
@@ -79,6 +79,8 @@ public class Player : MonoBehaviour
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
 
+        _scripts.interactions.ClearEnteredCollider();
+        
         if (Physics.Raycast(rayStart.position, Vector3.up, out _enteredCollider, 12f, layerMaskInteractAuto) &&
             !_scripts.interactions.lockInter)
             _scripts.interactions.ActivateInteractionAuto(_enteredCollider);

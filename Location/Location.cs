@@ -28,7 +28,8 @@ public class Location
             if (spawn.name == spawnName)
                 return spawn.spawn;
         }
-
+        
+        Debug.Log("Spawn don`t finded");
         return null;
     }
 }

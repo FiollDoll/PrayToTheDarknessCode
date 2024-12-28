@@ -4,7 +4,7 @@ using TMPro;
 
 public class Interactions : MonoBehaviour
 {
-    public ExtraInter selectedEI;
+    public ExtraInter enteredEI, selectedEI;
     [Header("Настройки")]
     [SerializeField] private LayerMask layerMaskInteract;
     public bool lockInter;
@@ -13,7 +13,7 @@ public class Interactions : MonoBehaviour
     
     private RaycastHit _selectedCollider, _enteredCollider;
     private AllScripts _scripts;
-    private string _totalColliderName, _totalColliderMode, _spawnName;
+    private string _spawnName;
 
     private void Start()
     {
@@ -34,19 +34,16 @@ public class Interactions : MonoBehaviour
                 _scripts.dialogsManager.ActivateDialog(_enteredCollider.collider.name);
                 break;
             case "location":
-                _totalColliderName = _enteredCollider.collider.name;
-                _totalColliderMode = _enteredCollider.collider.tag;
+                enteredEI = _enteredCollider.collider.gameObject.GetComponent<ExtraInteraction>().interactions[0];
+                _spawnName = enteredEI.moveToSpawn;
 
-                selectedEI = _enteredCollider.collider.gameObject.GetComponent<ExtraInteraction>().interactions[0];
-                _spawnName = selectedEI.moveToSpawn;
-
-                if (!_scripts.manageLocation.GetLocation(_totalColliderName).locked)
+                if (!_scripts.manageLocation.GetLocation(_enteredCollider.collider.name).locked)
                 {
-                    if (_scripts.manageLocation.GetLocation(_totalColliderName).autoEnter &&
+                    if (_scripts.manageLocation.GetLocation(_enteredCollider.collider.name).autoEnter &&
                         _scripts.manageLocation.totalLocation.autoEnter)
-                        _scripts.manageLocation.ActivateLocation(_totalColliderName, _spawnName);
+                        _scripts.manageLocation.ActivateLocation(_enteredCollider.collider.name, _spawnName);
                     else
-                        interLabelText.text = selectedEI.interLabel;
+                        interLabelText.text = enteredEI.interLabel;
                 }
 
                 break;
@@ -70,25 +67,29 @@ public class Interactions : MonoBehaviour
                 break;
         }
     }
-
+    
+    /// <summary>
+    /// Метод очистки коллайдеров, в которые вошел игрок. Используется в player
+    /// </summary>
+    public void ClearEnteredCollider()
+    {
+        interLabelText.text = "";
+        _spawnName = "";
+        _enteredCollider = new RaycastHit();
+    }
+    
     private void FixedUpdate()
     {
-        selectedEI = null;
-        _totalColliderName = "";
-        _totalColliderMode = "";
-        _spawnName = "";
-
-        interLabelText.text = "";
-
-        // TODO: добавить взаимодействие с интеракциями через нажатие мыши(сейчас работает через E, либо не работает)
+        enteredEI = null;
+        if (_selectedCollider.collider != null)
+            _selectedCollider.collider.gameObject.GetComponent<Renderer>().material.color = Color.white;
+        
         // Луч из мыши
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f, layerMaskInteract) && !lockInter)
         {
             switch (_selectedCollider.collider.tag)
             {
                 case "dialog":
-                    _scripts.dialogsManager.ActivateDialog(_selectedCollider.collider.name);
-                    break;
                 case "cutscene":
                 case "interact":
                 case "item":
@@ -115,80 +116,95 @@ public class Interactions : MonoBehaviour
                             _selectedCollider.collider.gameObject.name = totalEI.interName; // Сделано плохо
                             break;
                         }
-
-                        if (selectedEI == null)
-                            return;
                     }
-
-                    _totalColliderName = _selectedCollider.collider.gameObject.name;
-                    _totalColliderMode = _selectedCollider.collider.gameObject.tag;
-
+                    _selectedCollider.collider.gameObject.GetComponent<Renderer>().material.color = Color.magenta;
                     break;
             }
         }
     }
 
+    private void SetEiOptions(ExtraInter totalInter,string colliderName)
+    {
+        if (totalInter != null)
+        {
+            _scripts.inventory.AddItem(totalInter.itemNameAdd);
+            if (totalInter.darkAfterUse)
+                _scripts.main.ActivateNoVision(1f);
+            if (totalInter.nextStep && totalInter.stageInter == _scripts.questsSystem.totalQuest.totalStep)
+                _scripts.questsSystem.NextStep();
+            if (totalInter.activateCutscene)
+                _scripts.cutsceneManager.ActivateCutscene(colliderName);
+            if (totalInter.swapPlayerVisual)
+                _scripts.player.ChangeVisual(totalInter.playerVisual);
+            if (totalInter.destroyAfterInter)
+                Destroy(GameObject.Find(colliderName));
+            if (totalInter.moveToSpawn != "")
+                _scripts.manageLocation.ActivateLocation(colliderName, totalInter.moveToSpawn);
+        }
+    }
+    
     private void Update()
     {
         Debug.DrawLine(transform.position, _selectedCollider.point, Color.green);
 
+        // Перебор по коллайдерам, в которые вошли
         if (_enteredCollider.collider != null)
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                _totalColliderName = _enteredCollider.collider.gameObject.name;
-                _totalColliderMode = GameObject.Find(_totalColliderName).tag;
-                if (_totalColliderMode != "location")
+                if (!_enteredCollider.collider.CompareTag("location"))
                 {
                     if (_enteredCollider.collider.gameObject
                             .GetComponent<ExtraInteraction>() != null)
                     {
-                        if (selectedEI == null)
+                        if (enteredEI == null)
                             return;
                     }
                 }
 
-                if (selectedEI != null)
+                SetEiOptions(enteredEI, _enteredCollider.collider.name);
+                    
+                switch (_enteredCollider.collider.tag)
                 {
-                    _scripts.inventory.AddItem(selectedEI.itemNameAdd);
-                    if (selectedEI.darkAfterUse)
-                        _scripts.main.ActivateNoVision(1f);
-                    if (selectedEI.nextStep && selectedEI.stageInter == _scripts.questsSystem.totalQuest.totalStep)
-                        _scripts.questsSystem.NextStep();
-                    if (selectedEI.activateCutscene)
-                        _scripts.cutsceneManager.ActivateCutscene(_totalColliderName);
-                    if (selectedEI.swapPlayerVisual)
-                        _scripts.player.ChangeVisual(selectedEI.playerVisual);
-                    if (selectedEI.destroyAfterInter)
-                        Destroy(GameObject.Find(_totalColliderName));
-                    if (selectedEI.moveToSpawn != "")
-                        _scripts.manageLocation.ActivateLocation(_totalColliderName, selectedEI.moveToSpawn);
-                }
-
-                switch (_totalColliderMode)
-                {
-                    case "item":
-                        _scripts.inventory.AddItem(_totalColliderName);
-                        Destroy(GameObject.Find(_totalColliderName));
-                        break;
                     case "location":
-                        if (!_scripts.manageLocation.GetLocation(_totalColliderName).locked)
-                            _scripts.manageLocation.ActivateLocation(_totalColliderName, selectedEI.moveToSpawn);
+                        if (!_scripts.manageLocation.GetLocation(_enteredCollider.collider.name).locked)
+                            _scripts.manageLocation.ActivateLocation(_enteredCollider.collider.name, enteredEI.moveToSpawn);
                         break;
                     default:
-                        if (_totalColliderName == "floorChange" &&
+                        if (_enteredCollider.collider.name == "floorChange" &&
                             (!_scripts.main.CheckAnyMenuOpen() || floorChangeMenu.gameObject.activeSelf))
                             floorChangeMenu.gameObject.SetActive(!floorChangeMenu.gameObject.activeSelf);
                         else
                         {
                             if (!_scripts.dialogsManager.dialogMenu.activeSelf)
-                                _scripts.dialogsManager.ActivateDialog(_totalColliderName);
+                                _scripts.dialogsManager.ActivateDialog(_enteredCollider.collider.name);
                         }
                         break;
                 }
             }
         }
+        if (_selectedCollider.collider != null)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                SetEiOptions(selectedEI, _selectedCollider.collider.name);
 
+                switch (_selectedCollider.collider.tag)
+                {
+                    case "interact":
+                    case "dialog":
+                        _scripts.dialogsManager.ActivateDialog(_selectedCollider.collider.name);
+                        break;
+                    case "cutscene":
+                        _scripts.cutsceneManager.ActivateCutscene(_selectedCollider.collider.name);
+                        break;
+                    case "item":
+                        _scripts.inventory.AddItem(_selectedCollider.collider.name);
+                        Destroy(_selectedCollider.collider.gameObject);
+                        break;
+                }
+            }
+        }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (!_scripts.main.CheckAnyMenuOpen())
