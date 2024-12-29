@@ -14,10 +14,9 @@ public class Inventory : MonoBehaviour
     [SerializeField] private TextMeshProUGUI newItemText;
     private AllScripts _scripts;
 
-    private void Start()
+    public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.inventory = this;
     }
 
     /// <summary>

@@ -11,7 +11,7 @@ public class DevTool : MonoBehaviour
     [SerializeField] private TMP_InputField inputFieldStage, inputFieldNewQuest, inputFieldToLocation, inputFieldSpawn;
     private AllScripts _scripts;
 
-    private void Start() => _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+    public void Initialize() => _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
 
     public void ActivateMenuTools() => menuTools.gameObject.SetActive(!menuTools.activeSelf);
 

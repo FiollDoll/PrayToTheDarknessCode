@@ -11,13 +11,10 @@ public class QuestsSystem : MonoBehaviour
     public Quest[] gameQuests = new Quest[0];
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
     private AllScripts _scripts;
-
-    // Отключено для разработки
-    //private void Start() => ActivateQuest("FindFamily");
-    private void Start()
+    
+    public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.questsSystem = this;
         ActivateQuest("Good morning");
     }
 

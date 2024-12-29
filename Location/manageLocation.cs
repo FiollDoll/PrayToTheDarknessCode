@@ -14,7 +14,7 @@ public class ManageLocation : MonoBehaviour
     private CinemachineConfiner2D _cinemachineConfiner2D;
     private NPC_movement[] _NPCs;
 
-    private void Start()
+    public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _player = GameObject.Find("Player");

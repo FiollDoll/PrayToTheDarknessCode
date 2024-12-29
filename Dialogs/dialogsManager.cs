@@ -40,12 +40,11 @@ public class DialogsManager : MonoBehaviour
     private Image _noViewPanel;
     private AllScripts _scripts;
 
-    private void Start()
+    public void Initialize()
     {
         mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
         choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.dialogsManager = this;
         _noViewPanel = _scripts.main.noViewPanel;
 
         _textNameMain = mainDialogMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>();

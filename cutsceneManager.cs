@@ -17,10 +17,9 @@ public class CutsceneManager : MonoBehaviour
     private AllScripts _scripts;
     private Volume _volume;
 
-    private void Start()
+    public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.cutsceneManager = this;
         _volume = playerCamera.GetComponent<Volume>();
         if (!svBlock) // dev only
             startViewMenu.gameObject.SetActive(true);

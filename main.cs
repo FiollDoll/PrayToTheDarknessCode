@@ -21,8 +21,17 @@ public class Main : MonoBehaviour
 
     public void Start()
     {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.main = this;
+        // Точка инициализации всех скриптов по !порядку!
+        _scripts = GetComponent<AllScripts>();
+        _scripts.Initialize();
+        _scripts.cutsceneManager.Initialize();
+        _scripts.dialogsManager.Initialize();
+        _scripts.manageLocation.Initialize();
+        _scripts.questsSystem.Initialize();
+        _scripts.notebook.Initialize();
+        _scripts.interactions.Initialize();
+        _scripts.inventory.Initialize();
+        _scripts.player.Initialize();
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
     }
 

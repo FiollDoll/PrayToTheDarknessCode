@@ -26,13 +26,12 @@ public class Player : MonoBehaviour
     private SpriteRenderer _sr;
     private Animator _animator;
 
-    private void Start()
+    public void Initialize()
     {
         _rb = GetComponent<Rigidbody>();
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.player = this;
         ChangeVisual(1);
         ChoicePagePlayerMenu(0);
     }

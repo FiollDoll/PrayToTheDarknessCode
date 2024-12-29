@@ -24,11 +24,9 @@ public class Notebook : MonoBehaviour
 
     private AllScripts _scripts;
 
-    private void Start()
+    public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.notebook = this;
-        
         _pageNote = notebookMenu.transform.Find("pageNotes").gameObject;
         _pageQuest = notebookMenu.transform.Find("pageQuests").gameObject;
         _pageNpc = notebookMenu.transform.Find("pageNPC").gameObject;

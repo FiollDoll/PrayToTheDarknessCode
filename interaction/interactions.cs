@@ -15,10 +15,9 @@ public class Interactions : MonoBehaviour
     private AllScripts _scripts;
     private string _spawnName;
 
-    private void Start()
+    public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _scripts.interactions = this;
     }
 
     /// <summary>
