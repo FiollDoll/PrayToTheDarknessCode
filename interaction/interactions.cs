@@ -126,7 +126,7 @@ public class Interactions : MonoBehaviour
     {
         if (totalInter != null)
         {
-            _scripts.inventory.AddItem(totalInter.itemNameAdd);
+            _scripts.inventoryManager.AddItem(totalInter.itemNameAdd);
             if (totalInter.darkAfterUse)
                 _scripts.main.ActivateNoVision(1f);
             if (totalInter.nextStep && totalInter.stageInter == _scripts.questsSystem.totalQuest.totalStep)
@@ -198,7 +198,7 @@ public class Interactions : MonoBehaviour
                         _scripts.cutsceneManager.ActivateCutscene(_selectedCollider.collider.name);
                         break;
                     case "item":
-                        _scripts.inventory.AddItem(_selectedCollider.collider.name);
+                        _scripts.inventoryManager.AddItem(_selectedCollider.collider.name);
                         Destroy(_selectedCollider.collider.gameObject);
                         break;
                 }

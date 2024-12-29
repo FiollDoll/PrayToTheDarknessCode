@@ -109,7 +109,7 @@ public class CutsceneManager : MonoBehaviour
         foreach (string quest in totalCutscene.steps[step].addQuests)
             _scripts.questsSystem.ActivateQuest(quest, true);
         foreach (string item in totalCutscene.steps[step].addItem)
-            _scripts.inventory.AddItem(item);
+            _scripts.inventoryManager.AddItem(item);
     }
 
     public void ActivateCutsceneStep(int step)

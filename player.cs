@@ -54,11 +54,11 @@ public class Player : MonoBehaviour
         buttonsPlayerMenu[page].anchoredPosition = new Vector2(buttonsPlayerMenu[page].anchoredPosition.x, 195f);
 
         _scripts.notebook.ChoicePage(-1);
-        _scripts.inventory.ManageInventoryPanel(false);
+        _scripts.inventoryManager.ManageInventoryPanel(false);
         switch (page)
         {
             case 0:
-                _scripts.inventory.ManageInventoryPanel(true);
+                _scripts.inventoryManager.ManageInventoryPanel(true);
                 break;
             case 1:
                 _scripts.notebook.ChoicePage(1);

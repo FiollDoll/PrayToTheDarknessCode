@@ -30,7 +30,7 @@ public class Main : MonoBehaviour
         _scripts.questsSystem.Initialize();
         _scripts.notebook.Initialize();
         _scripts.interactions.Initialize();
-        _scripts.inventory.Initialize();
+        _scripts.inventoryManager.Initialize();
         _scripts.player.Initialize();
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
     }

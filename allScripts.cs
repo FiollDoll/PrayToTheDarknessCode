@@ -6,7 +6,7 @@ public class AllScripts : MonoBehaviour
     [HideInInspector] public DialogsManager dialogsManager;
     [HideInInspector] public Interactions interactions;
     [HideInInspector] public ManageLocation manageLocation;
-    [HideInInspector] public Inventory inventory;
+    [HideInInspector] public InventoryManager inventoryManager;
     [HideInInspector] public Notebook notebook;
     [HideInInspector] public QuestsSystem questsSystem;
     [HideInInspector] public CutsceneManager cutsceneManager;
@@ -18,7 +18,7 @@ public class AllScripts : MonoBehaviour
         dialogsManager = GameObject.Find("scripts").GetComponent<DialogsManager>();
         interactions = GameObject.Find("scripts").GetComponent<Interactions>();
         manageLocation = GameObject.Find("scripts").GetComponent<ManageLocation>();
-        inventory = GameObject.Find("scripts").GetComponent<Inventory>();
+        inventoryManager = GameObject.Find("scripts").GetComponent<InventoryManager>();
         notebook = GameObject.Find("scripts").GetComponent<Notebook>();
         questsSystem = GameObject.Find("questMenu").GetComponent<QuestsSystem>();
         cutsceneManager = GameObject.Find("scripts").GetComponent<CutsceneManager>();

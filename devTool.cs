@@ -46,7 +46,7 @@ public class DevTool : MonoBehaviour
         inputFieldStage.text = "";
     }
 
-    public void AddItem() => _scripts.inventory.AddItem("");
+    public void AddItem() => _scripts.inventoryManager.AddItem("");
 
     private void Update()
     {
