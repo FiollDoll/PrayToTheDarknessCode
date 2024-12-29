@@ -11,6 +11,7 @@ public class AllScripts : MonoBehaviour
     [HideInInspector] public QuestsSystem questsSystem;
     [HideInInspector] public CutsceneManager cutsceneManager;
     [HideInInspector] public Main main;
+    [HideInInspector] public DevTool devTool;
 
     public void Initialize()
     {
@@ -23,5 +24,6 @@ public class AllScripts : MonoBehaviour
         questsSystem = GameObject.Find("questMenu").GetComponent<QuestsSystem>();
         cutsceneManager = GameObject.Find("scripts").GetComponent<CutsceneManager>();
         main = GameObject.Find("scripts").GetComponent<Main>();
+        devTool = GameObject.Find("devTools").GetComponent<DevTool>();
     }
 }

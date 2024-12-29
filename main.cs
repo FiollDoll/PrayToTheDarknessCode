@@ -8,16 +8,20 @@ using Cinemachine;
 
 public class Main : MonoBehaviour
 {
+    [Header("Игровые переменные")]
     public float karma;
     public int hour, minute;
+
+    [Header("Настройки")]
     public Image noViewPanel;
     public Sprite nullSprite;
-    public NPC[] allNpc = new NPC[0];
-    private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
-    private Dictionary<TextMeshProUGUI, Coroutine> cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
-    private AllScripts _scripts;
     public bool lockAnyMenu;
     public float startCameraSize;
+    public NPC[] allNpc = new NPC[0];
+    
+    private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
+    private Dictionary<TextMeshProUGUI, Coroutine> _cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
+    private AllScripts _scripts;
 
     public void Start()
     {
@@ -32,6 +36,7 @@ public class Main : MonoBehaviour
         _scripts.interactions.Initialize();
         _scripts.inventoryManager.Initialize();
         _scripts.player.Initialize();
+        _scripts.devTool.Initialize();
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
     }
 
@@ -55,11 +60,11 @@ public class Main : MonoBehaviour
     {
         if (_scripts.player.playerMenu.gameObject.activeSelf)
             return true;
-        else if (_scripts.interactions.floorChangeMenu.activeSelf)
+        if (_scripts.interactions.floorChangeMenu.activeSelf)
             return true;
-        else if (GameObject.Find("devTools").GetComponent<DevTool>().menuTools.activeSelf)
+        if (GameObject.Find("devTools").GetComponent<DevTool>().menuTools.activeSelf)
             return true;
-        else if (_scripts.dialogsManager.dialogMenu.activeSelf)
+        if (_scripts.dialogsManager.dialogMenu.activeSelf)
             return true;
         return lockAnyMenu;
     }
@@ -82,22 +87,22 @@ public class Main : MonoBehaviour
 
     public void SetCursedText(TextMeshProUGUI text, int len)
     {
-        if (cursedTextCoroutines.ContainsKey(text))
+        if (_cursedTextCoroutines.ContainsKey(text))
         {
-            StopCoroutine(cursedTextCoroutines[text]);
-            cursedTextCoroutines.Remove(text);
+            StopCoroutine(_cursedTextCoroutines[text]);
+            _cursedTextCoroutines.Remove(text);
         }
 
         Coroutine newCoroutine = StartCoroutine(GenerateCursedText(text, len));
-        cursedTextCoroutines[text] = newCoroutine;
+        _cursedTextCoroutines[text] = newCoroutine;
     }
 
     public void EndCursedText(TextMeshProUGUI text)
     {
-        if (cursedTextCoroutines.TryGetValue(text, out Coroutine coroutine))
+        if (_cursedTextCoroutines.TryGetValue(text, out Coroutine coroutine))
         {
             StopCoroutine(coroutine);
-            cursedTextCoroutines.Remove(text);
+            _cursedTextCoroutines.Remove(text);
         }
     }
 

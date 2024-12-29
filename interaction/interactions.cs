@@ -1,19 +1,24 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Rendering;
 
 public class Interactions : MonoBehaviour
 {
     public ExtraInter enteredEI, selectedEI;
-    [Header("Настройки")]
-    [SerializeField] private LayerMask layerMaskInteract;
+    [Header("Настройки")] [SerializeField] private LayerMask layerMaskInteract;
+
+    [SerializeField] private Material materialOfSelected;
+
     public bool lockInter;
     [SerializeField] private TextMeshProUGUI interLabelText;
     public GameObject floorChangeMenu;
-    
+
     private RaycastHit _selectedCollider, _enteredCollider;
     private AllScripts _scripts;
     private string _spawnName;
+    private bool _locationToClick; // Определять - нужно нажать на кнопку чтобы перейти или нет
 
     public void Initialize()
     {
@@ -27,6 +32,7 @@ public class Interactions : MonoBehaviour
     public void ActivateInteractionAuto(RaycastHit enteredCollider)
     {
         _enteredCollider = enteredCollider;
+        _locationToClick = false;
         switch (_enteredCollider.collider.tag)
         {
             case "dialog":
@@ -42,7 +48,7 @@ public class Interactions : MonoBehaviour
                         _scripts.manageLocation.totalLocation.autoEnter)
                         _scripts.manageLocation.ActivateLocation(_enteredCollider.collider.name, _spawnName);
                     else
-                        interLabelText.text = enteredEI.interLabel;
+                        _locationToClick = true;
                 }
 
                 break;
@@ -66,25 +72,80 @@ public class Interactions : MonoBehaviour
                 break;
         }
     }
-    
+
     /// <summary>
     /// Метод очистки коллайдеров, в которые вошел игрок. Используется в player
     /// </summary>
     public void ClearEnteredCollider()
     {
-        interLabelText.text = "";
         _spawnName = "";
         _enteredCollider = new RaycastHit();
     }
-    
+
+    private void SetEiOptions(ExtraInter totalInter, string colliderName)
+    {
+        if (totalInter != null)
+        {
+            _scripts.inventoryManager.AddItem(totalInter.itemNameAdd);
+            if (totalInter.darkAfterUse)
+                _scripts.main.ActivateNoVision(1f);
+            if (totalInter.nextStep && totalInter.stageInter == _scripts.questsSystem.totalQuest.totalStep)
+                _scripts.questsSystem.NextStep();
+            if (totalInter.activateCutscene)
+                _scripts.cutsceneManager.ActivateCutscene(colliderName);
+            if (totalInter.swapPlayerVisual)
+                _scripts.player.ChangeVisual(totalInter.playerVisual);
+            if (totalInter.destroyAfterInter)
+                Destroy(GameObject.Find(colliderName));
+            if (totalInter.moveToSpawn != "")
+                _scripts.manageLocation.ActivateLocation(colliderName, totalInter.moveToSpawn);
+        }
+    }
+
+    /// <summary>
+    /// Добавление ДОП материала на объект(оутлайн выделения)
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <returns></returns>
+    public void AddMaterial(MeshRenderer renderer)
+    {
+        Material[] newMaterials = new Material[renderer.materials.Length + 1];
+
+        for (int i = 0; i < renderer.materials.Length; i++)
+            newMaterials[i] = renderer.materials[i];
+
+        newMaterials[newMaterials.Length - 1] = materialOfSelected;
+
+        renderer.materials = newMaterials;
+    }
+
+    public void RemoveMaterial(MeshRenderer renderer)
+    {
+        Material[] newMaterials = new Material[renderer.materials.Length - 1];
+
+        int index = 0;
+        for (int i = 0; i < renderer.materials.Length; i++)
+        {
+            if (renderer.materials[i] != materialOfSelected)
+            {
+                newMaterials[index] = renderer.materials[i];
+                index++;
+            }
+
+            renderer.materials = newMaterials;
+        }
+    }
+
     private void FixedUpdate()
     {
         enteredEI = null;
+        selectedEI = null;
         if (_selectedCollider.collider != null)
-            _selectedCollider.collider.gameObject.GetComponent<Renderer>().material.color = Color.white;
-        
+            RemoveMaterial(_selectedCollider.collider.gameObject.GetComponent<MeshRenderer>());
+
         // Луч из мыши
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f, layerMaskInteract) && !lockInter)
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f,
+                layerMaskInteract) && !lockInter)
         {
             switch (_selectedCollider.collider.tag)
             {
@@ -116,32 +177,13 @@ public class Interactions : MonoBehaviour
                             break;
                         }
                     }
-                    _selectedCollider.collider.gameObject.GetComponent<Renderer>().material.color = Color.magenta;
+
+                    AddMaterial(_selectedCollider.collider.gameObject.GetComponent<MeshRenderer>());
                     break;
             }
         }
     }
 
-    private void SetEiOptions(ExtraInter totalInter,string colliderName)
-    {
-        if (totalInter != null)
-        {
-            _scripts.inventoryManager.AddItem(totalInter.itemNameAdd);
-            if (totalInter.darkAfterUse)
-                _scripts.main.ActivateNoVision(1f);
-            if (totalInter.nextStep && totalInter.stageInter == _scripts.questsSystem.totalQuest.totalStep)
-                _scripts.questsSystem.NextStep();
-            if (totalInter.activateCutscene)
-                _scripts.cutsceneManager.ActivateCutscene(colliderName);
-            if (totalInter.swapPlayerVisual)
-                _scripts.player.ChangeVisual(totalInter.playerVisual);
-            if (totalInter.destroyAfterInter)
-                Destroy(GameObject.Find(colliderName));
-            if (totalInter.moveToSpawn != "")
-                _scripts.manageLocation.ActivateLocation(colliderName, totalInter.moveToSpawn);
-        }
-    }
-    
     private void Update()
     {
         Debug.DrawLine(transform.position, _selectedCollider.point, Color.green);
@@ -162,12 +204,13 @@ public class Interactions : MonoBehaviour
                 }
 
                 SetEiOptions(enteredEI, _enteredCollider.collider.name);
-                    
+
                 switch (_enteredCollider.collider.tag)
                 {
                     case "location":
                         if (!_scripts.manageLocation.GetLocation(_enteredCollider.collider.name).locked)
-                            _scripts.manageLocation.ActivateLocation(_enteredCollider.collider.name, enteredEI.moveToSpawn);
+                            _scripts.manageLocation.ActivateLocation(_enteredCollider.collider.name,
+                                enteredEI.moveToSpawn);
                         break;
                     default:
                         if (_enteredCollider.collider.name == "floorChange" &&
@@ -178,10 +221,12 @@ public class Interactions : MonoBehaviour
                             if (!_scripts.dialogsManager.dialogMenu.activeSelf)
                                 _scripts.dialogsManager.ActivateDialog(_enteredCollider.collider.name);
                         }
+
                         break;
                 }
             }
         }
+
         if (_selectedCollider.collider != null)
         {
             if (Input.GetMouseButton(0))
@@ -190,10 +235,6 @@ public class Interactions : MonoBehaviour
 
                 switch (_selectedCollider.collider.tag)
                 {
-                    case "interact":
-                    case "dialog":
-                        _scripts.dialogsManager.ActivateDialog(_selectedCollider.collider.name);
-                        break;
                     case "cutscene":
                         _scripts.cutsceneManager.ActivateCutscene(_selectedCollider.collider.name);
                         break;
@@ -201,9 +242,14 @@ public class Interactions : MonoBehaviour
                         _scripts.inventoryManager.AddItem(_selectedCollider.collider.name);
                         Destroy(_selectedCollider.collider.gameObject);
                         break;
+                    case "interact":
+                    case "dialog":
+                        _scripts.dialogsManager.ActivateDialog(_selectedCollider.collider.name);
+                        break;
                 }
             }
         }
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (!_scripts.main.CheckAnyMenuOpen())
@@ -212,5 +258,11 @@ public class Interactions : MonoBehaviour
                 _scripts.player.playerMenu.gameObject.SetActive(false);
             _scripts.player.canMove = !_scripts.player.playerMenu.activeSelf;
         }
+
+        interLabelText.text = "";
+        if (selectedEI != null)
+            interLabelText.text = selectedEI.interLabel;
+        if (enteredEI != null && _locationToClick) // Рассматривается случай только для перехода по локациям
+            interLabelText.text = enteredEI.interLabel;
     }
 }

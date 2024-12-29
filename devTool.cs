@@ -1,8 +1,5 @@
-using System;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Serialization;
 
 public class DevTool : MonoBehaviour
 {
