@@ -12,6 +12,7 @@ public class AllScripts : MonoBehaviour
     [HideInInspector] public CutsceneManager cutsceneManager;
     [HideInInspector] public Main main;
     [HideInInspector] public DevTool devTool;
+    [HideInInspector] public PostProcessingController postProcessingController;
 
     public void Initialize()
     {
@@ -25,5 +26,6 @@ public class AllScripts : MonoBehaviour
         cutsceneManager = GameObject.Find("scripts").GetComponent<CutsceneManager>();
         main = GameObject.Find("scripts").GetComponent<Main>();
         devTool = GameObject.Find("devTools").GetComponent<DevTool>();
+        postProcessingController = GameObject.Find("scripts").GetComponent<PostProcessingController>();
     }
 }

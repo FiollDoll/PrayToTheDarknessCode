@@ -9,18 +9,16 @@ using Cinemachine;
 public class CutsceneManager : MonoBehaviour
 {
     public Cutscene totalCutscene;
-    [SerializeField] private GameObject playerCamera, virtualCamera;
+    [SerializeField] private GameObject virtualCamera;
     [SerializeField] private Cutscene[] cutsceneInGame = new Cutscene[0];
     [SerializeField] private GameObject startViewMenu;
     [SerializeField] private bool svBlock; // dev only
     [SerializeField] private Image noViewPanel;
     private AllScripts _scripts;
-    private Volume _volume;
 
     public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _volume = playerCamera.GetComponent<Volume>();
         if (!svBlock) // dev only
             startViewMenu.gameObject.SetActive(true);
         StartViewMenuActivate();
@@ -71,7 +69,7 @@ public class CutsceneManager : MonoBehaviour
             _scripts.questsSystem.NextStep();
 
         if (totalCutscene.steps[step].newVolumeProfile != null)
-            _volume.profile = totalCutscene.steps[step].newVolumeProfile;
+            _scripts.postProcessingController.SetVolumeProfile(totalCutscene.steps[step].newVolumeProfile);
 
         if (totalCutscene.steps[step].editCameraSize != 0)
             virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize =
