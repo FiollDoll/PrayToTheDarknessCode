@@ -90,13 +90,16 @@ public class InventoryManager : MonoBehaviour
                             button.interactable = false;
                     }
                 }
+                // Отложено.
+                /*
                 else if (selectedItem.useInCollider)
                 {
-                    if (_scripts.interactions.selectedEI == null
-                        || (_scripts.interactions.selectedEI != null && _scripts.interactions.selectedEI.itemNameUse !=
+                    if (_scripts.interactions.selectedInteraction == null
+                        || (_scripts.interactions.selectedInteraction != null && _scripts.interactions.selectedInteraction.itemNameUse !=
                             selectedItem.nameInGame))
                         button.interactable = false;
                 }
+                */
             }
             else
                 button.interactable = false;

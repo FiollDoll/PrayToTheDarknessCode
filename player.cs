@@ -4,22 +4,19 @@ using Cinemachine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Характеристики")] 
-    public bool canMove;
+    [Header("Характеристики")] public bool canMove;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     [SerializeField] private string[] playerVisuals = new string[0];
     [HideInInspector] public List<NPC> familiarNpc = new List<NPC>();
 
-    [Header("Настройки")] 
-    [SerializeField] private Transform rayStart;
+    [Header("Настройки")] [SerializeField] private Transform rayStart;
     [SerializeField] private LayerMask layerMaskInteractAuto;
     public CinemachineVirtualCamera virtualCamera;
 
-    [Header("Игровое меню")] 
-    public GameObject playerMenu;
+    [Header("Игровое меню")] public GameObject playerMenu;
     [SerializeField] private RectTransform[] buttonsPlayerMenu = new RectTransform[0];
-    
+
     private AllScripts _scripts;
     private RaycastHit _enteredCollider;
     private Rigidbody _rb;
@@ -79,10 +76,17 @@ public class Player : MonoBehaviour
         float vert = Input.GetAxis("Vertical");
 
         _scripts.interactions.ClearEnteredCollider();
-        
-        if (Physics.Raycast(rayStart.position, Vector3.up, out _enteredCollider, 12f, layerMaskInteractAuto) &&
-            !_scripts.interactions.lockInter)
-            _scripts.interactions.ActivateInteractionAuto(_enteredCollider);
+
+        if (Physics.Raycast(rayStart.position, Vector3.up, out _enteredCollider, 12f,
+                layerMaskInteractAuto) && !_scripts.interactions.lockInter)
+        {
+            if (_enteredCollider.collider.TryGetComponent(out IInteractable interactable))
+            {
+                _scripts.interactions.enteredInteraction = interactable;
+                if (_scripts.interactions.CheckActiveInteraction(interactable) && interactable.autoUse)
+                    interactable.DoInteraction();
+            }
+        }
 
         if (canMove)
         {

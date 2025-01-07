@@ -17,6 +17,7 @@ public class Main : MonoBehaviour
     public Sprite nullSprite;
     public bool lockAnyMenu;
     public float startCameraSize;
+    [SerializeField] private Material materialOfSelected;
     public NPC[] allNpc = new NPC[0];
     
     private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
@@ -40,7 +41,8 @@ public class Main : MonoBehaviour
         _scripts.postProcessingController.Initialize();
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
     }
-
+    // TODO: прибраться в методах
+    
     public void ActivateNoVision(float time)
     {
         Sequence sequence = DOTween.Sequence();
@@ -69,7 +71,41 @@ public class Main : MonoBehaviour
             return true;
         return lockAnyMenu;
     }
+    
+    /// <summary>
+    /// Добавление ДОП материала на объект(оутлайн выделения)
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <returns></returns>
+    public void AddMaterial(MeshRenderer renderer)
+    {
+        Material[] newMaterials = new Material[renderer.materials.Length + 1];
 
+        for (int i = 0; i < renderer.materials.Length; i++)
+            newMaterials[i] = renderer.materials[i];
+
+        newMaterials[newMaterials.Length - 1] = materialOfSelected;
+
+        renderer.materials = newMaterials;
+    }
+
+    public void RemoveMaterial(MeshRenderer renderer)
+    {
+        Material[] newMaterials = new Material[renderer.materials.Length - 1];
+
+        int index = 0;
+        for (int i = 0; i < renderer.materials.Length; i++)
+        {
+            if (renderer.materials[i] != materialOfSelected)
+            {
+                newMaterials[index] = renderer.materials[i];
+                index++;
+            }
+
+            renderer.materials = newMaterials;
+        }
+    }
+    
     private string CursedText(int len)
     {
         string totalString = "";
