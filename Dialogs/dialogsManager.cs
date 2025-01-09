@@ -100,7 +100,7 @@ public class DialogsManager : MonoBehaviour
 
         _scripts.main.EndCursedText(_textDialogMain);
 
-        if (ActivatedDialog.bigPicture != null)
+        if (ActivatedDialog.bigPicture)
         {
             Sequence sequence = DOTween.Sequence();
             Tween stepSequence = _noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
@@ -196,7 +196,7 @@ public class DialogsManager : MonoBehaviour
     private void ActivateChoiceMenu(bool setScale = false)
     {
         choiceDialogMenu.gameObject.SetActive(true);
-        choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+        choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>()?.UpdateContentSize();
         if (setScale)
             choiceDialogMenu.GetComponent<RectTransform>().localScale = new Vector2(1f, 1f);
         foreach (Transform child in choicesContainer.transform)
@@ -276,7 +276,7 @@ public class DialogsManager : MonoBehaviour
             _iconImageMain.sprite = _selectedStep.icon;
             _iconImageMain.SetNativeSize();
             if (_selectedStep.shakeIcon)
-                _iconImageMain.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(10, 10, 10), 2f, 10);
+                _iconImageMain.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(10, 10, 10), 2f);
             else
                 _iconImageMain.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
         }

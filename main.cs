@@ -20,7 +20,7 @@ public class Main : MonoBehaviour
     [SerializeField] private Material materialOfSelected;
     public NPC[] allNpc = new NPC[0];
     
-    private string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
+    private readonly string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> _cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
     private AllScripts _scripts;
 
@@ -65,7 +65,7 @@ public class Main : MonoBehaviour
             return true;
         if (_scripts.interactions.floorChangeMenu.activeSelf)
             return true;
-        if (GameObject.Find("devTools").GetComponent<DevTool>().menuTools.activeSelf)
+        if (_scripts.devTool.menuTools.activeSelf)
             return true;
         if (_scripts.dialogsManager.dialogMenu.activeSelf)
             return true;
@@ -73,7 +73,7 @@ public class Main : MonoBehaviour
     }
     
     /// <summary>
-    /// Добавление ДОП материала на объект(оутлайн выделения)
+    /// Добавление ДОП материала на объект
     /// </summary>
     /// <param name="renderer"></param>
     /// <returns></returns>
@@ -84,11 +84,15 @@ public class Main : MonoBehaviour
         for (int i = 0; i < renderer.materials.Length; i++)
             newMaterials[i] = renderer.materials[i];
 
-        newMaterials[newMaterials.Length - 1] = materialOfSelected;
+        newMaterials[^1] = materialOfSelected;
 
         renderer.materials = newMaterials;
     }
 
+    /// <summary>
+    /// Удаление последнего материала
+    /// </summary>
+    /// <param name="renderer"></param>
     public void RemoveMaterial(MeshRenderer renderer)
     {
         Material[] newMaterials = new Material[renderer.materials.Length - 1];

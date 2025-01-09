@@ -1,20 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using Random = UnityEngine.Random;
 
 public class QuestsSystem : MonoBehaviour
 {
     public Quest totalQuest;
     public List<Quest> activeQuests = new List<Quest>();
-    public Quest[] gameQuests = new Quest[0];
+    public Quest[] gameQuests = Array.Empty<Quest>();
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
     private AllScripts _scripts;
-    
+    private RectTransform _textQuestTransform;
+
     public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        _textQuestTransform = textQuest.GetComponent<RectTransform>();
         ActivateQuest("Good morning");
     }
 
@@ -56,20 +60,16 @@ public class QuestsSystem : MonoBehaviour
         if (totalQuest.totalStep == totalQuest.steps.Length) // Окончание
         {
             activeQuests.Remove(totalQuest);
-            if (activeQuests.Count != 0)
-                totalQuest = activeQuests[activeQuests.Count - 1];
-            else
-                totalQuest = null;
+            totalQuest = activeQuests.Count != 0 ? activeQuests[^1] : null;
         }
 
         Sequence sequence = DOTween.Sequence();
 
-        Tween fadeAnimation = textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(-600, 0.5f)
+        Tween fadeAnimation = _textQuestTransform.DOAnchorPosX(-600, 0.5f)
             .SetEase(Ease.InQuart);
         fadeAnimation.OnComplete(UpdateQuestUI);
         sequence.Append(fadeAnimation);
-        sequence.Append(
-            textQuest.gameObject.GetComponent<RectTransform>().DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
+        sequence.Append(_textQuestTransform.DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
 
         if (totalQuest == null)

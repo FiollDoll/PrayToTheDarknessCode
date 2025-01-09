@@ -7,13 +7,15 @@ using TMPro;
 public class Notebook : MonoBehaviour
 {
     [Header("Настройки")] [SerializeField] private GameObject notebookMenu;
-
-    private GameObject _pageNote, _pageQuest, _pageNpc;
-    private GameObject _pageReadNote, _pageReadHuman, _pageReadMain;
-    
+    [SerializeField] private GameObject newNoteNotify;
     [SerializeField] private GameObject buttonChoiceActiveQuest, pageNpCcontainer, pageChoiceNote, pageChoiceQuest;
     [SerializeField] private GameObject buttonNotePrefab, buttonNPC;
-    [SerializeField] private GameObject newNoteNotify;
+    private GameObject _pageNote, _pageQuest, _pageNpc;
+    private GameObject _pageReadNote, _pageReadHuman, _pageReadMain;
+    private TextMeshProUGUI _headerMain, _noteMain;
+    private TextMeshProUGUI _headerHuman, _noteHuman;
+    private Image _iconHuman;
+    private Button _buttonExit;
 
     [Header("Записки игрока")] [SerializeField]
     private List<Note> playerNotes = new List<Note>();
@@ -32,18 +34,25 @@ public class Notebook : MonoBehaviour
         _pageReadNote = notebookMenu.transform.Find("pageRead").gameObject;
         _pageReadHuman = _pageReadNote.transform.Find("human").gameObject;
         _pageReadMain = _pageReadNote.transform.Find("noteQuest").gameObject;
+
+        _headerMain = _pageReadMain.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
+        _noteMain = _pageReadMain.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
+
+        _headerHuman = _pageReadHuman.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+        _noteHuman = _pageReadHuman.transform.Find("TextInfo").GetComponent<TextMeshProUGUI>();
+        _iconHuman = _pageReadHuman.transform.Find("Icon").GetComponent<Image>();
+
+        _buttonExit = _pageReadNote.transform.Find("ButtonExit").GetComponent<Button>();
     }
 
     public void AddNote(string nameNote)
     {
         foreach (Note note in gameNotes)
         {
-            if (nameNote == note.nameEn)
-            {
-                playerNotes.Add(note);
-                StartCoroutine(ActivateNotify());
-                break;
-            }
+            if (nameNote != note.nameEn) continue;
+            playerNotes.Add(note);
+            StartCoroutine(ActivateNotify());
+            break;
         }
     }
 
@@ -120,28 +129,13 @@ public class Notebook : MonoBehaviour
     private void ReadNote(int num, int mode = 0)
     {
         _pageReadNote.gameObject.SetActive(true);
-        TextMeshProUGUI header = null;
-        TextMeshProUGUI note = null;
-        Image icon = null;
-        if (mode == 0 || mode == 1)
-        {
-            header = _pageReadMain.transform.Find("TextHeader").GetComponent<TextMeshProUGUI>();
-            note = _pageReadMain.transform.Find("TextNote").GetComponent<TextMeshProUGUI>();
-        }
-        else
-        {
-            header = _pageReadHuman.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-            note = _pageReadHuman.transform.Find("TextInfo").GetComponent<TextMeshProUGUI>();
-            icon = _pageReadHuman.transform.Find("Icon").GetComponent<Image>();
-        }
-
         switch (mode)
         {
             case 0:
             {
                 _pageReadMain.gameObject.SetActive(true);
-                header.text = playerNotes[num].name;
-                note.text = playerNotes[num].description;
+                _headerMain.text = playerNotes[num].name;
+                _noteMain.text = playerNotes[num].description;
                 if (!playerNotes[num].readed)
                     playerNotes[num].readed = true;
                 break;
@@ -150,11 +144,11 @@ public class Notebook : MonoBehaviour
             {
                 _pageReadMain.gameObject.SetActive(true);
                 Quest selectedQuest = _scripts.questsSystem.activeQuests[num];
-                header.text = selectedQuest.name;
-                note.text = selectedQuest.description;
+                _headerMain.text = selectedQuest.name;
+                _noteMain.text = selectedQuest.description;
                 if (selectedQuest.steps[selectedQuest.totalStep].name != "")
-                    note.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" +
-                                 selectedQuest.steps[selectedQuest.totalStep].description;
+                    _noteMain.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" +
+                                      selectedQuest.steps[selectedQuest.totalStep].description;
                 if (selectedQuest != _scripts.questsSystem.totalQuest)
                 {
                     buttonChoiceActiveQuest.gameObject.SetActive(true);
@@ -170,15 +164,14 @@ public class Notebook : MonoBehaviour
             }
             case 2:
                 _pageReadHuman.gameObject.SetActive(true);
-                header.text = _scripts.player.familiarNpc[num].nameOfNpc;
-                note.text = _scripts.player.familiarNpc[num].description;
-                icon.sprite = _scripts.player.familiarNpc[num].icon.standartIcon;
-                icon.SetNativeSize();
+                _headerHuman.text = _scripts.player.familiarNpc[num].nameOfNpc;
+                _noteHuman.text = _scripts.player.familiarNpc[num].description;
+                _iconHuman.sprite = _scripts.player.familiarNpc[num].icon.standartIcon;
+                _iconHuman.SetNativeSize();
                 break;
         }
 
-        _pageReadNote.transform.Find("ButtonExit").GetComponent<Button>().onClick
-            .AddListener(delegate { ChoicePage(mode); });
+        _buttonExit.onClick.AddListener(delegate { ChoicePage(mode); });
     }
 
     private IEnumerator ActivateNotify()

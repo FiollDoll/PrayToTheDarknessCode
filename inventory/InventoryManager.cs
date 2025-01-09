@@ -6,16 +6,30 @@ using TMPro;
 
 public class InventoryManager : MonoBehaviour
 {
-    [SerializeField] private Inventory _inventory = new Inventory();
-    [SerializeField] private GameObject inventorySlotPrefab;
-    [SerializeField] private GameObject invMenu, itemInfoMenu;
-    private GameObject _mainStyle, _onlyIconStyle;
+    [Header("Inventory")] [SerializeField] private Inventory inventory;
+
+    [Header("Menu settings")] [SerializeField]
+    private GameObject inventorySlotPrefab;
     [SerializeField] private TextMeshProUGUI newItemText;
+    [SerializeField] private GameObject invMenu, itemInfoMenu;
+    
+    private GameObject _mainStyle, _onlyIconStyle;
+    private TextMeshProUGUI _textItemName, _textItemDescription;
+    private Image _iconInMain, _iconInOnly;
+    private Button _buttonItemActivate;
     private AllScripts _scripts;
 
     public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+
+        _mainStyle = itemInfoMenu.transform.Find("main").gameObject;
+        _onlyIconStyle = itemInfoMenu.transform.Find("onlyIcon").gameObject;
+        _textItemName = _mainStyle.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+        _textItemDescription = _mainStyle.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>();
+        _iconInMain = _mainStyle.transform.Find("ItemIcon").GetComponent<Image>();
+        _iconInOnly = _onlyIconStyle.transform.Find("ItemIcon").GetComponent<Image>();
+        _buttonItemActivate = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
     }
 
     /// <summary>
@@ -32,17 +46,16 @@ public class InventoryManager : MonoBehaviour
 
     public void AddItem(string nameItem)
     {
-        _inventory.AddItem(nameItem);
-        StartCoroutine(ActivateNotify(_inventory.GetGameItem(nameItem).name));
+        inventory.AddItem(nameItem);
+        StartCoroutine(ActivateNotify(inventory.GetGameItem(nameItem).name));
     }
-    
+
     /// <summary>
     /// Использование предмета из инвентаря
     /// </summary>
     /// <param name="slot">Индекс предмета</param>
     public void UseItem(int slot)
     {
-
         itemInfoMenu.gameObject.SetActive(false);
         UpdateInvUI();
         _scripts.player.playerMenu.gameObject.SetActive(false);
@@ -55,29 +68,23 @@ public class InventoryManager : MonoBehaviour
     private void WatchItem(int id)
     {
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
-        if (_mainStyle == null || _onlyIconStyle == null) // Первое присвоение
-        {
-            _mainStyle = itemInfoMenu.transform.Find("main").gameObject;
-            _onlyIconStyle = itemInfoMenu.transform.Find("onlyIcon").gameObject;
-        }
-        
+
         if (itemInfoMenu.gameObject.activeSelf)
         {
-            Item selectedItem = _inventory.GetPlayerItem(id);
+            Item selectedItem = inventory.GetPlayerItem(id);
             _mainStyle.gameObject.SetActive(!selectedItem.watchIconOnly);
             _onlyIconStyle.gameObject.SetActive(selectedItem.watchIconOnly);
             if (selectedItem.watchIconOnly)
-                _onlyIconStyle.transform.Find("ItemIcon").GetComponent<Image>().sprite = selectedItem.icon;
+                _iconInOnly.sprite = selectedItem.icon;
             else
             {
-                _mainStyle.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = selectedItem.name;
-                _mainStyle.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>().text =
+                _textItemName.text = selectedItem.name;
+                _textItemDescription.text =
                     selectedItem.description;
-                _mainStyle.transform.Find("ItemIcon").GetComponent<Image>().sprite = selectedItem.icon;
+                _iconInMain.sprite = selectedItem.icon;
             }
 
-            Button button = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
-            button.interactable = true; // Дефолт значение
+            _buttonItemActivate.interactable = true; // Дефолт значение
             if (selectedItem.canUse && (selectedItem.useInInventory || selectedItem.useInCollider))
             {
                 if (selectedItem.useInInventory)
@@ -87,7 +94,7 @@ public class InventoryManager : MonoBehaviour
                         if (selectedItem.questName != _scripts.questsSystem.totalQuest.nameInGame
                             || (_scripts.questsSystem.totalQuest.totalStep != selectedItem.questStage &&
                                 selectedItem.questStage > 0))
-                            button.interactable = false;
+                            _buttonItemActivate.interactable = false;
                     }
                 }
                 // Отложено.
@@ -102,16 +109,16 @@ public class InventoryManager : MonoBehaviour
                 */
             }
             else
-                button.interactable = false;
+                _buttonItemActivate.interactable = false;
 
-            if (button.interactable)
+            if (_buttonItemActivate.interactable)
             {
-                button.onClick.AddListener(delegate { UseItem(id); });
-                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
+                _buttonItemActivate.onClick.AddListener(delegate { UseItem(id); });
+                _buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
                     selectedItem.activationText != "" ? selectedItem.activationText : "???";
             }
             else
-                button.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "";
+                _buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "";
         }
     }
 
@@ -120,9 +127,9 @@ public class InventoryManager : MonoBehaviour
         foreach (Transform child in invMenu.transform.Find("items"))
             Destroy(child.gameObject);
 
-        for (int i = 0; i < _inventory.CountPlayerItems(); i++)
+        for (int i = 0; i < inventory.CountPlayerItems(); i++)
         {
-            Item selectedItem = _inventory.GetPlayerItem(i);
+            Item selectedItem = inventory.GetPlayerItem(i);
             var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 invMenu.transform.Find("items"));
             // TODO: добавить еще название

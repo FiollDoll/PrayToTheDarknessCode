@@ -68,21 +68,18 @@ public class Player : MonoBehaviour
                 break;
         }
     }
-
-
+    
     private void FixedUpdate()
     {
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
-
-        _scripts.interactions.ClearEnteredCollider();
-
+        
         if (Physics.Raycast(rayStart.position, Vector3.up, out _enteredCollider, 12f,
                 layerMaskInteractAuto) && !_scripts.interactions.lockInter)
         {
             if (_enteredCollider.collider.TryGetComponent(out IInteractable interactable))
             {
-                _scripts.interactions.enteredInteraction = interactable;
+                _scripts.interactions.EnteredInteraction = interactable;
                 if (_scripts.interactions.CheckActiveInteraction(interactable) && interactable.autoUse)
                     interactable.DoInteraction();
             }

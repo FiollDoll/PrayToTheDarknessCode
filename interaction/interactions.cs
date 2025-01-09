@@ -3,14 +3,14 @@ using TMPro;
 
 public class Interactions : MonoBehaviour
 {
-    public IInteractable enteredInteraction, selectedInteraction;
+    public IInteractable EnteredInteraction, SelectedInteraction;
     [Header("Настройки")] [SerializeField] private LayerMask layerMaskInteract;
 
     public bool lockInter;
     [SerializeField] private TextMeshProUGUI interLabelText;
     public GameObject floorChangeMenu;
 
-    private RaycastHit _selectedCollider, _enteredCollider;
+    private RaycastHit _selectedCollider;
     private AllScripts _scripts;
 
     public void Initialize()
@@ -18,11 +18,6 @@ public class Interactions : MonoBehaviour
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
     }
 
-    /// <summary>
-    /// Метод очистки коллайдеров, в которые вошел игрок. Используется в player
-    /// </summary>
-    public void ClearEnteredCollider() => _enteredCollider = new RaycastHit();
-    
     public bool CheckActiveInteraction(IInteractable interactable)
     {
         // Общая для всех проверка: можно ли использовать?
@@ -46,8 +41,8 @@ public class Interactions : MonoBehaviour
 
     private void FixedUpdate()
     {
-        enteredInteraction = null;
-        selectedInteraction = null;
+        EnteredInteraction = null;
+        SelectedInteraction = null;
         if (_selectedCollider.collider != null && _selectedCollider.collider.GetComponent<MeshRenderer>())
             _scripts.main.RemoveMaterial(_selectedCollider.collider.GetComponent<MeshRenderer>());
 
@@ -57,7 +52,7 @@ public class Interactions : MonoBehaviour
         {
             if (_selectedCollider.collider.TryGetComponent(out IInteractable interactable))
             {
-                selectedInteraction = interactable;
+                SelectedInteraction = interactable;
                 if (CheckActiveInteraction(interactable) && _selectedCollider.collider.GetComponent<MeshRenderer>())
                     _scripts.main.AddMaterial(_selectedCollider.collider.GetComponent<MeshRenderer>());
             }
@@ -69,17 +64,11 @@ public class Interactions : MonoBehaviour
         Debug.DrawLine(transform.position, _selectedCollider.point, Color.green);
 
         // Перебор по коллайдерам, в которые вошёл игрок, и в которых !autoUse
-        if (_enteredCollider.collider != null)
-        {
-            if (Input.GetKeyDown(KeyCode.E))
-                enteredInteraction.DoInteraction();
-        }
+        if (Input.GetKeyDown(KeyCode.E))
+            EnteredInteraction?.DoInteraction();
 
-        if (_selectedCollider.collider != null)
-        {
-            if (Input.GetMouseButton(0))
-                selectedInteraction.DoInteraction();
-        }
+        if (Input.GetMouseButton(0))
+            SelectedInteraction?.DoInteraction();
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -91,9 +80,9 @@ public class Interactions : MonoBehaviour
         }
 
         interLabelText.text = "";
-        if (selectedInteraction != null)
-            interLabelText.text = selectedInteraction.interLabel;
-        if (enteredInteraction != null) // Рассматривается случай только для перехода по локациям
-            interLabelText.text = enteredInteraction.interLabel;
+        if (SelectedInteraction != null)
+            interLabelText.text = SelectedInteraction.interLabel;
+        if (EnteredInteraction != null) // Рассматривается случай только для перехода по локациям
+            interLabelText.text = EnteredInteraction.interLabel;
     }
 }

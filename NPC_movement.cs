@@ -62,15 +62,14 @@ public class NPC_movement : MonoBehaviour
         {
             if (!waitPlayerAndMove || (waitPlayerAndMove && _playerInCollider))
             {
-                if (locationOfPointName == totalLocation)
-                    MoveTo(point);
-                else
-                    MoveTo(scripts.manageLocation.GetLocation(totalLocation).transformOfStairs);
+                MoveTo(locationOfPointName == totalLocation
+                    ? point
+                    : scripts.manageLocation.GetLocation(totalLocation).transformOfStairs);
             }
             else
-                _animator.SetBool("walk", false);
+                _animator?.SetBool("walk", false);
         }
         else
-            _animator.SetBool("walk", false);
+            _animator?.SetBool("walk", false);
     }
 }
