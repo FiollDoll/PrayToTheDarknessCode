@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using UnityEngine;
 using TMPro;
-using UnityEngine.Rendering;
 
 public class Interactions : MonoBehaviour
 {
@@ -25,8 +22,7 @@ public class Interactions : MonoBehaviour
     /// Метод очистки коллайдеров, в которые вошел игрок. Используется в player
     /// </summary>
     public void ClearEnteredCollider() => _enteredCollider = new RaycastHit();
-
-
+    
     public bool CheckActiveInteraction(IInteractable interactable)
     {
         // Общая для всех проверка: можно ли использовать?

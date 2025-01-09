@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class Dialog
 {
     [Header("Main")] public string nameDialog;
@@ -13,8 +15,7 @@ public class Dialog
 
     public DialogStyle styleOfDialog;
     public bool canMove, canInter;
-    public DialogStep[] steps = new DialogStep[0]; // Обычные этапы диалога
-    public DialogStepChoice[] dialogsChoices = new DialogStepChoice[0]; // Этапы с выбором
+    public DialogStep[] steps = Array.Empty<DialogStep>(); // Обычные этапы диалога
     [Header("AfterEnd")] public string startNewDialogAfterEnd;
     public bool darkAfterEnd;
 
@@ -30,14 +31,21 @@ public class Dialog
     public bool readed, moreRead;
 }
 
-[System.Serializable]
+[Serializable]
 public class DialogStep
 {
+    [Header("Dialog")]
     public NPC totalNpc;
+    public enum DialogMode
+    {
+        Dialog, Choice
+    }
+    public DialogMode dialogMode;
     
     public string text => PlayerPrefs.GetString("language") == "ru" ? ruText : enText;
-
     [TextArea] public string ruText, enText;
+    public DialogChoice[] choices = Array.Empty<DialogChoice>();
+    
     public bool cursedText;
     public bool animateTalking = true;
     public bool setCloseMeet;
@@ -81,13 +89,13 @@ public class DialogStep
     public Transform cameraTarget;
 }
 
-[System.Serializable]
-public class DialogStepChoice
+[Serializable]
+public class DialogChoice
 {
     public string textQuestion => PlayerPrefs.GetString("language") == "ru" ? ruTextQuestion : enTextQuestion;
-
     public string ruTextQuestion, enTextQuestion;
-    public DialogStep[] steps = new DialogStep[0];
+
+    public string nameNewDialog;
+    
     public bool readed, moreRead;
-    public bool returnToStartChoices;
 }

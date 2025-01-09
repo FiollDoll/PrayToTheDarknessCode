@@ -31,10 +31,8 @@ public class DialogsManager : MonoBehaviour
 
     [Header("Все диалоги")] public Dialog[] dialogs = new Dialog[0];
 
-    private string _totalMode;
     private bool _animatingText, _canStepNext;
 
-    private DialogStepChoice _selectedChoice;
     private DialogStep _selectedStep;
 
     private Image _noViewPanel;
@@ -78,29 +76,26 @@ public class DialogsManager : MonoBehaviour
     /// <param name="nameDialog">Название диалога</param>
     public void ActivateDialog(string nameDialog) // Старт диалога
     {
-        if (ActivatedDialog != null) return;
+        ActivatedDialog = null; // Если уже назначен
 
         Dialog newDialog = GetDialog((nameDialog));
         if (newDialog == null) return;
 
         ActivatedDialog = newDialog;
+        _selectedStep = ActivatedDialog.steps[0];
         dialogMenu.gameObject.SetActive(true);
         _canStepNext = false;
         _scripts.interactions.lockInter = ActivatedDialog.canInter;
-        if (ActivatedDialog.steps.Length > 0)
+        if (ActivatedDialog.steps[0].dialogMode == DialogStep.DialogMode.Dialog)
         {
             if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                 mainDialogMenu.gameObject.SetActive(true);
             else
                 subDialogMenu.gameObject.SetActive(true);
-
-            _selectedStep = ActivatedDialog.steps[0];
-            _totalMode = "dialog";
         }
         else
         {
             choiceDialogMenu.gameObject.SetActive(true);
-            _totalMode = "choice";
         }
 
         _scripts.main.EndCursedText(_textDialogMain);
@@ -128,7 +123,7 @@ public class DialogsManager : MonoBehaviour
             ActivatedDialog.readed = true;
         _scripts.player.canMove = ActivatedDialog.canMove;
 
-        if (_totalMode == "dialog")
+        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
             DialogUpdateAction();
         else
             ActivateChoiceMenu();
@@ -207,15 +202,15 @@ public class DialogsManager : MonoBehaviour
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
-        for (int i = 0; i < ActivatedDialog.dialogsChoices.Length; i++)
+        for (int i = 0; i < _selectedStep.choices.Length; i++)
         {
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 choicesContainer.transform);
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                ActivatedDialog.dialogsChoices[i].textQuestion;
+                _selectedStep.choices[i].textQuestion;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
-            if (ActivatedDialog.dialogsChoices[i].readed)
+            if (_selectedStep.choices[i].readed)
                 obj.GetComponent<Button>().interactable = false;
         }
 
@@ -228,21 +223,17 @@ public class DialogsManager : MonoBehaviour
     /// <param name="id"></param>
     private void ActivateChoiceStep(int id)
     {
-        _totalMode = "choice";
-        _selectedChoice = ActivatedDialog.dialogsChoices[id];
-        if (!_selectedChoice.moreRead)
-            _selectedChoice.readed = true;
-        choiceDialogMenu.gameObject.SetActive(false);
-        mainDialogMenu.gameObject.SetActive(true);
-        totalStep = 0;
-        _selectedStep = _selectedChoice.steps[0];
-        if (_selectedStep.cameraTarget != null)
-            _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget;
-        _textNameMain.text = _selectedStep.totalNpc.nameOfNpc;
-        _iconImageChoices.sprite = _selectedStep.icon;
-        if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
-            GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
-        StartCoroutine(SetText(_selectedStep.text));
+        DialogChoice choice = _selectedStep.choices[id];
+        if (choice.nameNewDialog != "") // т.е текущий диалог не продолжается
+        {
+            choiceDialogMenu.gameObject.SetActive(false);
+            totalStep = 0;
+            if (!choice.moreRead)
+                choice.readed = true;
+            ActivateDialog(choice.nameNewDialog);
+        }
+        else
+            DialogMoveNext();
     }
 
 
@@ -254,39 +245,24 @@ public class DialogsManager : MonoBehaviour
         void AddStep()
         {
             totalStep++;
-            if (_totalMode == "dialog")
-                _selectedStep = ActivatedDialog.steps[totalStep];
+            _selectedStep = ActivatedDialog.steps[totalStep];
+            if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
+                DialogUpdateAction();
             else
-                _selectedStep = _selectedChoice.steps[totalStep];
-            DialogUpdateAction();
+                ActivateChoiceMenu();
         }
 
         if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
             GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
 
-        switch (_totalMode)
+        // Окончание обычного диалога
+        if (totalStep + 1 == ActivatedDialog.steps.Length)
         {
-            // Окончание обычного диалога
-            case "dialog" when (totalStep + 1) == ActivatedDialog.steps.Length:
-            {
-                if (ActivatedDialog.dialogsChoices.Length == 0)
-                    DialogCLose();
-                else
-                    ActivateChoiceMenu(true);
-                return;
-            }
-            case "choice" when (totalStep + 1) == _selectedChoice.steps.Length:
-            {
-                if (_selectedChoice.returnToStartChoices)
-                    ActivateChoiceMenu(true);
-                else
-                    DialogCLose();
-                return;
-            }
-            default:
-                AddStep();
-                break;
+            DialogCLose();
+            return;
         }
+
+        AddStep();
     }
 
     /// <summary>
@@ -397,7 +373,8 @@ public class DialogsManager : MonoBehaviour
         if (_selectedStep.delayAfterNext != 0)
         {
             yield return new WaitForSeconds(_selectedStep.delayAfterNext);
-            if (_totalMode == "dialog" && (totalStep + 1) == ActivatedDialog.steps.Length)
+            if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog &&
+                (totalStep + 1) == ActivatedDialog.steps.Length)
                 DialogCLose();
             else
                 DialogMoveNext();
