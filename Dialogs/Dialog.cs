@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -15,7 +14,7 @@ public class Dialog
 
     public DialogStyle styleOfDialog;
     public bool canMove, canInter;
-    public DialogStep[] steps = Array.Empty<DialogStep>(); // Обычные этапы диалога
+    public StepBranch[] stepBranches = Array.Empty<StepBranch>(); // Обычные этапы диалога
     [Header("AfterEnd")] public string startNewDialogAfterEnd;
     public bool darkAfterEnd;
 
@@ -29,23 +28,43 @@ public class Dialog
     public float mainPanelStartDelay; // Задержка
     public bool nextStepQuest;
     public bool readed, moreRead;
+
+    public StepBranch FindBranch(string branchName)
+    {
+        foreach (StepBranch stepBranch in stepBranches)
+        {
+            if (stepBranch.branchName == branchName)
+                return stepBranch;
+        }
+
+        return null;
+    }
+}
+
+[Serializable]
+public class StepBranch
+{
+    public string branchName;
+    [Header("Основная часть ветки")] public DialogStep[] dialogSteps = Array.Empty<DialogStep>();
+    [Header("В конце ветки")] public DialogChoice[] choices = Array.Empty<DialogChoice>();
 }
 
 [Serializable]
 public class DialogStep
 {
-    [Header("Dialog")]
-    public NPC totalNpc;
+    [Header("Dialog")] public NPC totalNpc;
+
     public enum DialogMode
     {
-        Dialog, Choice
+        Dialog,
+        Choice
     }
+
     public DialogMode dialogMode;
-    
+
     public string text => PlayerPrefs.GetString("language") == "ru" ? ruText : enText;
     [TextArea] public string ruText, enText;
-    public DialogChoice[] choices = Array.Empty<DialogChoice>();
-    
+
     public bool cursedText;
     public bool animateTalking = true;
     public bool setCloseMeet;
@@ -95,7 +114,7 @@ public class DialogChoice
     public string textQuestion => PlayerPrefs.GetString("language") == "ru" ? ruTextQuestion : enTextQuestion;
     public string ruTextQuestion, enTextQuestion;
 
-    public string nameNewDialog;
-    
+    public string nameNewBranch;
+
     public bool readed, moreRead;
 }

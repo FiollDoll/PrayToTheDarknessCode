@@ -15,7 +15,7 @@ public class DialogsManager : MonoBehaviour
 
     [Header("Текущий диалог")] public int totalStep;
 
-    public Dialog ActivatedDialog
+    private Dialog ActivatedDialog
     {
         get
         {
@@ -33,6 +33,7 @@ public class DialogsManager : MonoBehaviour
 
     private bool _animatingText, _canStepNext;
 
+    private StepBranch _selectedBranch;
     private DialogStep _selectedStep;
 
     private Image _noViewPanel;
@@ -82,11 +83,12 @@ public class DialogsManager : MonoBehaviour
         if (newDialog == null) return;
 
         ActivatedDialog = newDialog;
-        _selectedStep = ActivatedDialog.steps[0];
+        _selectedBranch = ActivatedDialog.stepBranches[0];
+        _selectedStep = _selectedBranch.dialogSteps[0];
         dialogMenu.gameObject.SetActive(true);
         _canStepNext = false;
         _scripts.interactions.lockInter = ActivatedDialog.canInter;
-        if (ActivatedDialog.steps[0].dialogMode == DialogStep.DialogMode.Dialog)
+        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
         {
             if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                 mainDialogMenu.gameObject.SetActive(true);
@@ -94,9 +96,7 @@ public class DialogsManager : MonoBehaviour
                 subDialogMenu.gameObject.SetActive(true);
         }
         else
-        {
             choiceDialogMenu.gameObject.SetActive(true);
-        }
 
         _scripts.main.EndCursedText(_textDialogMain);
 
@@ -202,15 +202,15 @@ public class DialogsManager : MonoBehaviour
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
-        for (int i = 0; i < _selectedStep.choices.Length; i++)
+        for (int i = 0; i < _selectedBranch.choices.Length; i++)
         {
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 choicesContainer.transform);
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                _selectedStep.choices[i].textQuestion;
+                _selectedBranch.choices[i].textQuestion;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
-            if (_selectedStep.choices[i].readed)
+            if (_selectedBranch.choices[i].readed)
                 obj.GetComponent<Button>().interactable = false;
         }
 
@@ -223,19 +223,34 @@ public class DialogsManager : MonoBehaviour
     /// <param name="id"></param>
     private void ActivateChoiceStep(int id)
     {
-        DialogChoice choice = _selectedStep.choices[id];
-        if (choice.nameNewDialog != "") // т.е текущий диалог не продолжается
-        {
-            choiceDialogMenu.gameObject.SetActive(false);
-            totalStep = 0;
-            if (!choice.moreRead)
-                choice.readed = true;
-            ActivateDialog(choice.nameNewDialog);
-        }
-        else
-            DialogMoveNext();
+        DialogChoice choice = _selectedBranch.choices[id];
+        choiceDialogMenu.gameObject.SetActive(false);
+        totalStep = 0;
+        if (!choice.moreRead)
+            choice.readed = true;
+        ChangeDialogBranch(choice.nameNewBranch);
     }
 
+    private void ChangeDialogBranch(string nameOfBranch)
+    {
+        StepBranch newBranch = _activatedDialog.FindBranch(nameOfBranch);
+        _selectedBranch = newBranch;
+        _selectedStep = _selectedBranch.dialogSteps[0];
+        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
+        {
+            if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+                mainDialogMenu.gameObject.SetActive(true);
+            else
+                subDialogMenu.gameObject.SetActive(true);
+        }
+        else
+            choiceDialogMenu.gameObject.SetActive(true);
+
+        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
+            DialogUpdateAction();
+        else
+            ActivateChoiceMenu();
+    }
 
     /// <summary>
     /// Продвижение диалога далее
@@ -245,7 +260,7 @@ public class DialogsManager : MonoBehaviour
         void AddStep()
         {
             totalStep++;
-            _selectedStep = ActivatedDialog.steps[totalStep];
+            _selectedStep = _selectedBranch.dialogSteps[totalStep];
             if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
                 DialogUpdateAction();
             else
@@ -256,9 +271,13 @@ public class DialogsManager : MonoBehaviour
             GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
 
         // Окончание обычного диалога
-        if (totalStep + 1 == ActivatedDialog.steps.Length)
+        if (totalStep + 1 == _selectedBranch.dialogSteps.Length)
         {
-            DialogCLose();
+            // Если выбора нет.
+            if (_selectedBranch.choices.Length == 0)
+                DialogCLose();
+            else
+                ActivateChoiceMenu();
             return;
         }
 
@@ -374,7 +393,7 @@ public class DialogsManager : MonoBehaviour
         {
             yield return new WaitForSeconds(_selectedStep.delayAfterNext);
             if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog &&
-                (totalStep + 1) == ActivatedDialog.steps.Length)
+                (totalStep + 1) == ActivatedDialog.stepBranches.Length)
                 DialogCLose();
             else
                 DialogMoveNext();
