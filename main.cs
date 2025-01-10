@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using Cinemachine;
+using Random = UnityEngine.Random;
 
 public class Main : MonoBehaviour
 {
@@ -26,21 +28,45 @@ public class Main : MonoBehaviour
 
     public void Start()
     {
-        // Точка инициализации всех скриптов по !порядку!
+        // Точка инициализации всех скриптов по порядку
         _scripts = GetComponent<AllScripts>();
-        _scripts.Initialize();
-        _scripts.cutsceneManager.Initialize();
-        _scripts.dialogsManager.Initialize();
-        _scripts.manageLocation.Initialize();
-        _scripts.questsSystem.Initialize();
-        _scripts.notebook.Initialize();
-        _scripts.interactions.Initialize();
-        _scripts.inventoryManager.Initialize();
-        _scripts.player.Initialize();
-        _scripts.devTool.Initialize();
-        _scripts.postProcessingController.Initialize();
+
+        // Список методов инициализации
+        var initializers = new Action[]
+        {
+            () => _scripts.Initialize(),
+            () => _scripts.cutsceneManager.Initialize(),
+            () => _scripts.dialogsManager.Initialize(),
+            () => _scripts.manageLocation.Initialize(),
+            () => _scripts.questsSystem.Initialize(),
+            () => _scripts.notebook.Initialize(),
+            () => _scripts.interactions.Initialize(),
+            () => _scripts.inventoryManager.Initialize(),
+            () => _scripts.player.Initialize(),
+            () => _scripts.devTool.Initialize(),
+            () => _scripts.postProcessingController.Initialize()
+        };
+
+        // Выполнение инициализации без перерыва с обработкой ошибок
+        foreach (var initializer in initializers)
+        {
+            try
+            {
+                initializer();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Ошибка при инициализации: {ex.Message}");
+            }
+        }
         
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
+        foreach (NPC npc in allNpc)
+        {
+            GameObject npcObj = GameObject.Find(npc.nameInWorld);
+            npc.npcMovement = npcObj?.GetComponent<NPC_movement>();
+            npc.animator = npcObj?.GetComponent<Animator>();
+        }
     }
     // TODO: прибраться в методах
     

@@ -6,10 +6,11 @@ using TMPro;
 
 public class Notebook : MonoBehaviour
 {
-    [Header("Настройки")] [SerializeField] private GameObject notebookMenu;
-    [SerializeField] private GameObject newNoteNotify;
-    [SerializeField] private GameObject buttonChoiceActiveQuest, pageNpCcontainer, pageChoiceNote, pageChoiceQuest;
-    [SerializeField] private GameObject buttonNotePrefab, buttonNPC;
+    [Header("Настройки")] [SerializeField] private GameObject newNoteNotify;
+    [SerializeField] private GameObject buttonNotePrefab, buttonNpc;
+    [SerializeField] private GameObject buttonChoiceActiveQuest, pageNpсСontainer, pageChoiceNote, pageChoiceQuest;
+
+    private GameObject _notebookMenu;
     private GameObject _pageNote, _pageQuest, _pageNpc;
     private GameObject _pageReadNote, _pageReadHuman, _pageReadMain;
     private TextMeshProUGUI _headerMain, _noteMain;
@@ -28,10 +29,12 @@ public class Notebook : MonoBehaviour
     public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _pageNote = notebookMenu.transform.Find("pageNotes").gameObject;
-        _pageQuest = notebookMenu.transform.Find("pageQuests").gameObject;
-        _pageNpc = notebookMenu.transform.Find("pageNPC").gameObject;
-        _pageReadNote = notebookMenu.transform.Find("pageRead").gameObject;
+        _notebookMenu = _scripts.player.playerMenu.transform.Find("notebookMenu").gameObject;
+        newNoteNotify = GameObject.Find("newNote");
+        _pageNote = _notebookMenu.transform.Find("pageNotes").gameObject;
+        _pageQuest = _notebookMenu.transform.Find("pageQuests").gameObject;
+        _pageNpc = _notebookMenu.transform.Find("pageNPC").gameObject;
+        _pageReadNote = _notebookMenu.transform.Find("pageRead").gameObject;
         _pageReadHuman = _pageReadNote.transform.Find("human").gameObject;
         _pageReadMain = _pageReadNote.transform.Find("noteQuest").gameObject;
 
@@ -107,12 +110,12 @@ public class Notebook : MonoBehaviour
         else if (num == 2)
         {
             _pageNpc.gameObject.SetActive(true);
-            foreach (Transform child in pageNpCcontainer.transform)
+            foreach (Transform child in pageNpсСontainer.transform)
                 Destroy(child.gameObject);
 
             for (int i = 0; i < _scripts.player.familiarNpc.Count; i++)
             {
-                var obj = Instantiate(buttonNPC, Vector3.zero, Quaternion.identity, pageNpCcontainer.transform);
+                var obj = Instantiate(buttonNpc, Vector3.zero, Quaternion.identity, pageNpсСontainer.transform);
                 obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
                     _scripts.player.familiarNpc[i].nameOfNpc;
                 obj.transform.Find("Icon").GetComponent<Image>().sprite =

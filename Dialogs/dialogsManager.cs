@@ -15,12 +15,13 @@ public class DialogsManager : MonoBehaviour
     private DialogStep _selectedStep;
 
     [Header("Настройки")] public GameObject dialogMenu;
+    [SerializeField] private GameObject choicesContainer;
+
     public GameObject buttonChoicePrefab;
 
     private TextMeshProUGUI _textNameMain, _textDialogMain, _textDialogSub;
     private GameObject _mainDialogMenu, _choiceDialogMenu, _subDialogMenu;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
-    private GameObject _choicesContainer;
     private Image _iconImage;
     private RectTransform _iconImageTransform;
     private Image _bigPicture;
@@ -33,15 +34,15 @@ public class DialogsManager : MonoBehaviour
 
     public void Initialize()
     {
-        _mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
-        _choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _noViewPanel = _scripts.main.noViewPanel;
 
         _mainDialogMenu = dialogMenu.transform.Find("mainMenu").gameObject;
         _mainDialogMenuTransform = _mainDialogMenu.GetComponent<RectTransform>();
+        _mainDialogMenuTransform.DOPivotY(4f, 0.3f);
         _choiceDialogMenu = dialogMenu.transform.Find("choiceMenu").gameObject;
         _choiceDialogMenuTransform = _choiceDialogMenu.GetComponent<RectTransform>();
+        _choiceDialogMenuTransform.DOPivotY(4f, 0.3f);
         _adaptiveScrollViewChoice = _choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
         _subDialogMenu = dialogMenu.transform.Find("subMainMenu").gameObject;
 
@@ -218,13 +219,13 @@ public class DialogsManager : MonoBehaviour
         _adaptiveScrollViewChoice.UpdateContentSize();
         if (setScale)
             _choiceDialogMenuTransform.localScale = new Vector2(1f, 1f);
-        foreach (Transform child in _choicesContainer.transform)
+        foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
         for (int i = 0; i < _selectedBranch.choices.Length; i++)
         {
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
-                _choicesContainer.transform);
+                choicesContainer.transform);
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
                 _selectedBranch.choices[i].textQuestion;
             int num = i;
@@ -275,7 +276,7 @@ public class DialogsManager : MonoBehaviour
             DialogUpdateAction();
         }
 
-        _selectedStep.totalNpc.npcMovement.animator.SetBool("talk", false);
+        _selectedStep.totalNpc.animator?.SetBool("talk", false);
 
         // Окончание обычного диалога
         if (totalStep + 1 == _selectedBranch.dialogSteps.Length)
@@ -306,6 +307,7 @@ public class DialogsManager : MonoBehaviour
 
         foreach (NPC totalNpc in _scripts.main.allNpc)
         {
+            if (!totalNpc.canMeet) continue;
             if (totalNpc.nameOfNpc != _selectedStep.totalNpc.nameOfNpc) continue;
             if (_scripts.player.familiarNpc.Contains(totalNpc)) continue;
             _scripts.player.familiarNpc.Add(totalNpc);
@@ -314,8 +316,8 @@ public class DialogsManager : MonoBehaviour
 
         if (_selectedStep.setCloseMeet)
             _selectedStep.totalNpc.playerCloseMeet = true;
-
-        _selectedStep.totalNpc.npcMovement.animator.SetBool("talk", true);
+        
+        _selectedStep.totalNpc.animator?.SetBool("talk", true);
 
         if (_selectedStep.cursedText)
             _scripts.main.SetCursedText(_textDialogMain, Random.Range(5, 40));

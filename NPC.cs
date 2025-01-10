@@ -1,4 +1,3 @@
-using Unity.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
@@ -8,7 +7,9 @@ public class NPC : ScriptableObject
 
     public string ruName, enName;
     public string nameInWorld;
-    public NPC_movement npcMovement;
+    public bool canMeet;
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public NPC_movement npcMovement;
 
     public string description
     {
