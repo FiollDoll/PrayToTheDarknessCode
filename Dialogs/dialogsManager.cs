@@ -6,6 +6,14 @@ using DG.Tweening;
 
 public class DialogsManager : MonoBehaviour
 {
+    [Header("Все диалоги")] public Dialog[] dialogs = new Dialog[0];
+
+    [Header("Текущий диалог")] public int totalStep;
+
+    private Dialog _activatedDialog;
+    private StepBranch _selectedBranch;
+    private DialogStep _selectedStep;
+
     [Header("Настройки")] public GameObject dialogMenu;
     private TextMeshProUGUI _textNameMain, _textDialogMain, _textDialogSub;
     [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu;
@@ -13,28 +21,8 @@ public class DialogsManager : MonoBehaviour
     private Image _iconImageMain, _iconImageChoices;
     private Image _bigPicture;
 
-    [Header("Текущий диалог")] public int totalStep;
-
-    private Dialog ActivatedDialog
-    {
-        get
-        {
-            if (_activatedDialog == null || _activatedDialog.nameDialog == "")
-                return null;
-            else
-                return _activatedDialog;
-        }
-        set => _activatedDialog = value;
-    }
-
-    private Dialog _activatedDialog;
-
-    [Header("Все диалоги")] public Dialog[] dialogs = new Dialog[0];
-
     private bool _animatingText, _canStepNext;
 
-    private StepBranch _selectedBranch;
-    private DialogStep _selectedStep;
 
     private Image _noViewPanel;
     private AllScripts _scripts;
@@ -59,7 +47,7 @@ public class DialogsManager : MonoBehaviour
     /// </summary>
     /// <param name="nameDialog">Имя диалога, который ищем</param>
     /// <returns>Возвращает диалог</returns>
-    public Dialog GetDialog(string nameDialog)
+    private Dialog GetDialog(string nameDialog)
     {
         foreach (Dialog totalDialog in dialogs)
         {
@@ -71,40 +59,51 @@ public class DialogsManager : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    ///  Активирует новый диалог
-    /// </summary>
-    /// <param name="nameDialog">Название диалога</param>
-    public void ActivateDialog(string nameDialog) // Старт диалога
+    private bool CheckCanChoice()
     {
-        ActivatedDialog = null; // Если уже назначен
+        // Если выборов не 0 и этап последний - возвращаем true
+        return _selectedBranch.choices.Length != 0 && totalStep + 1 == _selectedBranch.dialogSteps.Length;
+    }
 
-        Dialog newDialog = GetDialog((nameDialog));
-        if (newDialog == null) return;
-
-        ActivatedDialog = newDialog;
-        _selectedBranch = ActivatedDialog.stepBranches[0];
-        _selectedStep = _selectedBranch.dialogSteps[0];
-        dialogMenu.gameObject.SetActive(true);
-        _canStepNext = false;
-        _scripts.interactions.lockInter = ActivatedDialog.canInter;
-        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
+    private void ActivateDialogWindow()
+    {
+        if (!CheckCanChoice())
         {
-            if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                 mainDialogMenu.gameObject.SetActive(true);
             else
                 subDialogMenu.gameObject.SetActive(true);
         }
         else
             choiceDialogMenu.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    ///  Активирует новый диалог
+    /// </summary>
+    /// <param name="nameDialog">Название диалога</param>
+    public void ActivateDialog(string nameDialog) // Старт диалога
+    {
+        _activatedDialog = new Dialog(); // Если уже назначен - очищаем
+
+        Dialog newDialog = GetDialog((nameDialog));
+        if (newDialog == null) return;
+
+        _activatedDialog = newDialog;
+        _selectedBranch = _activatedDialog.stepBranches[0];
+        _selectedStep = _selectedBranch.dialogSteps[0];
+        dialogMenu.gameObject.SetActive(true);
+        _canStepNext = false;
+        _scripts.interactions.lockInter = _activatedDialog.canInter;
+        ActivateDialogWindow();
 
         _scripts.main.EndCursedText(_textDialogMain);
 
-        if (ActivatedDialog.bigPicture)
+        if (_activatedDialog.bigPicture)
         {
             Sequence sequence = DOTween.Sequence();
             Tween stepSequence = _noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-            stepSequence.OnComplete(() => { _bigPicture.sprite = ActivatedDialog.bigPicture; });
+            stepSequence.OnComplete(() => { _bigPicture.sprite = _activatedDialog.bigPicture; });
             sequence.Append(stepSequence);
             sequence.Append(_bigPicture.DOFade(100f, 0.001f).SetEase(Ease.InQuart));
             sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
@@ -113,17 +112,17 @@ public class DialogsManager : MonoBehaviour
         else
             _bigPicture.sprite = _scripts.main.nullSprite;
 
-        if (ActivatedDialog.mainPanelStartDelay == 0)
+        if (_activatedDialog.mainPanelStartDelay == 0)
             OpenPanels();
         else
             StartCoroutine(ActivateUIMainMenuWithDelay(
-                ActivatedDialog.mainPanelStartDelay));
+                _activatedDialog.mainPanelStartDelay));
 
-        if (!ActivatedDialog.moreRead)
-            ActivatedDialog.readed = true;
-        _scripts.player.canMove = ActivatedDialog.canMove;
+        if (!_activatedDialog.moreRead)
+            _activatedDialog.readed = true;
+        _scripts.player.canMove = _activatedDialog.canMove;
 
-        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
+        if (!CheckCanChoice())
             DialogUpdateAction();
         else
             ActivateChoiceMenu();
@@ -136,12 +135,12 @@ public class DialogsManager : MonoBehaviour
     {
         _canStepNext = false;
         _scripts.interactions.lockInter = false;
-        if (ActivatedDialog.activatedCutsceneStepAtEnd != -1)
-            _scripts.cutsceneManager.ActivateCutsceneStep(ActivatedDialog.activatedCutsceneStepAtEnd);
+        if (_activatedDialog.activatedCutsceneStepAtEnd != -1)
+            _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activatedCutsceneStepAtEnd);
 
         totalStep = 0;
         Sequence sequence = DOTween.Sequence();
-        if (ActivatedDialog.bigPicture != null && !ActivatedDialog.disableFadeAtEnd)
+        if (_activatedDialog.bigPicture != null && !_activatedDialog.disableFadeAtEnd)
         {
             sequence = sequence.Append(_noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
             sequence.Append(mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f));
@@ -153,14 +152,14 @@ public class DialogsManager : MonoBehaviour
 
         choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.5f);
 
-        if (ActivatedDialog.darkAfterEnd && !ActivatedDialog.disableFadeAtEnd)
+        if (_activatedDialog.darkAfterEnd && !_activatedDialog.disableFadeAtEnd)
         {
             Tween extraSequence = _noViewPanel.DOFade(100f, 0.7f).SetEase(Ease.InQuart);
-            if (ActivatedDialog.posAfterEnd != null)
+            if (_activatedDialog.posAfterEnd != null)
             {
                 extraSequence.OnComplete(() =>
                 {
-                    _scripts.player.transform.localPosition = ActivatedDialog.posAfterEnd.position;
+                    _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
                 });
             }
 
@@ -174,15 +173,15 @@ public class DialogsManager : MonoBehaviour
             dialogMenu.gameObject.SetActive(false);
             mainDialogMenu.gameObject.SetActive(false);
             subDialogMenu.gameObject.SetActive(false);
-            if (ActivatedDialog.nextStepQuest)
+            if (_activatedDialog.nextStepQuest)
                 _scripts.questsSystem.NextStep();
             _scripts.player.canMove = true;
             _scripts.main.EndCursedText(_textDialogMain);
             _scripts.player.virtualCamera.Follow = _scripts.player.transform;
-            if (ActivatedDialog.noteAdd != "")
-                _scripts.notebook.AddNote(ActivatedDialog.noteAdd);
-            string newDialog = ActivatedDialog.startNewDialogAfterEnd;
-            ActivatedDialog = null;
+            if (_activatedDialog.noteAdd != "")
+                _scripts.notebook.AddNote(_activatedDialog.noteAdd);
+            string newDialog = _activatedDialog.startNewDialogAfterEnd;
+            _activatedDialog = null;
             _canStepNext = true;
             if (newDialog != "")
                 ActivateDialog(newDialog);
@@ -236,17 +235,9 @@ public class DialogsManager : MonoBehaviour
         StepBranch newBranch = _activatedDialog.FindBranch(nameOfBranch);
         _selectedBranch = newBranch;
         _selectedStep = _selectedBranch.dialogSteps[0];
-        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
-        {
-            if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                mainDialogMenu.gameObject.SetActive(true);
-            else
-                subDialogMenu.gameObject.SetActive(true);
-        }
-        else
-            choiceDialogMenu.gameObject.SetActive(true);
+        ActivateDialogWindow();
 
-        if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
+        if (!CheckCanChoice())
             DialogUpdateAction();
         else
             ActivateChoiceMenu();
@@ -261,20 +252,19 @@ public class DialogsManager : MonoBehaviour
         {
             totalStep++;
             _selectedStep = _selectedBranch.dialogSteps[totalStep];
-            if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog)
+            if (!CheckCanChoice())
                 DialogUpdateAction();
             else
                 ActivateChoiceMenu();
         }
 
-        if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
-            GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", false);
+        GameObject.Find(_selectedStep.totalNpc.nameInWorld)?.GetComponent<Animator>().SetBool("talk", false);
 
         // Окончание обычного диалога
         if (totalStep + 1 == _selectedBranch.dialogSteps.Length)
         {
             // Если выбора нет.
-            if (_selectedBranch.choices.Length == 0)
+            if (!CheckCanChoice())
                 DialogCLose();
             else
                 ActivateChoiceMenu();
@@ -289,15 +279,12 @@ public class DialogsManager : MonoBehaviour
     /// </summary>
     private void DialogUpdateAction()
     {
-        if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+        if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
         {
             _textNameMain.text = _selectedStep.totalNpc.nameOfNpc;
             _iconImageMain.sprite = _selectedStep.icon;
             _iconImageMain.SetNativeSize();
-            if (_selectedStep.shakeIcon)
-                _iconImageMain.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(10, 10, 10), 2f);
-            else
-                _iconImageMain.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+            _iconImageMain.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
         }
 
         foreach (NPC totalNpc in _scripts.main.allNpc)
@@ -311,8 +298,7 @@ public class DialogsManager : MonoBehaviour
         if (_selectedStep.setCloseMeet)
             _selectedStep.totalNpc.playerCloseMeet = true;
 
-        if (GameObject.Find(_selectedStep.totalNpc.nameInWorld) && _selectedStep.animateTalking)
-            GameObject.Find(_selectedStep.totalNpc.nameInWorld).GetComponent<Animator>().SetBool("talk", true);
+        GameObject.Find(_selectedStep.totalNpc.nameInWorld)?.GetComponent<Animator>().SetBool("talk", true);
 
         if (_selectedStep.cursedText)
             _scripts.main.SetCursedText(_textDialogMain, Random.Range(5, 40));
@@ -345,7 +331,7 @@ public class DialogsManager : MonoBehaviour
 
     private void Update()
     {
-        if (ActivatedDialog == null) return;
+        if (_activatedDialog == null) return;
         if (_selectedStep.delayAfterNext == 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -356,7 +342,7 @@ public class DialogsManager : MonoBehaviour
                 {
                     _animatingText = false;
                     StopAllCoroutines();
-                    if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+                    if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                         _textDialogMain.text = _selectedStep.text;
                     else
                         _textDialogSub.text = _selectedStep.text;
@@ -381,7 +367,7 @@ public class DialogsManager : MonoBehaviour
         foreach (char tChar in textChar)
         {
             if (!_animatingText) continue;
-            if (ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                 _textDialogMain.text += tChar;
             else
                 _textDialogSub.text += tChar;
@@ -392,11 +378,15 @@ public class DialogsManager : MonoBehaviour
         if (_selectedStep.delayAfterNext != 0)
         {
             yield return new WaitForSeconds(_selectedStep.delayAfterNext);
-            if (_selectedStep.dialogMode == DialogStep.DialogMode.Dialog &&
-                (totalStep + 1) == ActivatedDialog.stepBranches.Length)
+            if (totalStep + 1 == _activatedDialog.stepBranches.Length) // Завершение
                 DialogCLose();
             else
-                DialogMoveNext();
+            {
+                if (!CheckCanChoice())
+                    DialogUpdateAction();
+                else
+                    ActivateChoiceMenu();
+            }
         }
     }
 

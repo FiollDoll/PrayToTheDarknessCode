@@ -1,33 +1,37 @@
 ﻿using System;
+using Unity.Collections;
 using UnityEngine;
 
 [Serializable]
 public class Dialog
 {
-    [Header("Main")] public string nameDialog;
+    [Header("Основное")] public string nameDialog;
+    [ReadOnly] public bool readed;
+
+    public DialogStyle styleOfDialog;
 
     public enum DialogStyle
     {
         Main,
-        SubMain
+        SubMain,
+        BigPicture
     };
 
-    public DialogStyle styleOfDialog;
-    public bool canMove, canInter;
-    public StepBranch[] stepBranches = Array.Empty<StepBranch>(); // Обычные этапы диалога
-    [Header("AfterEnd")] public string startNewDialogAfterEnd;
-    public bool darkAfterEnd;
-
-    [Tooltip("Работает только с darkAfterEnd")]
-    public Transform posAfterEnd;
-
-    [Header("Other")] public string noteAdd;
+    public StepBranch[] stepBranches = Array.Empty<StepBranch>(); // Ветки диалога
     public Sprite bigPicture;
-    public int activatedCutsceneStepAtEnd = -1;
-    public bool disableFadeAtEnd;
-    public float mainPanelStartDelay; // Задержка
+    [Header("Настройки")] public bool moreRead;
+    public bool canMove, canInter;
+    public float mainPanelStartDelay; // Задержка перед появлением
+
+    [Header("Действия после окончания диалога")]
+    public string noteAdd;
+
+    public string startNewDialogAfterEnd;
+    public bool darkAfterEnd;
+    public Transform posAfterEnd;
     public bool nextStepQuest;
-    public bool readed, moreRead;
+    public int activatedCutsceneStepAtEnd = -1;
+    public bool disableFadeAtEnd; // TODO: сделать noviewPanel неперекрываемой, а после убрать эту переменную
 
     public StepBranch FindBranch(string branchName)
     {
@@ -52,23 +56,18 @@ public class StepBranch
 [Serializable]
 public class DialogStep
 {
-    [Header("Dialog")] public NPC totalNpc;
-
-    public enum DialogMode
-    {
-        Dialog,
-        Choice
-    }
-
-    public DialogMode dialogMode;
+    [Header("Диалог")] public NPC totalNpc;
 
     public string text => PlayerPrefs.GetString("language") == "ru" ? ruText : enText;
     [TextArea] public string ruText, enText;
+    public IconMood iconMoodSelected;
 
+    [Header("Настройки диалога")] public Transform cameraTarget;
     public bool cursedText;
-    public bool animateTalking = true;
     public bool setCloseMeet;
     public float delayAfterNext;
+    public int activatedCutsceneStep = -1;
+    public string questStart;
 
     public enum IconMood
     {
@@ -77,12 +76,10 @@ public class DialogStep
         Angry,
         Sad,
         Scary,
-        Wonder,
-        Confusion,
+        Wonder, // Непонимание
+        Confusion, // Удивление
         Curse
     }
-
-    public IconMood iconMoodSelected;
 
     public Sprite icon
     {
@@ -101,20 +98,15 @@ public class DialogStep
             };
         }
     }
-
-    public bool shakeIcon;
-    public int activatedCutsceneStep = -1;
-    public string questStart;
-    public Transform cameraTarget;
 }
 
 [Serializable]
 public class DialogChoice
 {
-    public string textQuestion => PlayerPrefs.GetString("language") == "ru" ? ruTextQuestion : enTextQuestion;
+    [Header("Основное")] public string nameNewBranch;
+    [ReadOnly] public bool readed;
     public string ruTextQuestion, enTextQuestion;
-
-    public string nameNewBranch;
-
-    public bool readed, moreRead;
+    public string textQuestion => PlayerPrefs.GetString("language") == "ru" ? ruTextQuestion : enTextQuestion;
+    
+    [Header("Настройки")] public bool moreRead;
 }
