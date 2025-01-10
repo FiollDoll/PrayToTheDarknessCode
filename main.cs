@@ -39,6 +39,7 @@ public class Main : MonoBehaviour
         _scripts.player.Initialize();
         _scripts.devTool.Initialize();
         _scripts.postProcessingController.Initialize();
+        
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
     }
     // TODO: прибраться в методах

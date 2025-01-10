@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NPC_movement : MonoBehaviour
@@ -10,7 +8,7 @@ public class NPC_movement : MonoBehaviour
     private bool _playerInCollider;
     private Transform _playerTransform;
     private SpriteRenderer _sr;
-    private Animator _animator;
+    [HideInInspector] public Animator animator;
 
     [Header("Move to player")] public bool moveToPlayer;
 
@@ -23,7 +21,7 @@ public class NPC_movement : MonoBehaviour
     {
         _playerTransform = GameObject.Find("Player").transform;
         _sr = GetComponent<SpriteRenderer>();
-        _animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -52,7 +50,7 @@ public class NPC_movement : MonoBehaviour
             _playerInCollider = false;
     }
 
-    private void MoveTo(Transform target) => scripts.main.MoveTo(target, speed, transform, _sr, _animator);
+    private void MoveTo(Transform target) => scripts.main.MoveTo(target, speed, transform, _sr, animator);
 
     private void FixedUpdate()
     {
@@ -67,9 +65,9 @@ public class NPC_movement : MonoBehaviour
                     : scripts.manageLocation.GetLocation(totalLocation).transformOfStairs);
             }
             else
-                _animator?.SetBool("walk", false);
+                animator?.SetBool("walk", false);
         }
         else
-            _animator?.SetBool("walk", false);
+            animator?.SetBool("walk", false);
     }
 }

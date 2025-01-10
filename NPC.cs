@@ -1,18 +1,15 @@
+using Unity.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
 public class NPC : ScriptableObject
 {
-    [HideInInspector]
-    public string nameOfNpc
-    {
-        get { return PlayerPrefs.GetString("language") == "ru" ? ruName : enName; }
-    }
+    public string nameOfNpc => PlayerPrefs.GetString("language") == "ru" ? ruName : enName;
 
     public string ruName, enName;
     public string nameInWorld;
+    public NPC_movement npcMovement;
 
-    [HideInInspector]
     public string description
     {
         get

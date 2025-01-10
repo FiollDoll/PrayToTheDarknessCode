@@ -78,7 +78,7 @@ public class CutsceneManager : MonoBehaviour
         foreach (Cutscene.ObjectState objState in totalCutscene.steps[step].objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
         foreach (Cutscene.ObjectSprite objectSprite in totalCutscene.steps[step].objectsChangeSprite)
-            objectSprite.obj.GetComponent<SpriteRenderer>().sprite = objectSprite.newSprite;
+            objectSprite.spriteRenderer.sprite = objectSprite.newSprite;
         foreach (Cutscene.ObjectTransform objectTransform in totalCutscene.steps[step].objectsChangeTransform)
             objectTransform.obj.transform.position = objectTransform.newTransform.position;
         foreach (Cutscene.Animations animations in totalCutscene.steps[step].animatorsChanges)
@@ -88,20 +88,20 @@ public class CutsceneManager : MonoBehaviour
             _scripts.manageLocation.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
         _scripts.main.lockAnyMenu = totalCutscene.steps[step].lockAllMenu;
 
-        foreach (Cutscene.NPC_moveToPlayer nPC_MoveToPlayer in totalCutscene.steps[step].npcMoveToPlayer)
-            GameObject.Find(nPC_MoveToPlayer.NPC_name).GetComponent<NPC_movement>().moveToPlayer =
-                nPC_MoveToPlayer.move;
+        foreach (Cutscene.NpcMoveToPlayer npcMoveToPlayer in totalCutscene.steps[step].npcMoveToPlayer)
+            npcMoveToPlayer.npc.moveToPlayer = npcMoveToPlayer.move;
+
         foreach (Cutscene.HumanMove humanMove in totalCutscene.steps[step].humansMove)
         {
-            if (humanMove.human.GetComponent<NPC_movement>())
+            NPC_movement npcMovement = humanMove.human.GetComponent<NPC_movement>();
+            if (npcMovement)
             {
-                humanMove.human.GetComponent<NPC_movement>().moveToPoint = true;
-                humanMove.human.GetComponent<NPC_movement>().point = humanMove.pointMove;
-                humanMove.human.GetComponent<NPC_movement>().locationOfPointName =
-                    humanMove.human.GetComponent<NPC_movement>().totalLocation;
+                npcMovement.moveToPoint = true;
+                npcMovement.point = humanMove.pointMove;
+                npcMovement.locationOfPointName = npcMovement.totalLocation;
             }
-            else if (humanMove.human.GetComponent<Player>())
-                humanMove.human.GetComponent<Player>().MoveTo(humanMove.pointMove);
+            else
+                humanMove.human.GetComponent<Player>()?.MoveTo(humanMove.pointMove);
         }
 
         foreach (string quest in totalCutscene.steps[step].addQuests)
@@ -153,9 +153,9 @@ public class Cutscene
     }
 
     [System.Serializable]
-    public class NPC_moveToPlayer
+    public class NpcMoveToPlayer
     {
-        public string NPC_name;
+        public NPC_movement npc;
         public bool move;
     }
 
@@ -176,7 +176,7 @@ public class Cutscene
     [System.Serializable]
     public class ObjectSprite
     {
-        public GameObject obj;
+        public SpriteRenderer spriteRenderer;
         public Sprite newSprite;
     }
 
@@ -227,7 +227,7 @@ public class Cutscene
         public Animations[] animatorsChanges = new Animations[0];
 
         [Header("-Other")] public string startViewMenuActivate;
-        public NPC_moveToPlayer[] npcMoveToPlayer = new NPC_moveToPlayer[0];
+        public NpcMoveToPlayer[] npcMoveToPlayer = new NpcMoveToPlayer[0];
         public HumanMove[] humansMove = new HumanMove[0];
         public float editCameraSize;
         public VolumeProfile newVolumeProfile;

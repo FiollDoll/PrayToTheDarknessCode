@@ -15,12 +15,16 @@ public class DialogsManager : MonoBehaviour
     private DialogStep _selectedStep;
 
     [Header("Настройки")] public GameObject dialogMenu;
-    private TextMeshProUGUI _textNameMain, _textDialogMain, _textDialogSub;
-    [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu;
-    [SerializeField] private GameObject choicesContainer, buttonChoicePrefab;
-    private Image _iconImageMain, _iconImageChoices;
-    private Image _bigPicture;
+    public GameObject buttonChoicePrefab;
 
+    private TextMeshProUGUI _textNameMain, _textDialogMain, _textDialogSub;
+    private GameObject _mainDialogMenu, _choiceDialogMenu, _subDialogMenu;
+    private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
+    private GameObject _choicesContainer;
+    private Image _iconImage;
+    private RectTransform _iconImageTransform;
+    private Image _bigPicture;
+    private AdaptiveScrollView _adaptiveScrollViewChoice;
     private bool _animatingText, _canStepNext;
 
 
@@ -29,19 +33,27 @@ public class DialogsManager : MonoBehaviour
 
     public void Initialize()
     {
-        mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
-        choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
+        _mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
+        _choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f);
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _noViewPanel = _scripts.main.noViewPanel;
 
-        _textNameMain = mainDialogMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-        _textDialogMain = mainDialogMenu.transform.Find("TextDialog").GetComponent<TextMeshProUGUI>();
-        _iconImageMain = mainDialogMenu.transform.Find("Image").GetComponent<Image>();
-        _iconImageChoices = choiceDialogMenu.transform.Find("Image").GetComponent<Image>();
-        _textDialogSub = subDialogMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        _mainDialogMenu = dialogMenu.transform.Find("mainMenu").gameObject;
+        _mainDialogMenuTransform = _mainDialogMenu.GetComponent<RectTransform>();
+        _choiceDialogMenu = dialogMenu.transform.Find("choiceMenu").gameObject;
+        _choiceDialogMenuTransform = _choiceDialogMenu.GetComponent<RectTransform>();
+        _adaptiveScrollViewChoice = _choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
+        _subDialogMenu = dialogMenu.transform.Find("subMainMenu").gameObject;
+
+        _textNameMain = _mainDialogMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+        _textDialogMain = _mainDialogMenu.transform.Find("TextDialog").GetComponent<TextMeshProUGUI>();
+        _iconImage = _mainDialogMenu.transform.Find("Image").GetComponent<Image>();
+        _iconImageTransform = _iconImage.GetComponent<RectTransform>();
+        _textDialogSub = _subDialogMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
         _bigPicture = dialogMenu.transform.Find("bigPicture").gameObject.GetComponent<Image>();
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     /// <summary>
     /// Поиск диалога
     /// </summary>
@@ -59,23 +71,29 @@ public class DialogsManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Проверка - пора ли активировать выборы и есть ли они вообще?
+    /// </summary>
+    /// <returns></returns>
     private bool CheckCanChoice()
     {
-        // Если выборов не 0 и этап последний - возвращаем true
         return _selectedBranch.choices.Length != 0 && totalStep + 1 == _selectedBranch.dialogSteps.Length;
     }
 
+    /// <summary>
+    /// Активация диалоговых меню
+    /// </summary>
     private void ActivateDialogWindow()
     {
         if (!CheckCanChoice())
         {
             if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                mainDialogMenu.gameObject.SetActive(true);
+                _mainDialogMenu.gameObject.SetActive(true);
             else
-                subDialogMenu.gameObject.SetActive(true);
+                _subDialogMenu.gameObject.SetActive(true);
         }
         else
-            choiceDialogMenu.gameObject.SetActive(true);
+            _choiceDialogMenu.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -92,10 +110,15 @@ public class DialogsManager : MonoBehaviour
         _activatedDialog = newDialog;
         _selectedBranch = _activatedDialog.stepBranches[0];
         _selectedStep = _selectedBranch.dialogSteps[0];
+
         dialogMenu.gameObject.SetActive(true);
         _canStepNext = false;
         _scripts.interactions.lockInter = _activatedDialog.canInter;
         ActivateDialogWindow();
+
+        if (!_activatedDialog.moreRead)
+            _activatedDialog.readed = true;
+        _scripts.player.canMove = _activatedDialog.canMove;
 
         _scripts.main.EndCursedText(_textDialogMain);
 
@@ -118,10 +141,6 @@ public class DialogsManager : MonoBehaviour
             StartCoroutine(ActivateUIMainMenuWithDelay(
                 _activatedDialog.mainPanelStartDelay));
 
-        if (!_activatedDialog.moreRead)
-            _activatedDialog.readed = true;
-        _scripts.player.canMove = _activatedDialog.canMove;
-
         if (!CheckCanChoice())
             DialogUpdateAction();
         else
@@ -140,22 +159,22 @@ public class DialogsManager : MonoBehaviour
 
         totalStep = 0;
         Sequence sequence = DOTween.Sequence();
-        if (_activatedDialog.bigPicture != null && !_activatedDialog.disableFadeAtEnd)
+        if (_activatedDialog.bigPicture && !_activatedDialog.disableFadeAtEnd)
         {
             sequence = sequence.Append(_noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
-            sequence.Append(mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f));
+            sequence.Append(_mainDialogMenuTransform.DOPivotY(4f, 0.3f));
             sequence.Append(_bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
             sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
         }
         else
-            sequence.Append(mainDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.3f));
+            sequence.Append(_mainDialogMenuTransform.DOPivotY(4f, 0.3f));
 
-        choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(4f, 0.5f);
+        _choiceDialogMenuTransform.DOPivotY(4f, 0.5f);
 
         if (_activatedDialog.darkAfterEnd && !_activatedDialog.disableFadeAtEnd)
         {
             Tween extraSequence = _noViewPanel.DOFade(100f, 0.7f).SetEase(Ease.InQuart);
-            if (_activatedDialog.posAfterEnd != null)
+            if (_activatedDialog.posAfterEnd)
             {
                 extraSequence.OnComplete(() =>
                 {
@@ -171,8 +190,8 @@ public class DialogsManager : MonoBehaviour
         sequence.OnComplete(() =>
         {
             dialogMenu.gameObject.SetActive(false);
-            mainDialogMenu.gameObject.SetActive(false);
-            subDialogMenu.gameObject.SetActive(false);
+            _mainDialogMenu.gameObject.SetActive(false);
+            _subDialogMenu.gameObject.SetActive(false);
             if (_activatedDialog.nextStepQuest)
                 _scripts.questsSystem.NextStep();
             _scripts.player.canMove = true;
@@ -188,23 +207,24 @@ public class DialogsManager : MonoBehaviour
         });
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     /// <summary>
     /// Активация + генерация меню с выборами
     /// </summary>
     /// <param name="setScale"></param>
     private void ActivateChoiceMenu(bool setScale = false)
     {
-        choiceDialogMenu.gameObject.SetActive(true);
-        choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>()?.UpdateContentSize();
+        _choiceDialogMenu.gameObject.SetActive(true);
+        _adaptiveScrollViewChoice.UpdateContentSize();
         if (setScale)
-            choiceDialogMenu.GetComponent<RectTransform>().localScale = new Vector2(1f, 1f);
-        foreach (Transform child in choicesContainer.transform)
+            _choiceDialogMenuTransform.localScale = new Vector2(1f, 1f);
+        foreach (Transform child in _choicesContainer.transform)
             Destroy(child.gameObject);
 
         for (int i = 0; i < _selectedBranch.choices.Length; i++)
         {
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
-                choicesContainer.transform);
+                _choicesContainer.transform);
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
                 _selectedBranch.choices[i].textQuestion;
             int num = i;
@@ -213,7 +233,7 @@ public class DialogsManager : MonoBehaviour
                 obj.GetComponent<Button>().interactable = false;
         }
 
-        choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+        _adaptiveScrollViewChoice.UpdateContentSize();
     }
 
     /// <summary>
@@ -223,7 +243,7 @@ public class DialogsManager : MonoBehaviour
     private void ActivateChoiceStep(int id)
     {
         DialogChoice choice = _selectedBranch.choices[id];
-        choiceDialogMenu.gameObject.SetActive(false);
+        _choiceDialogMenu.gameObject.SetActive(false);
         totalStep = 0;
         if (!choice.moreRead)
             choice.readed = true;
@@ -252,13 +272,10 @@ public class DialogsManager : MonoBehaviour
         {
             totalStep++;
             _selectedStep = _selectedBranch.dialogSteps[totalStep];
-            if (!CheckCanChoice())
-                DialogUpdateAction();
-            else
-                ActivateChoiceMenu();
+            DialogUpdateAction();
         }
 
-        GameObject.Find(_selectedStep.totalNpc.nameInWorld)?.GetComponent<Animator>().SetBool("talk", false);
+        _selectedStep.totalNpc.npcMovement.animator.SetBool("talk", false);
 
         // Окончание обычного диалога
         if (totalStep + 1 == _selectedBranch.dialogSteps.Length)
@@ -282,9 +299,9 @@ public class DialogsManager : MonoBehaviour
         if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
         {
             _textNameMain.text = _selectedStep.totalNpc.nameOfNpc;
-            _iconImageMain.sprite = _selectedStep.icon;
-            _iconImageMain.SetNativeSize();
-            _iconImageMain.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+            _iconImage.sprite = _selectedStep.icon;
+            _iconImage.SetNativeSize();
+            _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
         }
 
         foreach (NPC totalNpc in _scripts.main.allNpc)
@@ -298,16 +315,15 @@ public class DialogsManager : MonoBehaviour
         if (_selectedStep.setCloseMeet)
             _selectedStep.totalNpc.playerCloseMeet = true;
 
-        GameObject.Find(_selectedStep.totalNpc.nameInWorld)?.GetComponent<Animator>().SetBool("talk", true);
+        _selectedStep.totalNpc.npcMovement.animator.SetBool("talk", true);
 
         if (_selectedStep.cursedText)
             _scripts.main.SetCursedText(_textDialogMain, Random.Range(5, 40));
         else
             StartCoroutine(SetText(_selectedStep.text));
 
-        _scripts.player.virtualCamera.Follow = _selectedStep.cameraTarget != null
-            ? _selectedStep.cameraTarget
-            : _scripts.player.transform;
+        _scripts.player.virtualCamera.Follow =
+            _selectedStep.cameraTarget ? _selectedStep.cameraTarget : _scripts.player.transform;
 
         if (_selectedStep.questStart != "")
             _scripts.questsSystem.ActivateQuest(_selectedStep.questStart, true);
@@ -321,12 +337,10 @@ public class DialogsManager : MonoBehaviour
     private void OpenPanels()
     {
         // TODO: переделать
-        mainDialogMenu.GetComponent<RectTransform>().GetComponent<RectTransform>().DOPivotY(0.5f, 0.3f)
-            .SetEase(Ease.InQuart).OnComplete(() => { _canStepNext = true; });
-        choiceDialogMenu.GetComponent<RectTransform>().DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart).OnComplete(() =>
-        {
-            _canStepNext = true;
-        });
+        _mainDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart)
+            .OnComplete(() => { _canStepNext = true; });
+        _choiceDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart)
+            .OnComplete(() => { _canStepNext = true; });
     }
 
     private void Update()

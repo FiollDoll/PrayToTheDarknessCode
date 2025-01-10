@@ -9,6 +9,7 @@ public class Inventory
 
     public AllScripts scripts;
 
+    // ReSharper disable Unity.PerformanceAnalysis
     public Item GetGameItem(string nameItem)
     {
         foreach (Item item in gameItems)
