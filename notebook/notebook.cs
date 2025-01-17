@@ -119,7 +119,7 @@ public class Notebook : MonoBehaviour
                 obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
                     _scripts.player.familiarNpc[i].nameOfNpc;
                 obj.transform.Find("Icon").GetComponent<Image>().sprite =
-                    _scripts.player.familiarNpc[i].icon.standartIcon;
+                    _scripts.player.familiarNpc[i].npcIcon.standartIcon;
                 obj.transform.Find("Icon").GetComponent<Image>().SetNativeSize();
                 int number = i;
                 obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
@@ -169,7 +169,7 @@ public class Notebook : MonoBehaviour
                 _pageReadHuman.gameObject.SetActive(true);
                 _headerHuman.text = _scripts.player.familiarNpc[num].nameOfNpc;
                 _noteHuman.text = _scripts.player.familiarNpc[num].description;
-                _iconHuman.sprite = _scripts.player.familiarNpc[num].icon.standartIcon;
+                _iconHuman.sprite = _scripts.player.familiarNpc[num].npcIcon.standartIcon;
                 _iconHuman.SetNativeSize();
                 break;
         }

@@ -93,7 +93,7 @@ public class CutsceneManager : MonoBehaviour
 
         foreach (Cutscene.HumanMove humanMove in totalCutscene.steps[step].humansMove)
         {
-            NPC_movement npcMovement = humanMove.human.GetComponent<NPC_movement>();
+            NpcMovement npcMovement = humanMove.human.GetComponent<NpcMovement>();
             if (npcMovement)
             {
                 npcMovement.moveToPoint = true;
@@ -155,7 +155,7 @@ public class Cutscene
     [System.Serializable]
     public class NpcMoveToPlayer
     {
-        public NPC_movement npc;
+        public NpcMovement npc;
         public bool move;
     }
 

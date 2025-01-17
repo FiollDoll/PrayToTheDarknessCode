@@ -305,7 +305,7 @@ public class DialogsManager : MonoBehaviour
             _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
         }
 
-        foreach (NPC totalNpc in _scripts.main.allNpc)
+        foreach (Npc totalNpc in _scripts.main.allNpc)
         {
             if (!totalNpc.canMeet) continue;
             if (totalNpc.nameOfNpc != _selectedStep.totalNpc.nameOfNpc) continue;
@@ -313,9 +313,6 @@ public class DialogsManager : MonoBehaviour
             _scripts.player.familiarNpc.Add(totalNpc);
             break;
         }
-
-        if (_selectedStep.setCloseMeet)
-            _selectedStep.totalNpc.playerCloseMeet = true;
         
         _selectedStep.totalNpc.animator?.SetBool("talk", true);
 

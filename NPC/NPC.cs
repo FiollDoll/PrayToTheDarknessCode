@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
-public class NPC : ScriptableObject
+public class Npc : ScriptableObject
 {
     public string nameOfNpc => PlayerPrefs.GetString("language") == "ru" ? ruName : enName;
 
@@ -9,29 +9,14 @@ public class NPC : ScriptableObject
     public string nameInWorld;
     public bool canMeet;
     [HideInInspector] public Animator animator;
-    [HideInInspector] public NPC_movement npcMovement;
+    [HideInInspector] public NpcMovement npcMovement;
 
     public string description
     {
-        get
-        {
-            if (!playerCloseMeet)
-                return PlayerPrefs.GetString("language") == "ru" ? ruDescription : enDescription;
-            else
-                return PlayerPrefs.GetString("language") == "ru" ? ruCloseDescription : enCloseDescription;
-        }
+        get { return PlayerPrefs.GetString("language") == "ru" ? ruDescription : enDescription; }
     }
 
     public string ruDescription, enDescription;
 
-    [Header("-Closed description NPC")] public bool playerCloseMeet;
-    public string ruCloseDescription, enCloseDescription;
-
-    [Header("Icons NPC")] public Icons icon;
-}
-
-[System.Serializable]
-public class Icons
-{
-    public Sprite standartIcon, happyIcon, angryIcon, sadIcon, scaryIcon, wonderIcon, confusionIcon, curseIcon;
+    [Header("Icons NPC")] public NpcIcons npcIcon;
 }

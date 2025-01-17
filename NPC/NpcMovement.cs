@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NPC_movement : MonoBehaviour
+public class NpcMovement : MonoBehaviour
 {
     public string totalLocation;
     [SerializeField] private float speed;

@@ -56,7 +56,7 @@ public class StepBranch
 [Serializable]
 public class DialogStep
 {
-    [Header("Диалог")] public NPC totalNpc;
+    [Header("Диалог")] public Npc totalNpc;
 
     public string text => PlayerPrefs.GetString("language") == "ru" ? ruText : enText;
     [TextArea] public string ruText, enText;
@@ -64,7 +64,6 @@ public class DialogStep
 
     [Header("Настройки диалога")] public Transform cameraTarget;
     public bool cursedText;
-    public bool setCloseMeet;
     public float delayAfterNext;
     public int activatedCutsceneStep = -1;
     public string questStart;
@@ -87,14 +86,14 @@ public class DialogStep
         {
             return iconMoodSelected switch
             {
-                IconMood.Standart => totalNpc.icon.standartIcon,
-                IconMood.Happy => totalNpc.icon.happyIcon,
-                IconMood.Sad => totalNpc.icon.sadIcon,
-                IconMood.Scary => totalNpc.icon.scaryIcon,
-                IconMood.Wonder => totalNpc.icon.wonderIcon,
-                IconMood.Confusion => totalNpc.icon.confusionIcon,
-                IconMood.Angry => totalNpc.icon.angryIcon,
-                IconMood.Curse => totalNpc.icon.curseIcon,
+                IconMood.Standart => totalNpc.npcIcon.standartIcon,
+                IconMood.Happy => totalNpc.npcIcon.happyIcon,
+                IconMood.Sad => totalNpc.npcIcon.sadIcon,
+                IconMood.Scary => totalNpc.npcIcon.scaryIcon,
+                IconMood.Wonder => totalNpc.npcIcon.wonderIcon,
+                IconMood.Confusion => totalNpc.npcIcon.confusionIcon,
+                IconMood.Angry => totalNpc.npcIcon.angryIcon,
+                IconMood.Curse => totalNpc.npcIcon.curseIcon,
             };
         }
     }

@@ -20,7 +20,7 @@ public class Main : MonoBehaviour
     public bool lockAnyMenu;
     public float startCameraSize;
     [SerializeField] private Material materialOfSelected;
-    public NPC[] allNpc = new NPC[0];
+    public Npc[] allNpc = new Npc[0];
 
     private const string CharsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> _cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
@@ -61,10 +61,10 @@ public class Main : MonoBehaviour
         }
         
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
-        foreach (NPC npc in allNpc)
+        foreach (Npc npc in allNpc)
         {
             GameObject npcObj = GameObject.Find(npc.nameInWorld);
-            npc.npcMovement = npcObj?.GetComponent<NPC_movement>();
+            npc.npcMovement = npcObj?.GetComponent<NpcMovement>();
             npc.animator = npcObj?.GetComponent<Animator>();
         }
     }

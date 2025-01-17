@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     [SerializeField] private string[] playerVisuals = new string[0];
-    [HideInInspector] public List<NPC> familiarNpc = new List<NPC>();
+    [HideInInspector] public List<Npc> familiarNpc = new List<Npc>();
 
     [Header("Настройки")] [SerializeField] private Transform rayStart;
     [SerializeField] private LayerMask layerMaskInteractAuto;
