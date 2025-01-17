@@ -12,7 +12,7 @@ public class ManageLocation : MonoBehaviour
     private AllScripts _scripts;
     private GameObject _player;
     private CinemachineConfiner2D _cinemachineConfiner2D;
-    private NpcMovement[] _NPCs;
+    private NpcController[] _NPCs;
 
     public void Initialize()
     {
@@ -22,7 +22,7 @@ public class ManageLocation : MonoBehaviour
         _cinemachineConfiner2D = _scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>();
         _scripts.manageLocation = this;
         totalLocation = GetLocation("mainMark");
-        _NPCs = FindObjectsByType<NpcMovement>(FindObjectsSortMode.None);
+        _NPCs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
     }
 
     public void ActivateLocation(string locationName, string spawn = "", bool withFade = true)
@@ -38,7 +38,7 @@ public class ManageLocation : MonoBehaviour
                 _scripts.main.startCameraSize + location.modifCamera;
 
             
-            foreach (NpcMovement totalNpc in _NPCs)
+            foreach (NpcController totalNpc in _NPCs)
             {
                 if (totalNpc.moveToPlayer)
                     totalNpc.gameObject.transform.position = location.GetSpawn(spawn).position;

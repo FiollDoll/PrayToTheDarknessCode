@@ -1,9 +1,10 @@
 using UnityEngine;
 
-public class NpcMovement : MonoBehaviour
+public class NpcController : MonoBehaviour
 {
     public string totalLocation;
     [SerializeField] private float speed;
+    public string selectedStyle = "standard";
     [SerializeField] private AllScripts scripts;
     private bool _playerInCollider;
     private Transform _playerTransform;

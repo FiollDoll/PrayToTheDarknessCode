@@ -60,7 +60,7 @@ public class DialogStep
 
     public string text => PlayerPrefs.GetString("language") == "ru" ? ruText : enText;
     [TextArea] public string ruText, enText;
-    public IconMood iconMoodSelected;
+    public NpcIcon.IconMood iconMoodSelected;
 
     [Header("Настройки диалога")] public Transform cameraTarget;
     public bool cursedText;
@@ -68,35 +68,7 @@ public class DialogStep
     public int activatedCutsceneStep = -1;
     public string questStart;
 
-    public enum IconMood
-    {
-        Standart,
-        Happy,
-        Angry,
-        Sad,
-        Scary,
-        Wonder, // Непонимание
-        Confusion, // Удивление
-        Curse
-    }
-
-    public Sprite icon
-    {
-        get
-        {
-            return iconMoodSelected switch
-            {
-                IconMood.Standart => totalNpc.npcIcon.standartIcon,
-                IconMood.Happy => totalNpc.npcIcon.happyIcon,
-                IconMood.Sad => totalNpc.npcIcon.sadIcon,
-                IconMood.Scary => totalNpc.npcIcon.scaryIcon,
-                IconMood.Wonder => totalNpc.npcIcon.wonderIcon,
-                IconMood.Confusion => totalNpc.npcIcon.confusionIcon,
-                IconMood.Angry => totalNpc.npcIcon.angryIcon,
-                IconMood.Curse => totalNpc.npcIcon.curseIcon,
-            };
-        }
-    }
+    public Sprite icon => totalNpc.GetStyleIcon(iconMoodSelected);
 }
 
 [Serializable]

@@ -63,8 +63,9 @@ public class Main : MonoBehaviour
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
         foreach (Npc npc in allNpc)
         {
+            npc.UpdateNpcStyleDict();
             GameObject npcObj = GameObject.Find(npc.nameInWorld);
-            npc.npcMovement = npcObj?.GetComponent<NpcMovement>();
+            npc.npcController = npcObj?.GetComponent<NpcController>();
             npc.animator = npcObj?.GetComponent<Animator>();
         }
     }
