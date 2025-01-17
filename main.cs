@@ -21,8 +21,8 @@ public class Main : MonoBehaviour
     public float startCameraSize;
     [SerializeField] private Material materialOfSelected;
     public NPC[] allNpc = new NPC[0];
-    
-    private readonly string _charsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
+
+    private const string CharsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> _cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
     private AllScripts _scripts;
 
@@ -140,7 +140,7 @@ public class Main : MonoBehaviour
     private string CursedText(int len)
     {
         string totalString = "";
-        char[] chars = _charsOnString.ToCharArray();
+        char[] chars = CharsOnString.ToCharArray();
 
         for (int i = 0; i < len; i++)
         {
