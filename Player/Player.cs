@@ -2,8 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IHumanable
 {
+    public Npc npcEntity { get; set; }
+    public string selectedStyle { get; set; } = "standard";
+
     [Header("Характеристики")] public bool canMove;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
@@ -29,18 +32,18 @@ public class Player : MonoBehaviour
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        ChangeVisual(1);
+        ChangeStyle("standard");
         ChoicePagePlayerMenu(0);
     }
 
-    public void ChangeVisual(int num)
+    public void ChangeStyle(string newStyle)
     {
-        foreach (string style in playerVisuals)
-            _animator.SetBool(style, false);
-
-        _animator.SetBool(playerVisuals[num], true);
+        selectedStyle = newStyle;
+        Debug.Log(npcEntity.nameOfNpc);
+        Debug.Log(npcEntity.GetNpcStyle(selectedStyle).nameOfStyle);
+        _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
-
+    
     public void MoveTo(Transform target) =>
         _scripts.main.MoveTo(target, moveSpeed, transform, _sr, _animator);
 

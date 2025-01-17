@@ -1,10 +1,11 @@
 using UnityEngine;
 
-public class NpcController : MonoBehaviour
+public class NpcController : MonoBehaviour, IHumanable
 {
+    public Npc npcEntity { get; set; }
     public string totalLocation;
     [SerializeField] private float speed;
-    public string selectedStyle = "standard";
+    public string selectedStyle { get; set; } = "standard";
     [SerializeField] private AllScripts scripts;
     private bool _playerInCollider;
     private Transform _playerTransform;
@@ -23,6 +24,12 @@ public class NpcController : MonoBehaviour
         _playerTransform = GameObject.Find("Player").transform;
         _sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+    }
+
+    public void ChangeStyle(string newStyle)
+    {
+        selectedStyle = newStyle;
+        animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

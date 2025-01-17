@@ -10,12 +10,10 @@ using Random = UnityEngine.Random;
 
 public class Main : MonoBehaviour
 {
-    [Header("Игровые переменные")]
-    public float karma;
+    [Header("Игровые переменные")] public float karma;
     public int hour, minute;
 
-    [Header("Настройки")]
-    public Image noViewPanel;
+    [Header("Настройки")] public Image noViewPanel;
     public Sprite nullSprite;
     public bool lockAnyMenu;
     public float startCameraSize;
@@ -30,7 +28,19 @@ public class Main : MonoBehaviour
     {
         // Точка инициализации всех скриптов по порядку
         _scripts = GetComponent<AllScripts>();
+        
+        // Инициализация информации об НПС
+        foreach (Npc npc in allNpc)
+        {
+            npc.UpdateNpcStyleDict();
+            GameObject npcObj = GameObject.Find(npc.nameInWorld);
+            npc.NpcController = npcObj.GetComponent<IHumanable>();
+            if (npc.NpcController != null) // Если существо
+                npc.NpcController.npcEntity = npc;
 
+            npc.animator = npcObj?.GetComponent<Animator>();
+        }
+        
         // Список методов инициализации
         var initializers = new Action[]
         {
@@ -56,21 +66,15 @@ public class Main : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Ошибка при инициализации: {ex.Message}");
+                Debug.LogError($"Ошибка при инициализации: {ex.Message}\n{initializer.Target}");
             }
         }
-        
-        startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize;
-        foreach (Npc npc in allNpc)
-        {
-            npc.UpdateNpcStyleDict();
-            GameObject npcObj = GameObject.Find(npc.nameInWorld);
-            npc.npcController = npcObj?.GetComponent<NpcController>();
-            npc.animator = npcObj?.GetComponent<Animator>();
-        }
+
+        startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
+            .OrthographicSize;
     }
     // TODO: прибраться в методах
-    
+
     public void ActivateNoVision(float time)
     {
         Sequence sequence = DOTween.Sequence();
@@ -99,7 +103,7 @@ public class Main : MonoBehaviour
             return true;
         return lockAnyMenu;
     }
-    
+
     /// <summary>
     /// Добавление ДОП материала на объект
     /// </summary>
@@ -137,7 +141,7 @@ public class Main : MonoBehaviour
             renderer.materials = newMaterials;
         }
     }
-    
+
     private string CursedText(int len)
     {
         string totalString = "";

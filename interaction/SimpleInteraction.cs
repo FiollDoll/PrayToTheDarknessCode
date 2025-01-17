@@ -16,7 +16,7 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
     [Header("Preferences")] public string dialogStart;
     public bool destroyAfterInter;
 
-    public int playerVisual = -1;
+    public string playerVisual = "";
     public bool nextQuestStep { get; set; }
 
     private AllScripts _scripts;
@@ -31,8 +31,8 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
         if (dialogStart != "")
             _scripts.dialogsManager.ActivateDialog(dialogStart);
 
-        if (playerVisual != -1)
-            _scripts.player.ChangeVisual(playerVisual);
+        if (playerVisual != "")
+            _scripts.player.ChangeStyle(playerVisual);
 
         if (destroyAfterInter)
             Destroy(this.gameObject);

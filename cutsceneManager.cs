@@ -50,8 +50,8 @@ public class CutsceneManager : MonoBehaviour
         if (totalCutscene.steps[step].startViewMenuActivate != "")
             StartViewMenuActivate(totalCutscene.steps[step].startViewMenuActivate);
         _scripts.player.changeSpeed = totalCutscene.steps[step].editSpeed;
-        if (totalCutscene.steps[step].changeVisualPlayer != -1)
-            _scripts.player.ChangeVisual(totalCutscene.steps[step].changeVisualPlayer);
+        if (totalCutscene.steps[step].changeVisualPlayer != "")
+            _scripts.player.ChangeStyle(totalCutscene.steps[step].changeVisualPlayer);
         if (totalCutscene.steps[step].moveToLocation != "")
             _scripts.manageLocation.ActivateLocation(totalCutscene.steps[step].moveToLocation,
                 totalCutscene.steps[step].moveToLocationSpawn, totalCutscene.steps[step].toLocationWithFade);
@@ -68,7 +68,7 @@ public class CutsceneManager : MonoBehaviour
         if (totalCutscene.steps[step].questStepNext)
             _scripts.questsSystem.NextStep();
 
-        if (totalCutscene.steps[step].newVolumeProfile != null)
+        if (totalCutscene.steps[step].newVolumeProfile)
             _scripts.postProcessingController.SetVolumeProfile(totalCutscene.steps[step].newVolumeProfile);
 
         if (totalCutscene.steps[step].editCameraSize != 0)
@@ -202,7 +202,7 @@ public class Cutscene
 
         [Header("-DoInScripts")] public bool questStepNext;
         public float editSpeed;
-        public int changeVisualPlayer = -1;
+        public string changeVisualPlayer = "";
 
         [Header("-Dialogs")] public string activatedDialog;
         public bool closeDialogMenu;

@@ -10,7 +10,7 @@ public class Npc : ScriptableObject
     public string ruName, enName;
 
     public string description => PlayerPrefs.GetString("language") == "ru" ? ruDescription : enDescription;
-    public string ruDescription, enDescription;
+    [TextArea]public string ruDescription, enDescription;
 
     public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
     private Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
@@ -19,7 +19,7 @@ public class Npc : ScriptableObject
 
     // Назначаются при старте
     [HideInInspector] public Animator animator;
-    [HideInInspector] public NpcController npcController;
+    [HideInInspector] public IHumanable NpcController;
 
     public void UpdateNpcStyleDict()
     {
@@ -27,10 +27,15 @@ public class Npc : ScriptableObject
             _stylesDict.Add(style.nameOfStyle, style);
     }
 
+    public NpcStyle GetNpcStyle(string styleName)
+    {
+        return _stylesDict[styleName];
+    }
+    
     public Sprite GetStyleIcon(NpcIcon.IconMood iconMood)
     {
-        if (npcController && npcController.selectedStyle != "")
-            return _stylesDict[npcController.selectedStyle].styleIcon.ReturnIcon(iconMood);
+        if (NpcController != null && NpcController.selectedStyle != "")
+            return _stylesDict[NpcController.selectedStyle].styleIcon.ReturnIcon(iconMood);
         return _stylesDict["standard"].styleIcon.ReturnIcon(iconMood);
     }
 }
