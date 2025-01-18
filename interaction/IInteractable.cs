@@ -9,7 +9,7 @@ public interface IInteractable
     public int stageInter { get;}
 
     // Общие настройки
-    public bool autoUse { get;}
-
+    public bool autoUse { get;} // Автоматическое использование
+    public string itemNameUse { get; } // Возможность использовать определенный предмет
     public void DoInteraction();
 }

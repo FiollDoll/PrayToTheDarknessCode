@@ -43,8 +43,9 @@ public class Interactions : MonoBehaviour
     {
         EnteredInteraction = null;
         SelectedInteraction = null;
-        if (_selectedCollider.collider != null && _selectedCollider.collider.GetComponent<MeshRenderer>())
-            _scripts.main.RemoveMaterial(_selectedCollider.collider.GetComponent<MeshRenderer>());
+        MeshRenderer selectedColliderRenderer = _selectedCollider.collider?.GetComponent<MeshRenderer>();
+        if (selectedColliderRenderer)
+            _scripts.main.RemoveMaterial(selectedColliderRenderer);
 
         // Взаимодействия по мыши
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f,
@@ -53,8 +54,8 @@ public class Interactions : MonoBehaviour
             if (_selectedCollider.collider.TryGetComponent(out IInteractable interactable))
             {
                 SelectedInteraction = interactable;
-                if (CheckActiveInteraction(interactable) && _selectedCollider.collider.GetComponent<MeshRenderer>())
-                    _scripts.main.AddMaterial(_selectedCollider.collider.GetComponent<MeshRenderer>());
+                if (CheckActiveInteraction(interactable) && selectedColliderRenderer)
+                    _scripts.main.AddMaterial(selectedColliderRenderer);
             }
         }
     }

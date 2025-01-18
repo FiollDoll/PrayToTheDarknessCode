@@ -15,7 +15,8 @@ public class ItemInteraction : MonoBehaviour, IInteractable
 
     [Header("Preferences")] public bool darkAfterUse { get; set; }
     public bool nextQuestStep { get; set; }
-
+    public string ItemNameToUse;
+    public string itemNameUse => ItemNameToUse;
     private AllScripts _scripts;
 
     private void Awake()
@@ -30,7 +31,7 @@ public class ItemInteraction : MonoBehaviour, IInteractable
         if (nextQuestStep)
             _scripts.questsSystem.NextStep();
 
-        _scripts.inventoryManager.AddItem(this.gameObject.name);
-        Destroy(this.gameObject);
+        _scripts.inventoryManager.AddItem(gameObject.name);
+        Destroy(gameObject);
     }
 }

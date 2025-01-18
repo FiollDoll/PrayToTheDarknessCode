@@ -11,15 +11,11 @@ public class Item
     [TextArea] public string descriptionRu, descriptionEn;
     public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
 
-
-    [TextArea] public string activationTextRu, activationTextEn;
-    public string activationText => PlayerPrefs.GetString("language") == "ru" ? activationTextRu : activationTextEn;
-
     public Sprite icon
     {
         get
         {
-            if (iconRu != null) // iconEn дефолт
+            if (iconRu) // iconEn дефолт
                 return PlayerPrefs.GetString("language") == "ru" ? iconRu : iconEn;
 
             return iconEn;
@@ -30,6 +26,8 @@ public class Item
     public bool watchIconOnly;
 
     [Header("UseSettings")] public bool canUse;
+    public string useText => PlayerPrefs.GetString("language") == "ru" ? useTextRu : useTextEn;
+    public string useTextRu, useTextEn;
     public bool removeAfterUse = true;
     public bool useInInventory;
     public bool useInCollider;

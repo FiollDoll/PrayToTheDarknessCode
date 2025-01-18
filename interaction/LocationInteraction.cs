@@ -16,6 +16,8 @@ public class LocationInteraction : MonoBehaviour, IInteractable
     [Header("Preferences")] public string spawnName;
     public bool destroyAfterInter;
     public bool nextQuestStep;
+    public string ItemNameToUse;
+    public string itemNameUse => ItemNameToUse;
 
     private AllScripts _scripts;
 

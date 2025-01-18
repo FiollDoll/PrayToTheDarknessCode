@@ -2,18 +2,21 @@
 
 public class CutsceneInteraction : MonoBehaviour, IInteractable
 {
-    [Header("Main")] public string interName { get; set; }
-
+    [Header("Main")] public string ruLabelName;
+    public string enLabelName;
     public string interLabel => PlayerPrefs.GetString("language") == "ru" ? ruLabelName : enLabelName;
-    public string ruLabelName { get; set; }
-    public string enLabelName { get; set; }
-    public bool autoUse { get; set; }
 
-    [Header("Requires")] public string nameQuestRequired { get; set; }
-    public int stageInter { get; set; }
+    [Header("Requires")] public bool AutoUse;
+    public bool autoUse => AutoUse;
+    public string NameQuestRequired;
+    public string nameQuestRequired => NameQuestRequired;
+    public int StageInter;
+    public int stageInter => StageInter;
 
     [Header("Preferences")] public bool nextQuestStep { get; set; }
-
+    public string ItemNameToUse;
+    public string itemNameUse => ItemNameToUse;
+    
     private AllScripts _scripts;
 
     private void Awake()
@@ -23,6 +26,6 @@ public class CutsceneInteraction : MonoBehaviour, IInteractable
 
     public void DoInteraction()
     {
-        _scripts.cutsceneManager.ActivateCutscene(interName);
+        _scripts.cutsceneManager.ActivateCutscene(gameObject.name);
     }
 }

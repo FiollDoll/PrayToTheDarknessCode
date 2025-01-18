@@ -14,7 +14,8 @@ public class DialogInteraction : MonoBehaviour, IInteractable
     public int stageInter => StageInter;
 
     [Header("Preferences")] public bool nextQuestStep { get; set; }
-
+    public string ItemNameToUse;
+    public string itemNameUse => ItemNameToUse;
     private AllScripts _scripts;
 
     private void Awake()
@@ -24,6 +25,6 @@ public class DialogInteraction : MonoBehaviour, IInteractable
 
     public void DoInteraction()
     {
-        _scripts.dialogsManager.ActivateDialog(this.gameObject.name);
+        _scripts.dialogsManager.ActivateDialog(gameObject.name);
     }
 }

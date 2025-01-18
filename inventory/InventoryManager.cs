@@ -10,9 +10,10 @@ public class InventoryManager : MonoBehaviour
 
     [Header("Menu settings")] [SerializeField]
     private GameObject inventorySlotPrefab;
+
     [SerializeField] private TextMeshProUGUI newItemText;
     [SerializeField] private GameObject invMenu, itemInfoMenu;
-    
+
     private GameObject _mainStyle, _onlyIconStyle;
     private TextMeshProUGUI _textItemName, _textItemDescription;
     private Image _iconInMain, _iconInOnly;
@@ -33,7 +34,7 @@ public class InventoryManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Управление показом инвентаря
+    /// Открытие/закрытие инвентаря
     /// </summary>
     /// <param name="state"></param>
     public void ManageInventoryPanel(bool state)
@@ -44,6 +45,10 @@ public class InventoryManager : MonoBehaviour
             UpdateInvUI();
     }
 
+    /// <summary>
+    /// Выдача предмета
+    /// </summary>
+    /// <param name="nameItem"></param>
     public void AddItem(string nameItem)
     {
         inventory.AddItem(nameItem);
@@ -62,63 +67,59 @@ public class InventoryManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Просмотр определенного меню
+    /// Просмотр определенного предмета
     /// </summary>
     /// <param name="id"></param>
     private void WatchItem(int id)
     {
         itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
 
-        if (itemInfoMenu.gameObject.activeSelf)
+        if (!itemInfoMenu.gameObject.activeSelf) return; // Если меню закрылось
+
+        Item selectedItem = inventory.GetPlayerItem(id);
+
+        _mainStyle.gameObject.SetActive(!selectedItem.watchIconOnly);
+        _onlyIconStyle.gameObject.SetActive(selectedItem.watchIconOnly);
+
+        if (selectedItem.watchIconOnly)
+            _iconInOnly.sprite = selectedItem.icon;
+        else
         {
-            Item selectedItem = inventory.GetPlayerItem(id);
-            _mainStyle.gameObject.SetActive(!selectedItem.watchIconOnly);
-            _onlyIconStyle.gameObject.SetActive(selectedItem.watchIconOnly);
-            if (selectedItem.watchIconOnly)
-                _iconInOnly.sprite = selectedItem.icon;
-            else
-            {
-                _textItemName.text = selectedItem.name;
-                _textItemDescription.text =
-                    selectedItem.description;
-                _iconInMain.sprite = selectedItem.icon;
-            }
+            _textItemName.text = selectedItem.name;
+            _textItemDescription.text =
+                selectedItem.description;
+            _iconInMain.sprite = selectedItem.icon;
+        }
 
-            _buttonItemActivate.interactable = true; // Дефолт значение
-            if (selectedItem.canUse && (selectedItem.useInInventory || selectedItem.useInCollider))
+        _buttonItemActivate.gameObject.SetActive(true);
+        if (selectedItem.canUse && (selectedItem.useInInventory || selectedItem.useInCollider))
+        {
+            if (selectedItem.useInInventory)
             {
-                if (selectedItem.useInInventory)
+                if (selectedItem.questName != "")
                 {
-                    if (selectedItem.questName != "")
-                    {
-                        if (selectedItem.questName != _scripts.questsSystem.totalQuest.nameInGame
-                            || (_scripts.questsSystem.totalQuest.totalStep != selectedItem.questStage &&
-                                selectedItem.questStage > 0))
-                            _buttonItemActivate.interactable = false;
-                    }
+                    if (selectedItem.questName != _scripts.questsSystem.totalQuest.nameInGame
+                        || (_scripts.questsSystem.totalQuest.totalStep != selectedItem.questStage &&
+                            selectedItem.questStage > 0))
+                        _buttonItemActivate.gameObject.SetActive(false);
                 }
-                // Отложено.
-                /*
-                else if (selectedItem.useInCollider)
-                {
-                    if (_scripts.interactions.selectedInteraction == null
-                        || (_scripts.interactions.selectedInteraction != null && _scripts.interactions.selectedInteraction.itemNameUse !=
-                            selectedItem.nameInGame))
-                        button.interactable = false;
-                }
-                */
             }
-            else
-                _buttonItemActivate.interactable = false;
+            else if (selectedItem.useInCollider) // Только для enteredColliders
+            {
+                if (_scripts.interactions.EnteredInteraction == null ||
+                    (_scripts.interactions.EnteredInteraction != null &&
+                     _scripts.interactions.EnteredInteraction.itemNameUse != selectedItem.nameInGame))
+                    _buttonItemActivate.gameObject.SetActive(false);
+            }
+        }
+        else
+            _buttonItemActivate.gameObject.SetActive(false);
 
-            if (_buttonItemActivate.interactable)
-            {
-                _buttonItemActivate.onClick.AddListener(delegate { UseItem(id); });
-                _buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                    selectedItem.activationText != "" ? selectedItem.activationText : "???";
-            }
-            else
-                _buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = "";
+        if (_buttonItemActivate.gameObject.activeSelf)
+        {
+            _buttonItemActivate.onClick.AddListener(delegate { UseItem(id); });
+            _buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
+                selectedItem.useText != "" ? selectedItem.useText : "???";
         }
     }
 

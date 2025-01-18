@@ -6,27 +6,43 @@ public class Inventory
 {
     [SerializeField] private List<Item> playerItems = new List<Item>();
     [SerializeField] private Item[] gameItems = new Item[0];
+    private Dictionary<string, Item> _gameItemsDict = new Dictionary<string, Item>();
 
     public AllScripts scripts;
 
-    // ReSharper disable Unity.PerformanceAnalysis
-    public Item GetGameItem(string nameItem)
+    /// <summary>
+    /// Инициализация словаря доступных предметов. Вызывается один раз!
+    /// </summary>
+    public void UpdateGameItemsDict()
     {
         foreach (Item item in gameItems)
-        {
-            if (item.nameInGame != nameItem) continue;
-            return item;
-        }
-
-        Debug.Log("Item not found!");
-        return null;
+            _gameItemsDict.Add(item.nameInGame, item);
+    }
+    
+    /// <summary>
+    /// Получить Item по имени
+    /// </summary>
+    /// <param name="nameItem">Название предмета</param>
+    /// <returns></returns>
+    public Item GetGameItem(string nameItem)
+    {
+        return _gameItemsDict[nameItem];
     }
 
+    /// <summary>
+    /// Получить предмет в инвентаре игрока
+    /// </summary>
+    /// <param name="slot">Индекс слота</param>
+    /// <returns></returns>
     public Item GetPlayerItem(int slot)
     {
         return playerItems[slot];
     }
 
+    /// <summary>
+    /// Получить число предметов в инвентаре
+    /// </summary>
+    /// <returns></returns>
     public int CountPlayerItems()
     {
         return playerItems.Count;

@@ -18,6 +18,8 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
 
     public string playerVisual = "";
     public bool nextQuestStep { get; set; }
+    public string ItemNameToUse;
+    public string itemNameUse => ItemNameToUse;
 
     private AllScripts _scripts;
 
