@@ -6,4 +6,5 @@ public interface IHumanable
     public string selectedStyle { get; set; }
 
     public void ChangeStyle(string newStyle);
+    public void MoveTo(Transform target);
 }

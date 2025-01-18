@@ -13,12 +13,12 @@ public class Main : MonoBehaviour
     [Header("Игровые переменные")] public float karma;
     public int hour, minute;
 
-    [Header("Настройки")] public Image noViewPanel;
+    [Header("Настройки")] public Npc[] allNpc = new Npc[0];
+    public Image noViewPanel;
     public Sprite nullSprite;
-    public bool lockAnyMenu;
-    public float startCameraSize;
     [SerializeField] private Material materialOfSelected;
-    public Npc[] allNpc = new Npc[0];
+    [HideInInspector] public bool lockAnyMenu;
+    [HideInInspector] public float startCameraSize;
 
     private const string CharsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> _cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
@@ -28,7 +28,7 @@ public class Main : MonoBehaviour
     {
         // Точка инициализации всех скриптов по порядку
         _scripts = GetComponent<AllScripts>();
-        
+
         // Инициализация информации об НПС
         foreach (Npc npc in allNpc)
         {
@@ -40,7 +40,7 @@ public class Main : MonoBehaviour
 
             npc.animator = npcObj?.GetComponent<Animator>();
         }
-        
+
         // Список методов инициализации
         var initializers = new Action[]
         {
@@ -73,22 +73,28 @@ public class Main : MonoBehaviour
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .OrthographicSize;
     }
-    // TODO: прибраться в методах
-
-    public void ActivateNoVision(float time)
-    {
-        Sequence sequence = DOTween.Sequence();
-        Tween fadeAnimation = noViewPanel.DOFade(100f, time / 2).SetEase(Ease.InQuart);
-        sequence.Append(fadeAnimation);
-        sequence.Append(noViewPanel.DOFade(0f, time / 2).SetEase(Ease.OutQuart));
-        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-    }
 
     public void MoveTo(Transform target, float speed, Transform pos, SpriteRenderer spriteRenderer, Animator animator)
     {
         pos.position = Vector3.MoveTowards(pos.position, target.position, speed * Time.deltaTime);
         animator.SetBool("walk", true);
         spriteRenderer.flipX = !(target.position.x > pos.position.x);
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    /// <summary>
+    /// Активирует затемнение
+    /// </summary>
+    /// <param name="time"></param>
+    /// <param name="actionAfterFade"></param>
+    public void ActivateNoVision(float time, Action actionAfterFade = null)
+    {
+        Sequence sequence = DOTween.Sequence();
+        Tween fadeAnimation = noViewPanel.DOFade(100f, time / 2).SetEase(Ease.InQuart);
+        fadeAnimation.OnComplete(() => { actionAfterFade?.Invoke(); });
+        sequence.Append(fadeAnimation);
+        sequence.Append(noViewPanel.DOFade(0f, time / 2).SetEase(Ease.OutQuart));
+        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
     }
 
     public bool CheckAnyMenuOpen()
@@ -107,38 +113,38 @@ public class Main : MonoBehaviour
     /// <summary>
     /// Добавление ДОП материала на объект
     /// </summary>
-    /// <param name="renderer"></param>
+    /// <param name="objRenderer"></param>
     /// <returns></returns>
-    public void AddMaterial(MeshRenderer renderer)
+    public void AddMaterial(MeshRenderer objRenderer)
     {
-        Material[] newMaterials = new Material[renderer.materials.Length + 1];
+        Material[] newMaterials = new Material[objRenderer.materials.Length + 1];
 
-        for (int i = 0; i < renderer.materials.Length; i++)
-            newMaterials[i] = renderer.materials[i];
+        for (int i = 0; i < objRenderer.materials.Length; i++)
+            newMaterials[i] = objRenderer.materials[i];
 
         newMaterials[^1] = materialOfSelected;
 
-        renderer.materials = newMaterials;
+        objRenderer.materials = newMaterials;
     }
 
     /// <summary>
     /// Удаление последнего материала
     /// </summary>
-    /// <param name="renderer"></param>
-    public void RemoveMaterial(MeshRenderer renderer)
+    /// <param name="objRenderer"></param>
+    public void RemoveMaterial(MeshRenderer objRenderer)
     {
-        Material[] newMaterials = new Material[renderer.materials.Length - 1];
+        Material[] newMaterials = new Material[objRenderer.materials.Length - 1];
 
         int index = 0;
-        for (int i = 0; i < renderer.materials.Length; i++)
+        for (int i = 0; i < objRenderer.materials.Length; i++)
         {
-            if (renderer.materials[i] != materialOfSelected)
+            if (objRenderer.materials[i] != materialOfSelected)
             {
-                newMaterials[index] = renderer.materials[i];
+                newMaterials[index] = objRenderer.materials[i];
                 index++;
             }
 
-            renderer.materials = newMaterials;
+            objRenderer.materials = newMaterials;
         }
     }
 

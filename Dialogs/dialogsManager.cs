@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -7,6 +8,7 @@ using DG.Tweening;
 public class DialogsManager : MonoBehaviour
 {
     [Header("Все диалоги")] public Dialog[] dialogs = new Dialog[0];
+    private Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>(); 
 
     [Header("Текущий диалог")] public int totalStep;
 
@@ -34,6 +36,9 @@ public class DialogsManager : MonoBehaviour
 
     public void Initialize()
     {
+        foreach (Dialog dialog in dialogs)
+            _dialogsDict.Add(dialog.nameDialog, dialog);
+        
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _noViewPanel = _scripts.main.noViewPanel;
 
@@ -62,14 +67,7 @@ public class DialogsManager : MonoBehaviour
     /// <returns>Возвращает диалог</returns>
     private Dialog GetDialog(string nameDialog)
     {
-        foreach (Dialog totalDialog in dialogs)
-        {
-            if (totalDialog.nameDialog == nameDialog && !totalDialog.readed)
-                return totalDialog;
-        }
-
-        Debug.Log("Dialog " + nameDialog + "don`t find or readed");
-        return null;
+        return _dialogsDict[nameDialog];
     }
 
     /// <summary>
@@ -86,7 +84,16 @@ public class DialogsManager : MonoBehaviour
     /// </summary>
     private void ActivateDialogWindow()
     {
-        if (!CheckCanChoice())
+        if (_activatedDialog.bigPicture) // Сначала затемнение
+        {
+            _scripts.main.ActivateNoVision(1.2f, () =>
+            {
+                _bigPicture.gameObject.SetActive(true);
+                _bigPicture.sprite = _activatedDialog.bigPicture;
+            });
+        }
+        
+        if (!CheckCanChoice()) // Потом уже управление менюшками
         {
             if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                 _mainDialogMenu.gameObject.SetActive(true);
@@ -107,11 +114,12 @@ public class DialogsManager : MonoBehaviour
 
         Dialog newDialog = GetDialog((nameDialog));
         if (newDialog == null) return;
-
+        if (newDialog.readed) return;
+        
         _activatedDialog = newDialog;
         _selectedBranch = _activatedDialog.stepBranches[0];
         _selectedStep = _selectedBranch.dialogSteps[0];
-
+        
         dialogMenu.gameObject.SetActive(true);
         _canStepNext = false;
         _scripts.interactions.lockInter = _activatedDialog.canInter;
@@ -122,19 +130,6 @@ public class DialogsManager : MonoBehaviour
         _scripts.player.canMove = _activatedDialog.canMove;
 
         _scripts.main.EndCursedText(_textDialogMain);
-
-        if (_activatedDialog.bigPicture)
-        {
-            Sequence sequence = DOTween.Sequence();
-            Tween stepSequence = _noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart);
-            stepSequence.OnComplete(() => { _bigPicture.sprite = _activatedDialog.bigPicture; });
-            sequence.Append(stepSequence);
-            sequence.Append(_bigPicture.DOFade(100f, 0.001f).SetEase(Ease.InQuart));
-            sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-            sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-        }
-        else
-            _bigPicture.sprite = _scripts.main.nullSprite;
 
         if (_activatedDialog.mainPanelStartDelay == 0)
             OpenPanels();
@@ -158,54 +153,39 @@ public class DialogsManager : MonoBehaviour
         if (_activatedDialog.activatedCutsceneStepAtEnd != -1)
             _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activatedCutsceneStepAtEnd);
 
-        totalStep = 0;
-        Sequence sequence = DOTween.Sequence();
-        if (_activatedDialog.bigPicture && !_activatedDialog.disableFadeAtEnd)
-        {
-            sequence = sequence.Append(_noViewPanel.DOFade(100f, 0.5f).SetEase(Ease.InQuart));
-            sequence.Append(_mainDialogMenuTransform.DOPivotY(4f, 0.3f));
-            sequence.Append(_bigPicture.DOFade(0f, 0.1f).SetEase(Ease.OutQuart));
-            sequence.Append(_noViewPanel.DOFade(0f, 0.5f).SetEase(Ease.OutQuart));
-        }
+        if (_activatedDialog.bigPicture)
+            _scripts.main.ActivateNoVision(1.5f, DoActionToClose);
+        else if (_activatedDialog.darkAfterEnd)
+            _scripts.main.ActivateNoVision(1.2f, DoActionToClose);
         else
-            sequence.Append(_mainDialogMenuTransform.DOPivotY(4f, 0.3f));
+            DoActionToClose();
+    }
 
-        _choiceDialogMenuTransform.DOPivotY(4f, 0.5f);
+    /// <summary>
+    /// Выполнить действия для закрытия диалога
+    /// </summary>
+    private void DoActionToClose()
+    {
+        totalStep = 0;
+        dialogMenu.gameObject.SetActive(false);
+        _bigPicture.gameObject.SetActive(false);
+        _mainDialogMenu.gameObject.SetActive(false);
+        _subDialogMenu.gameObject.SetActive(false);
+        if (_activatedDialog.posAfterEnd)
+            _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
-        if (_activatedDialog.darkAfterEnd && !_activatedDialog.disableFadeAtEnd)
-        {
-            Tween extraSequence = _noViewPanel.DOFade(100f, 0.7f).SetEase(Ease.InQuart);
-            if (_activatedDialog.posAfterEnd)
-            {
-                extraSequence.OnComplete(() =>
-                {
-                    _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
-                });
-            }
-
-            sequence.Append(extraSequence);
-            sequence.Append(_noViewPanel.DOFade(0f, 0.7f).SetEase(Ease.OutQuart));
-        }
-
-        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
-        sequence.OnComplete(() =>
-        {
-            dialogMenu.gameObject.SetActive(false);
-            _mainDialogMenu.gameObject.SetActive(false);
-            _subDialogMenu.gameObject.SetActive(false);
-            if (_activatedDialog.nextStepQuest)
-                _scripts.questsSystem.NextStep();
-            _scripts.player.canMove = true;
-            _scripts.main.EndCursedText(_textDialogMain);
-            _scripts.player.virtualCamera.Follow = _scripts.player.transform;
-            if (_activatedDialog.noteAdd != "")
-                _scripts.notebook.AddNote(_activatedDialog.noteAdd);
-            string newDialog = _activatedDialog.startNewDialogAfterEnd;
-            _activatedDialog = null;
-            _canStepNext = true;
-            if (newDialog != "")
-                ActivateDialog(newDialog);
-        });
+        if (_activatedDialog.nextStepQuest)
+            _scripts.questsSystem.NextStep();
+        _scripts.player.canMove = true;
+        _scripts.main.EndCursedText(_textDialogMain);
+        _scripts.player.virtualCamera.Follow = _scripts.player.transform;
+        if (_activatedDialog.noteAdd != "")
+            _scripts.notebook.AddNote(_activatedDialog.noteAdd);
+        string newDialog = _activatedDialog.startNewDialogAfterEnd;
+        _activatedDialog = null;
+        _canStepNext = true;
+        if (newDialog != "")
+            ActivateDialog(newDialog);
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -313,7 +293,7 @@ public class DialogsManager : MonoBehaviour
             _scripts.player.familiarNpc.Add(totalNpc);
             break;
         }
-        
+
         _selectedStep.totalNpc.animator?.SetBool("talk", true);
 
         if (_selectedStep.cursedText)

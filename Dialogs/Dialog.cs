@@ -31,7 +31,6 @@ public class Dialog
     public Transform posAfterEnd;
     public bool nextStepQuest;
     public int activatedCutsceneStepAtEnd = -1;
-    public bool disableFadeAtEnd; // TODO: сделать noviewPanel неперекрываемой, а после убрать эту переменную
 
     public StepBranch FindBranch(string branchName)
     {

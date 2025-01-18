@@ -2,42 +2,48 @@ using UnityEngine;
 
 public class NpcController : MonoBehaviour, IHumanable
 {
-    public Npc npcEntity { get; set; }
-    public string totalLocation;
-    [SerializeField] private float speed;
+    [Header("MainInfo")] public Npc npcEntity { get; set; }
     public string selectedStyle { get; set; } = "standard";
-    [SerializeField] private AllScripts scripts;
+    public string totalLocation;
+
+    [Header("Preference")] [SerializeField]
+    private float speed;
+
+    private AllScripts _scripts;
     private bool _playerInCollider;
     private Transform _playerTransform;
     private SpriteRenderer _sr;
-    [HideInInspector] public Animator animator;
+    private Animator _animator;
 
-    [Header("Move to player")] public bool moveToPlayer;
+    [Header("Move To Player Preference")] public bool moveToPlayer;
 
-    [Header("Move to point")] public bool moveToPoint;
+    [Header("Move To Point Preference")] public bool moveToPoint;
     public bool waitPlayerAndMove;
-    public Transform point;
-    public string locationOfPointName;
+    [HideInInspector] public Transform point;
+    [HideInInspector] public string locationOfPointName;
 
     private void Start()
     {
-        _playerTransform = GameObject.Find("Player").transform;
         _sr = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
+        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        _playerTransform = GameObject.Find("Player").transform;
     }
 
     public void ChangeStyle(string newStyle)
     {
         selectedStyle = newStyle;
-        animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
+        _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
+
+    public void MoveTo(Transform target) => _scripts.main.MoveTo(target, speed, transform, _sr, _animator);
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         switch (other.gameObject.name)
         {
             case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
-                transform.position = scripts.manageLocation.GetLocation(locationOfPointName).spawns[0].spawn.position;
+                transform.position = _scripts.manageLocation.GetLocation(locationOfPointName).spawns[0].spawn.position;
                 totalLocation = locationOfPointName;
                 break;
             case "Player":
@@ -58,8 +64,6 @@ public class NpcController : MonoBehaviour, IHumanable
             _playerInCollider = false;
     }
 
-    private void MoveTo(Transform target) => scripts.main.MoveTo(target, speed, transform, _sr, animator);
-
     private void FixedUpdate()
     {
         if (!_playerInCollider && moveToPlayer)
@@ -70,12 +74,12 @@ public class NpcController : MonoBehaviour, IHumanable
             {
                 MoveTo(locationOfPointName == totalLocation
                     ? point
-                    : scripts.manageLocation.GetLocation(totalLocation).transformOfStairs);
+                    : _scripts.manageLocation.GetLocation(totalLocation).transformOfStairs);
             }
             else
-                animator?.SetBool("walk", false);
+                _animator?.SetBool("walk", false);
         }
         else
-            animator?.SetBool("walk", false);
+            _animator?.SetBool("walk", false);
     }
 }

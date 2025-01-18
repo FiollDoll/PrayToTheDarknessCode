@@ -10,7 +10,6 @@ public class Player : MonoBehaviour, IHumanable
     [Header("Характеристики")] public bool canMove;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
-    [SerializeField] private string[] playerVisuals = new string[0];
     [HideInInspector] public List<Npc> familiarNpc = new List<Npc>();
 
     [Header("Настройки")] [SerializeField] private Transform rayStart;
@@ -39,8 +38,6 @@ public class Player : MonoBehaviour, IHumanable
     public void ChangeStyle(string newStyle)
     {
         selectedStyle = newStyle;
-        Debug.Log(npcEntity.nameOfNpc);
-        Debug.Log(npcEntity.GetNpcStyle(selectedStyle).nameOfStyle);
         _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
     
