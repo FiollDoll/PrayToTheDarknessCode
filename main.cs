@@ -87,13 +87,14 @@ public class Main : MonoBehaviour
     /// </summary>
     /// <param name="time"></param>
     /// <param name="actionAfterFade"></param>
-    public void ActivateNoVision(float time, Action actionAfterFade = null)
+    public void ActivateNoVision(float time, Action actionAfterFade = null, Action actionAfterEnd = null)
     {
         Sequence sequence = DOTween.Sequence();
         Tween fadeAnimation = noViewPanel.DOFade(100f, time / 2).SetEase(Ease.InQuart);
         fadeAnimation.OnComplete(() => { actionAfterFade?.Invoke(); });
         sequence.Append(fadeAnimation);
         sequence.Append(noViewPanel.DOFade(0f, time / 2).SetEase(Ease.OutQuart));
+        sequence.OnComplete(() => { actionAfterEnd?.Invoke(); });
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
     }
 

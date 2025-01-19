@@ -69,7 +69,7 @@ public class Inventory
             scripts.dialogsManager.ActivateDialog(playerItems[slot].activateNameDialog);
         if (playerItems[slot].questName != "" && playerItems[slot].questNextStep)
         {
-            if (scripts.questsSystem.FindQuest(playerItems[slot].questName) == scripts.questsSystem.totalQuest)
+            if (scripts.questsSystem.GetQuest(playerItems[slot].questName) == scripts.questsSystem.totalQuest)
                 scripts.questsSystem.NextStep();
         }
 

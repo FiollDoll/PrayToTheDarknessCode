@@ -22,6 +22,7 @@ public class InventoryManager : MonoBehaviour
 
     public void Initialize()
     {
+        inventory.UpdateGameItemsDict();
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
 
         _mainStyle = itemInfoMenu.transform.Find("main").gameObject;

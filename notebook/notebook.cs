@@ -24,10 +24,15 @@ public class Notebook : MonoBehaviour
     [Header("Записки в игре")] [SerializeField]
     private Note[] gameNotes = new Note[0];
 
+    private Dictionary<string, Note> _gameNotesDict = new Dictionary<string, Note>();
+
     private AllScripts _scripts;
 
     public void Initialize()
     {
+        foreach (Note note in gameNotes)
+            _gameNotesDict.Add(note.gameName, note);
+
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _notebookMenu = _scripts.player.playerMenu.transform.Find("notebookMenu").gameObject;
         newNoteNotify = GameObject.Find("newNote");
@@ -48,15 +53,23 @@ public class Notebook : MonoBehaviour
         _buttonExit = _pageReadNote.transform.Find("ButtonExit").GetComponent<Button>();
     }
 
+    /// <summary>
+    /// Возврат записки по имени
+    /// </summary>
+    /// <param name="nameNote"></param>
+    /// <returns></returns>
+    private Note GetNote(string nameNote)
+    {
+        return _gameNotesDict[nameNote];
+    }
+
     public void AddNote(string nameNote)
     {
-        foreach (Note note in gameNotes)
-        {
-            if (nameNote != note.nameEn) continue;
-            playerNotes.Add(note);
-            StartCoroutine(ActivateNotify());
-            break;
-        }
+        Note newNote = GetNote(nameNote);
+        if (newNote == null) return; // Если пустой
+        
+        playerNotes.Add(newNote);
+        StartCoroutine(ActivateNotify());
     }
 
     public void ChoicePage(int num)
@@ -68,64 +81,70 @@ public class Notebook : MonoBehaviour
         _pageReadMain.gameObject.SetActive(false);
         _pageReadHuman.gameObject.SetActive(false);
         buttonChoiceActiveQuest.gameObject.SetActive(false);
-        if (num == 0)
+        switch (num)
         {
-            _pageNote.gameObject.SetActive(true);
-            foreach (Transform child in pageChoiceNote.transform)
-                Destroy(child.gameObject);
-
-            for (int i = 0; i < playerNotes.Count; i++)
+            case 0:
             {
-                var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceNote.transform);
-                if (playerNotes[i].readed)
-                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerNotes[i].name;
-                else
-                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = "(*)" + playerNotes[i].name;
-                int number = i;
-                obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number); });
+                _pageNote.gameObject.SetActive(true);
+                foreach (Transform child in pageChoiceNote.transform)
+                    Destroy(child.gameObject);
+
+                for (int i = 0; i < playerNotes.Count; i++)
+                {
+                    var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceNote.transform);
+                    if (playerNotes[i].readed)
+                        obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerNotes[i].name;
+                    else
+                        obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = "(*)" + playerNotes[i].name;
+                    int number = i;
+                    obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number); });
+                }
+
+                _pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+                break;
             }
-
-            _pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
-        }
-        else if (num == 1)
-        {
-            _pageQuest.gameObject.SetActive(true);
-            foreach (Transform child in pageChoiceQuest.transform)
-                Destroy(child.gameObject);
-
-            for (int i = 0; i < _scripts.questsSystem.activeQuests.Count; i++)
+            case 1:
             {
-                var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceQuest.transform);
-                TextMeshProUGUI textName = obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-                if (_scripts.questsSystem.activeQuests[i] == _scripts.questsSystem.totalQuest)
-                    textName.text = "-> " + _scripts.questsSystem.activeQuests[i].name;
-                else
-                    textName.text = _scripts.questsSystem.activeQuests[i].name;
-                int number = i;
-                obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
+                _pageQuest.gameObject.SetActive(true);
+                foreach (Transform child in pageChoiceQuest.transform)
+                    Destroy(child.gameObject);
+
+                for (int i = 0; i < _scripts.questsSystem.activeQuests.Count; i++)
+                {
+                    var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceQuest.transform);
+                    TextMeshProUGUI textName = obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
+                    if (_scripts.questsSystem.activeQuests[i] == _scripts.questsSystem.totalQuest)
+                        textName.text = "-> " + _scripts.questsSystem.activeQuests[i].name;
+                    else
+                        textName.text = _scripts.questsSystem.activeQuests[i].name;
+                    int number = i;
+                    obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
+                }
+
+                _pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+                break;
             }
-
-            _pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
-        }
-        else if (num == 2)
-        {
-            _pageNpc.gameObject.SetActive(true);
-            foreach (Transform child in pageNpсСontainer.transform)
-                Destroy(child.gameObject);
-
-            for (int i = 0; i < _scripts.player.familiarNpc.Count; i++)
+            case 2:
             {
-                var obj = Instantiate(buttonNpc, Vector3.zero, Quaternion.identity, pageNpсСontainer.transform);
-                obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
-                    _scripts.player.familiarNpc[i].nameOfNpc;
-                obj.transform.Find("Icon").GetComponent<Image>().sprite =
-                    _scripts.player.familiarNpc[i].GetStyleIcon(NpcIcon.IconMood.Standart);
-                obj.transform.Find("Icon").GetComponent<Image>().SetNativeSize();
-                int number = i;
-                obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
-            }
+                _pageNpc.gameObject.SetActive(true);
+                foreach (Transform child in pageNpсСontainer.transform)
+                    Destroy(child.gameObject);
 
-            _pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+                for (int i = 0; i < _scripts.player.familiarNpc.Count; i++)
+                {
+                    var obj = Instantiate(buttonNpc, Vector3.zero, Quaternion.identity, pageNpсСontainer.transform);
+                    obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
+                        _scripts.player.familiarNpc[i].nameOfNpc;
+                    obj.transform.Find("Icon").GetComponent<Image>().sprite =
+                        _scripts.player.familiarNpc[i].GetStyleIcon(NpcIcon.IconMood.Standart);
+                    obj.transform.Find("Icon").GetComponent<Image>().SetNativeSize();
+                    int number = i;
+                    obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 2); });
+                }
+
+                _pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>().UpdateContentSize();
+                break;
+            }
         }
     }
 

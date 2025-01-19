@@ -11,47 +11,61 @@ public class QuestsSystem : MonoBehaviour
     public Quest totalQuest;
     public List<Quest> activeQuests = new List<Quest>();
     public Quest[] gameQuests = Array.Empty<Quest>();
+    private Dictionary<string, Quest> _gameQuestDict = new Dictionary<string, Quest>();
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
     private AllScripts _scripts;
     private RectTransform _textQuestTransform;
 
     public void Initialize()
     {
+        foreach (Quest quest in gameQuests)
+            _gameQuestDict.Add(quest.nameInGame, quest);
+        
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _textQuestTransform = textQuest.GetComponent<RectTransform>();
         ActivateQuest("Good morning");
     }
 
+    /// <summary>
+    /// Возрат квеста по имени
+    /// </summary>
+    /// <param name="questName"></param>
+    /// <returns></returns>
+    public Quest GetQuest(string questName)
+    {
+        return _gameQuestDict[questName];
+    }
+    
+    /// <summary>
+    /// Активирует новый квест
+    /// </summary>
+    /// <param name="questName">Имя квеста</param>
+    /// <param name="extraActivate">Перекрыть текущий АКТИВНЫЙ квест</param>
     public void ActivateQuest(string questName, bool extraActivate = false)
     {
-        Quest newQuest = FindQuest(questName);
-        if (newQuest != null)
-        {
-            if (totalQuest != null || extraActivate)
-                totalQuest = newQuest;
-            activeQuests.Add(newQuest);
-            UpdateQuestUI();
-        }
+        Quest newQuest = GetQuest(questName);
+        if (newQuest == null) return;
+        
+        if (totalQuest != null || extraActivate)
+            totalQuest = newQuest;
+        activeQuests.Add(newQuest);
+        UpdateQuestUI();
     }
 
+    /// <summary>
+    /// Выбор другого активного квеста
+    /// </summary>
+    /// <param name="questName"></param>
     public void ChoiceActiveQuest(string questName)
     {
-        totalQuest = FindQuest(questName);
+        totalQuest = GetQuest(questName);
         UpdateQuestUI();
         _scripts.notebook.ChoicePage(1);
     }
 
-    public Quest FindQuest(string questName)
-    {
-        foreach (Quest quest in gameQuests)
-        {
-            if (quest.nameInGame == questName)
-                return quest;
-        }
-
-        return null;
-    }
-
+    /// <summary>
+    /// Следующий этап квеста
+    /// </summary>
     public void NextStep()
     {
         if (totalQuest == null)
@@ -72,7 +86,7 @@ public class QuestsSystem : MonoBehaviour
         sequence.Append(_textQuestTransform.DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
 
-        if (totalQuest == null)
+        if (totalQuest == null) // Если новый квест не назначен
             return;
 
         if (totalQuest.steps[totalQuest.totalStep].delayNextStep != 0)
