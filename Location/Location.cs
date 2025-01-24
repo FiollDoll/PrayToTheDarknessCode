@@ -22,7 +22,7 @@ public class Location
     public void UpdateSpawnsDict()
     {
         foreach (SpawnInLocation spawn in spawns)
-            _spawnsDict.Add(spawn.name, spawn);
+            _spawnsDict.TryAdd(spawn.name, spawn);
     }
     
     /// <summary>

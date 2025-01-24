@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 
@@ -18,6 +19,7 @@ public class Dialog
     };
 
     public StepBranch[] stepBranches = Array.Empty<StepBranch>(); // Ветки диалога
+    private Dictionary<string, StepBranch> _stepBranchesDict = new Dictionary<string, StepBranch>();
     public Sprite bigPicture;
     [Header("Настройки")] public bool moreRead;
     public bool canMove, canInter;
@@ -32,15 +34,15 @@ public class Dialog
     public bool nextStepQuest;
     public int activatedCutsceneStepAtEnd = -1;
 
-    public StepBranch FindBranch(string branchName)
+    public void UpdateBranchesDict()
     {
         foreach (StepBranch stepBranch in stepBranches)
-        {
-            if (stepBranch.branchName == branchName)
-                return stepBranch;
-        }
-
-        return null;
+            _stepBranchesDict.TryAdd(stepBranch.branchName, stepBranch);
+    }
+    
+    public StepBranch FindBranch(string branchName)
+    {
+        return _stepBranchesDict[branchName];
     }
 }
 

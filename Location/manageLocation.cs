@@ -16,7 +16,7 @@ public class ManageLocation : MonoBehaviour
     {
         foreach (Location location in locations)
         {
-            _locationsDict.Add(location.gameName, location);
+            _locationsDict.TryAdd(location.gameName, location);
             location.UpdateSpawnsDict();
         }
 

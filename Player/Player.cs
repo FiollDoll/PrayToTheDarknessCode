@@ -90,9 +90,9 @@ public class Player : MonoBehaviour, IHumanable
             _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
             _animator.SetBool("walk", horiz != 0 || vert != 0);
             if (horiz > 0)
-                _sr.flipX = false;
-            else if (horiz < 0)
                 _sr.flipX = true;
+            else if (horiz < 0)
+                _sr.flipX = false;
         }
         else
         {

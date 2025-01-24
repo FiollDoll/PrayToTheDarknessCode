@@ -13,19 +13,21 @@ public class AllScripts : MonoBehaviour
     [HideInInspector] public Main main;
     [HideInInspector] public DevTool devTool;
     [HideInInspector] public PostProcessingController postProcessingController;
+    [HideInInspector] public NotifyManager notifyManager;
 
     public void Initialize()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
-        dialogsManager = GameObject.Find("scripts").GetComponent<DialogsManager>();
-        interactions = GameObject.Find("scripts").GetComponent<Interactions>();
-        manageLocation = GameObject.Find("scripts").GetComponent<ManageLocation>();
-        inventoryManager = GameObject.Find("scripts").GetComponent<InventoryManager>();
-        notebook = GameObject.Find("scripts").GetComponent<Notebook>();
+        dialogsManager = GetComponent<DialogsManager>();
+        interactions = GetComponent<Interactions>();
+        manageLocation = GetComponent<ManageLocation>();
+        inventoryManager = GetComponent<InventoryManager>();
+        notebook = GetComponent<Notebook>();
         questsSystem = GameObject.Find("questMenu").GetComponent<QuestsSystem>();
-        cutsceneManager = GameObject.Find("scripts").GetComponent<CutsceneManager>();
-        main = GameObject.Find("scripts").GetComponent<Main>();
-        devTool = GameObject.Find("devTools").GetComponent<DevTool>();
-        postProcessingController = GameObject.Find("scripts").GetComponent<PostProcessingController>();
+        cutsceneManager = GetComponent<CutsceneManager>();
+        main = GetComponent<Main>();
+        devTool = GetComponent<DevTool>();
+        postProcessingController = GetComponent<PostProcessingController>();
+        notifyManager = GetComponent<NotifyManager>();
     }
 }

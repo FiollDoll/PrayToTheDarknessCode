@@ -11,7 +11,6 @@ public class InventoryManager : MonoBehaviour
     [Header("Menu settings")] [SerializeField]
     private GameObject inventorySlotPrefab;
 
-    [SerializeField] private TextMeshProUGUI newItemText;
     [SerializeField] private GameObject invMenu, itemInfoMenu;
 
     private GameObject _mainStyle, _onlyIconStyle;
@@ -53,7 +52,7 @@ public class InventoryManager : MonoBehaviour
     public void AddItem(string nameItem)
     {
         inventory.AddItem(nameItem);
-        StartCoroutine(ActivateNotify(inventory.GetGameItem(nameItem).name));
+        _scripts.notifyManager.StartNewItemNotify(inventory.GetGameItem(nameItem).name);
     }
 
     /// <summary>
@@ -139,13 +138,5 @@ public class InventoryManager : MonoBehaviour
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { WatchItem(num); });
         }
-    }
-
-    private IEnumerator ActivateNotify(string notifyName)
-    {
-        newItemText.gameObject.SetActive(true);
-        newItemText.text = "+" + notifyName;
-        yield return new WaitForSeconds(2);
-        newItemText.gameObject.SetActive(false);
     }
 }

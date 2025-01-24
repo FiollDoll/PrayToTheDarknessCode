@@ -6,8 +6,8 @@ using TMPro;
 
 public class Notebook : MonoBehaviour
 {
-    [Header("Настройки")] [SerializeField] private GameObject newNoteNotify;
-    [SerializeField] private GameObject buttonNotePrefab, buttonNpc;
+    [Header("Настройки")] [SerializeField] private GameObject buttonNotePrefab;
+    [SerializeField] private GameObject buttonNpc;
     [SerializeField] private GameObject buttonChoiceActiveQuest, pageNpсСontainer, pageChoiceNote, pageChoiceQuest;
 
     private GameObject _notebookMenu;
@@ -31,11 +31,10 @@ public class Notebook : MonoBehaviour
     public void Initialize()
     {
         foreach (Note note in gameNotes)
-            _gameNotesDict.Add(note.gameName, note);
+            _gameNotesDict.TryAdd(note.gameName, note);
 
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _notebookMenu = _scripts.player.playerMenu.transform.Find("notebookMenu").gameObject;
-        newNoteNotify = GameObject.Find("newNote");
         _pageNote = _notebookMenu.transform.Find("pageNotes").gameObject;
         _pageQuest = _notebookMenu.transform.Find("pageQuests").gameObject;
         _pageNpc = _notebookMenu.transform.Find("pageNPC").gameObject;
@@ -60,16 +59,19 @@ public class Notebook : MonoBehaviour
     /// <returns></returns>
     private Note GetNote(string nameNote)
     {
-        return _gameNotesDict[nameNote];
+        if (_gameNotesDict.TryGetValue(nameNote, out Note note))
+            return note;
+
+        return null;
     }
 
     public void AddNote(string nameNote)
     {
         Note newNote = GetNote(nameNote);
         if (newNote == null) return; // Если пустой
-        
+
         playerNotes.Add(newNote);
-        StartCoroutine(ActivateNotify());
+        _scripts.notifyManager.StartNewNoteNotify(newNote.name);
     }
 
     public void ChoicePage(int num)
@@ -91,11 +93,13 @@ public class Notebook : MonoBehaviour
 
                 for (int i = 0; i < playerNotes.Count; i++)
                 {
-                    var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceNote.transform);
+                    var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity,
+                        pageChoiceNote.transform);
                     if (playerNotes[i].readed)
                         obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerNotes[i].name;
                     else
-                        obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = "(*)" + playerNotes[i].name;
+                        obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
+                            "(*)" + playerNotes[i].name;
                     int number = i;
                     obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number); });
                 }
@@ -111,7 +115,8 @@ public class Notebook : MonoBehaviour
 
                 for (int i = 0; i < _scripts.questsSystem.activeQuests.Count; i++)
                 {
-                    var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity, pageChoiceQuest.transform);
+                    var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity,
+                        pageChoiceQuest.transform);
                     TextMeshProUGUI textName = obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
                     if (_scripts.questsSystem.activeQuests[i] == _scripts.questsSystem.totalQuest)
                         textName.text = "-> " + _scripts.questsSystem.activeQuests[i].name;
@@ -194,12 +199,5 @@ public class Notebook : MonoBehaviour
         }
 
         _buttonExit.onClick.AddListener(delegate { ChoicePage(mode); });
-    }
-
-    private IEnumerator ActivateNotify()
-    {
-        newNoteNotify.gameObject.SetActive(true);
-        yield return new WaitForSeconds(3);
-        newNoteNotify.gameObject.SetActive(false);
     }
 }

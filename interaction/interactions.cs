@@ -44,7 +44,7 @@ public class Interactions : MonoBehaviour
         EnteredInteraction = null;
         SelectedInteraction = null;
         MeshRenderer selectedColliderRenderer = _selectedCollider.collider?.GetComponent<MeshRenderer>();
-        if (selectedColliderRenderer)
+        if (selectedColliderRenderer && selectedColliderRenderer.materials.Length > 1)
             _scripts.main.RemoveMaterial(selectedColliderRenderer);
 
         // Взаимодействия по мыши

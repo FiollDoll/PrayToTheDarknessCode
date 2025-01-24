@@ -8,7 +8,7 @@ using DG.Tweening;
 public class DialogsManager : MonoBehaviour
 {
     [Header("Все диалоги")] public Dialog[] dialogs = new Dialog[0];
-    private Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>(); 
+    private Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
     [Header("Текущий диалог")] public int totalStep;
 
@@ -37,8 +37,11 @@ public class DialogsManager : MonoBehaviour
     public void Initialize()
     {
         foreach (Dialog dialog in dialogs)
-            _dialogsDict.Add(dialog.nameDialog, dialog);
-        
+        {
+            _dialogsDict.TryAdd(dialog.nameDialog, dialog);
+            dialog.UpdateBranchesDict();
+        }
+
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _noViewPanel = _scripts.main.noViewPanel;
 
@@ -92,7 +95,7 @@ public class DialogsManager : MonoBehaviour
                 _bigPicture.sprite = _activatedDialog.bigPicture;
             });
         }
-        
+
         if (!CheckCanChoice()) // Потом уже управление менюшками
         {
             if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
@@ -110,16 +113,20 @@ public class DialogsManager : MonoBehaviour
     /// <param name="nameDialog">Название диалога</param>
     public void ActivateDialog(string nameDialog) // Старт диалога
     {
-        _activatedDialog = new Dialog(); // Если уже назначен - очищаем
-
-        Dialog newDialog = GetDialog((nameDialog));
+        if (_activatedDialog != null)
+        {
+            _activatedDialog = new Dialog(); // Если уже назначен - очищаем
+            StopAllCoroutines();
+        }
+        
+        Dialog newDialog = GetDialog(nameDialog);
         if (newDialog == null) return;
         if (newDialog.readed) return;
-        
+
         _activatedDialog = newDialog;
         _selectedBranch = _activatedDialog.stepBranches[0];
         _selectedStep = _selectedBranch.dialogSteps[0];
-        
+
         dialogMenu.gameObject.SetActive(true);
         _canStepNext = false;
         _scripts.interactions.lockInter = _activatedDialog.canInter;
@@ -299,7 +306,7 @@ public class DialogsManager : MonoBehaviour
         if (_selectedStep.cursedText)
             _scripts.main.SetCursedText(_textDialogMain, Random.Range(5, 40));
         else
-            StartCoroutine(SetText(_selectedStep.text));
+            StartCoroutine(SetText());
 
         _scripts.player.virtualCamera.Follow =
             _selectedStep.cameraTarget ? _selectedStep.cameraTarget : _scripts.player.transform;
@@ -349,14 +356,13 @@ public class DialogsManager : MonoBehaviour
     /// <summary>
     ///  Посимвольная установка текста
     /// </summary>
-    /// <param name="text">Текст</param>
     /// <returns></returns>
-    private IEnumerator SetText(string text)
+    private IEnumerator SetText()
     {
         _textDialogMain.text = "";
         _textDialogSub.text = "";
         _animatingText = true;
-        char[] textChar = text.ToCharArray();
+        char[] textChar = _selectedStep.text.ToCharArray();
         foreach (char tChar in textChar)
         {
             if (!_animatingText) continue;

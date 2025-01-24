@@ -16,7 +16,7 @@ public class Inventory
     public void UpdateGameItemsDict()
     {
         foreach (Item item in gameItems)
-            _gameItemsDict.Add(item.nameInGame, item);
+            _gameItemsDict.TryAdd(item.nameInGame, item);
     }
     
     /// <summary>

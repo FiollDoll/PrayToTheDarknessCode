@@ -26,9 +26,10 @@ public class Main : MonoBehaviour
 
     public void Start()
     {
-        // Точка инициализации всех скриптов по порядку
         _scripts = GetComponent<AllScripts>();
-
+        
+        startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
+            .OrthographicSize;
         // Инициализация информации об НПС
         foreach (Npc npc in allNpc)
         {
@@ -40,7 +41,8 @@ public class Main : MonoBehaviour
 
             npc.animator = npcObj?.GetComponent<Animator>();
         }
-
+        
+        // Точка инициализации всех скриптов по порядку
         // Список методов инициализации
         var initializers = new Action[]
         {
@@ -66,12 +68,9 @@ public class Main : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Ошибка при инициализации: {ex.Message}\n{initializer.Target}");
+                Debug.LogError($"Ошибка при инициализации: {ex.Message}\n{initializer.Method.GetBaseDefinition()}");
             }
         }
-
-        startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
-            .OrthographicSize;
     }
 
     public void MoveTo(Transform target, float speed, Transform pos, SpriteRenderer spriteRenderer, Animator animator)

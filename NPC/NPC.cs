@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
@@ -24,7 +25,7 @@ public class Npc : ScriptableObject
     public void UpdateNpcStyleDict()
     {
         foreach (NpcStyle style in styles)
-            _stylesDict.Add(style.nameOfStyle, style);
+            _stylesDict.TryAdd(style.nameOfStyle, style);
     }
 
     public NpcStyle GetNpcStyle(string styleName)
