@@ -31,10 +31,10 @@ public class Player : MonoBehaviour, IHumanable
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        ChangeStyle("standard");
+        ChangeStyle("sleepy");
         ChoicePagePlayerMenu(0);
     }
-
+    
     public void ChangeStyle(string newStyle)
     {
         selectedStyle = newStyle;

@@ -4,33 +4,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using MyBox;
 
 public class DialogsManager : MonoBehaviour
 {
-    [Header("Все диалоги")] public Dialog[] dialogs = new Dialog[0];
+    [Header("All dialogs")] public Dialog[] dialogs = new Dialog[0];
     private Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
-    [Header("Текущий диалог")] public int totalStep;
-
+    [Header("Current dialog")] public int totalStep;
     private Dialog _activatedDialog;
     private StepBranch _selectedBranch;
     private DialogStep _selectedStep;
 
-    [Header("Настройки")] public GameObject dialogMenu;
+    [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
+
+    [Foldout("Scene Objects", true)] public GameObject dialogMenu;
     [SerializeField] private GameObject choicesContainer;
 
-    public GameObject buttonChoicePrefab;
-
-    private TextMeshProUGUI _textNameMain, _textDialogMain, _textDialogSub;
-    private GameObject _mainDialogMenu, _choiceDialogMenu, _subDialogMenu;
+    [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub;
+    [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu;
+    [SerializeField] private Image iconImage;
+    [SerializeField] private Image bigPicture;
+    [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
-    private Image _iconImage;
     private RectTransform _iconImageTransform;
-    private Image _bigPicture;
-    private AdaptiveScrollView _adaptiveScrollViewChoice;
+
+
     private bool _animatingText, _canStepNext;
-
-
     private Image _noViewPanel;
     private AllScripts _scripts;
 
@@ -44,22 +44,9 @@ public class DialogsManager : MonoBehaviour
 
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _noViewPanel = _scripts.main.noViewPanel;
-
-        _mainDialogMenu = dialogMenu.transform.Find("mainMenu").gameObject;
-        _mainDialogMenuTransform = _mainDialogMenu.GetComponent<RectTransform>();
-        _mainDialogMenuTransform.DOPivotY(4f, 0.3f);
-        _choiceDialogMenu = dialogMenu.transform.Find("choiceMenu").gameObject;
-        _choiceDialogMenuTransform = _choiceDialogMenu.GetComponent<RectTransform>();
-        _choiceDialogMenuTransform.DOPivotY(4f, 0.3f);
-        _adaptiveScrollViewChoice = _choiceDialogMenu.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
-        _subDialogMenu = dialogMenu.transform.Find("subMainMenu").gameObject;
-
-        _textNameMain = _mainDialogMenu.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-        _textDialogMain = _mainDialogMenu.transform.Find("TextDialog").GetComponent<TextMeshProUGUI>();
-        _iconImage = _mainDialogMenu.transform.Find("Image").GetComponent<Image>();
-        _iconImageTransform = _iconImage.GetComponent<RectTransform>();
-        _textDialogSub = _subDialogMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-        _bigPicture = dialogMenu.transform.Find("bigPicture").gameObject.GetComponent<Image>();
+        _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
+        _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
+        _iconImageTransform = iconImage.GetComponent<RectTransform>();
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -91,20 +78,20 @@ public class DialogsManager : MonoBehaviour
         {
             _scripts.main.ActivateNoVision(1.2f, () =>
             {
-                _bigPicture.gameObject.SetActive(true);
-                _bigPicture.sprite = _activatedDialog.bigPicture;
+                bigPicture.gameObject.SetActive(true);
+                bigPicture.sprite = _activatedDialog.bigPicture;
             });
         }
 
         if (!CheckCanChoice()) // Потом уже управление менюшками
         {
             if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                _mainDialogMenu.gameObject.SetActive(true);
+                mainDialogMenu.gameObject.SetActive(true);
             else
-                _subDialogMenu.gameObject.SetActive(true);
+                subDialogMenu.gameObject.SetActive(true);
         }
         else
-            _choiceDialogMenu.gameObject.SetActive(true);
+            choiceDialogMenu.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -118,7 +105,7 @@ public class DialogsManager : MonoBehaviour
             _activatedDialog = new Dialog(); // Если уже назначен - очищаем
             StopAllCoroutines();
         }
-        
+
         Dialog newDialog = GetDialog(nameDialog);
         if (newDialog == null) return;
         if (newDialog.readed) return;
@@ -136,7 +123,7 @@ public class DialogsManager : MonoBehaviour
             _activatedDialog.readed = true;
         _scripts.player.canMove = _activatedDialog.canMove;
 
-        _scripts.main.EndCursedText(_textDialogMain);
+        _scripts.main.EndCursedText(textDialogMain);
 
         if (_activatedDialog.mainPanelStartDelay == 0)
             OpenPanels();
@@ -175,16 +162,16 @@ public class DialogsManager : MonoBehaviour
     {
         totalStep = 0;
         dialogMenu.gameObject.SetActive(false);
-        _bigPicture.gameObject.SetActive(false);
-        _mainDialogMenu.gameObject.SetActive(false);
-        _subDialogMenu.gameObject.SetActive(false);
+        bigPicture.gameObject.SetActive(false);
+        mainDialogMenu.gameObject.SetActive(false);
+        subDialogMenu.gameObject.SetActive(false);
         if (_activatedDialog.posAfterEnd)
             _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
         if (_activatedDialog.nextStepQuest)
             _scripts.questsSystem.NextStep();
         _scripts.player.canMove = true;
-        _scripts.main.EndCursedText(_textDialogMain);
+        _scripts.main.EndCursedText(textDialogMain);
         _scripts.player.virtualCamera.Follow = _scripts.player.transform;
         if (_activatedDialog.noteAdd != "")
             _scripts.notebook.AddNote(_activatedDialog.noteAdd);
@@ -202,8 +189,8 @@ public class DialogsManager : MonoBehaviour
     /// <param name="setScale"></param>
     private void ActivateChoiceMenu(bool setScale = false)
     {
-        _choiceDialogMenu.gameObject.SetActive(true);
-        _adaptiveScrollViewChoice.UpdateContentSize();
+        choiceDialogMenu.gameObject.SetActive(true);
+        adaptiveScrollViewChoice.UpdateContentSize();
         if (setScale)
             _choiceDialogMenuTransform.localScale = new Vector2(1f, 1f);
         foreach (Transform child in choicesContainer.transform)
@@ -221,7 +208,7 @@ public class DialogsManager : MonoBehaviour
                 obj.GetComponent<Button>().interactable = false;
         }
 
-        _adaptiveScrollViewChoice.UpdateContentSize();
+        adaptiveScrollViewChoice.UpdateContentSize();
     }
 
     /// <summary>
@@ -231,7 +218,7 @@ public class DialogsManager : MonoBehaviour
     private void ActivateChoiceStep(int id)
     {
         DialogChoice choice = _selectedBranch.choices[id];
-        _choiceDialogMenu.gameObject.SetActive(false);
+        choiceDialogMenu.gameObject.SetActive(false);
         totalStep = 0;
         if (!choice.moreRead)
             choice.readed = true;
@@ -286,9 +273,9 @@ public class DialogsManager : MonoBehaviour
     {
         if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
         {
-            _textNameMain.text = _selectedStep.totalNpc.nameOfNpc;
-            _iconImage.sprite = _selectedStep.icon;
-            _iconImage.SetNativeSize();
+            textNameMain.text = _selectedStep.totalNpc.nameOfNpc;
+            iconImage.sprite = _selectedStep.icon;
+            iconImage.SetNativeSize();
             _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
         }
 
@@ -304,7 +291,7 @@ public class DialogsManager : MonoBehaviour
         _selectedStep.totalNpc.animator?.SetBool("talk", true);
 
         if (_selectedStep.cursedText)
-            _scripts.main.SetCursedText(_textDialogMain, Random.Range(5, 40));
+            _scripts.main.SetCursedText(textDialogMain, Random.Range(5, 40));
         else
             StartCoroutine(SetText());
 
@@ -343,9 +330,9 @@ public class DialogsManager : MonoBehaviour
                     _animatingText = false;
                     StopAllCoroutines();
                     if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                        _textDialogMain.text = _selectedStep.text;
+                        textDialogMain.text = _selectedStep.text;
                     else
-                        _textDialogSub.text = _selectedStep.text;
+                        textDialogSub.text = _selectedStep.text;
                 }
                 else
                     DialogMoveNext();
@@ -359,17 +346,17 @@ public class DialogsManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator SetText()
     {
-        _textDialogMain.text = "";
-        _textDialogSub.text = "";
+        textDialogMain.text = "";
+        textDialogSub.text = "";
         _animatingText = true;
         char[] textChar = _selectedStep.text.ToCharArray();
         foreach (char tChar in textChar)
         {
             if (!_animatingText) continue;
             if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                _textDialogMain.text += tChar;
+                textDialogMain.text += tChar;
             else
-                _textDialogSub.text += tChar;
+                textDialogSub.text += tChar;
             yield return new WaitForSeconds(0.05f);
         }
 

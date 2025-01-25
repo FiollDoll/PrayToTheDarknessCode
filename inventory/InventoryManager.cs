@@ -1,36 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using MyBox;
 
 public class InventoryManager : MonoBehaviour
 {
     [Header("Inventory")] [SerializeField] private Inventory inventory;
 
-    [Header("Menu settings")] [SerializeField]
-    private GameObject inventorySlotPrefab;
+    [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
+
+    [Foldout("SceneObjects", true)] [SerializeField]
+    private Button buttonItemActivate;
 
     [SerializeField] private GameObject invMenu, itemInfoMenu;
+    [SerializeField] private GameObject mainView, onlyIconView;
+    [SerializeField] private TextMeshProUGUI textItemName, textItemDescription;
+    [SerializeField] private Image iconInMain, iconInOnly;
 
-    private GameObject _mainStyle, _onlyIconStyle;
-    private TextMeshProUGUI _textItemName, _textItemDescription;
-    private Image _iconInMain, _iconInOnly;
-    private Button _buttonItemActivate;
     private AllScripts _scripts;
 
     public void Initialize()
     {
         inventory.UpdateGameItemsDict();
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-
-        _mainStyle = itemInfoMenu.transform.Find("main").gameObject;
-        _onlyIconStyle = itemInfoMenu.transform.Find("onlyIcon").gameObject;
-        _textItemName = _mainStyle.transform.Find("TextName").GetComponent<TextMeshProUGUI>();
-        _textItemDescription = _mainStyle.transform.Find("TextDescription").GetComponent<TextMeshProUGUI>();
-        _iconInMain = _mainStyle.transform.Find("ItemIcon").GetComponent<Image>();
-        _iconInOnly = _onlyIconStyle.transform.Find("ItemIcon").GetComponent<Image>();
-        _buttonItemActivate = itemInfoMenu.transform.Find("ButtonActivate").GetComponent<Button>();
     }
 
     /// <summary>
@@ -78,20 +70,20 @@ public class InventoryManager : MonoBehaviour
 
         Item selectedItem = inventory.GetPlayerItem(id);
 
-        _mainStyle.gameObject.SetActive(!selectedItem.watchIconOnly);
-        _onlyIconStyle.gameObject.SetActive(selectedItem.watchIconOnly);
+        mainView.gameObject.SetActive(!selectedItem.watchIconOnly);
+        onlyIconView.gameObject.SetActive(selectedItem.watchIconOnly);
 
         if (selectedItem.watchIconOnly)
-            _iconInOnly.sprite = selectedItem.icon;
+            iconInOnly.sprite = selectedItem.icon;
         else
         {
-            _textItemName.text = selectedItem.name;
-            _textItemDescription.text =
+            textItemName.text = selectedItem.name;
+            textItemDescription.text =
                 selectedItem.description;
-            _iconInMain.sprite = selectedItem.icon;
+            iconInMain.sprite = selectedItem.icon;
         }
 
-        _buttonItemActivate.gameObject.SetActive(true);
+        buttonItemActivate.gameObject.SetActive(true);
         if (selectedItem.canUse && (selectedItem.useInInventory || selectedItem.useInCollider))
         {
             if (selectedItem.useInInventory)
@@ -101,7 +93,7 @@ public class InventoryManager : MonoBehaviour
                     if (selectedItem.questName != _scripts.questsSystem.totalQuest.nameInGame
                         || (_scripts.questsSystem.totalQuest.totalStep != selectedItem.questStage &&
                             selectedItem.questStage > 0))
-                        _buttonItemActivate.gameObject.SetActive(false);
+                        buttonItemActivate.gameObject.SetActive(false);
                 }
             }
             else if (selectedItem.useInCollider) // Только для enteredColliders
@@ -109,16 +101,16 @@ public class InventoryManager : MonoBehaviour
                 if (_scripts.interactions.EnteredInteraction == null ||
                     (_scripts.interactions.EnteredInteraction != null &&
                      _scripts.interactions.EnteredInteraction.itemNameUse != selectedItem.nameInGame))
-                    _buttonItemActivate.gameObject.SetActive(false);
+                    buttonItemActivate.gameObject.SetActive(false);
             }
         }
         else
-            _buttonItemActivate.gameObject.SetActive(false);
+            buttonItemActivate.gameObject.SetActive(false);
 
-        if (_buttonItemActivate.gameObject.activeSelf)
+        if (buttonItemActivate.gameObject.activeSelf)
         {
-            _buttonItemActivate.onClick.AddListener(delegate { UseItem(id); });
-            _buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
+            buttonItemActivate.onClick.AddListener(delegate { UseItem(id); });
+            buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
                 selectedItem.useText != "" ? selectedItem.useText : "???";
         }
     }
