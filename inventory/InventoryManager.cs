@@ -44,7 +44,7 @@ public class InventoryManager : MonoBehaviour
     public void AddItem(string nameItem)
     {
         inventory.AddItem(nameItem);
-        _scripts.notifyManager.StartNewItemNotify(inventory.GetGameItem(nameItem).name);
+        _scripts.notifyManager.StartNewItemNotify(inventory.GetGameItem(nameItem).name.text);
     }
 
     /// <summary>
@@ -77,9 +77,9 @@ public class InventoryManager : MonoBehaviour
             iconInOnly.sprite = selectedItem.icon;
         else
         {
-            textItemName.text = selectedItem.name;
+            textItemName.text = selectedItem.name.text;
             textItemDescription.text =
-                selectedItem.description;
+                selectedItem.description.text;
             iconInMain.sprite = selectedItem.icon;
         }
 
@@ -111,7 +111,7 @@ public class InventoryManager : MonoBehaviour
         {
             buttonItemActivate.onClick.AddListener(delegate { UseItem(id); });
             buttonItemActivate.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                selectedItem.useText != "" ? selectedItem.useText : "???";
+                selectedItem.useText.text != "" ? selectedItem.useText.text : "???";
         }
     }
 

@@ -6,8 +6,7 @@ public class Location
 {
     [Header("Основные настройки")]
     public string gameName;
-    public string name => PlayerPrefs.GetString("language") == "ru" ? ruName : enName;
-    public string ruName, enName;
+    public Language name;
     
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;

@@ -2,9 +2,8 @@
 
 public class SimpleInteraction : MonoBehaviour, IInteractable
 {
-    [Header("Main")] public string ruLabelName;
-    public string enLabelName;
-    public string interLabel => PlayerPrefs.GetString("language") == "ru" ? ruLabelName : enLabelName;
+    [Header("Main")] public Language label;
+    public string interLabel => label.text;
 
     [Header("Requires")] public bool AutoUse;
     public bool autoUse => AutoUse;

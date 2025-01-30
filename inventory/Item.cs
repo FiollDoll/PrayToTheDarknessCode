@@ -4,12 +4,8 @@
 public class Item
 {
     public string nameInGame;
-    public string nameRu, nameEn;
-    public string name => PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn;
-
-
-    [TextArea] public string descriptionRu, descriptionEn;
-    public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
+    public Language name;
+    public Language description;
 
     public Sprite icon
     {
@@ -26,8 +22,7 @@ public class Item
     public bool watchIconOnly;
 
     [Header("UseSettings")] public bool canUse;
-    public string useText => PlayerPrefs.GetString("language") == "ru" ? useTextRu : useTextEn;
-    public string useTextRu, useTextEn;
+    public Language useText;
     public bool removeAfterUse = true;
     public bool useInInventory;
     public bool useInCollider;

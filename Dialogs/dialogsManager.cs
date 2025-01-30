@@ -273,7 +273,7 @@ public class DialogsManager : MonoBehaviour
     {
         if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
         {
-            textNameMain.text = _selectedStep.totalNpc.nameOfNpc;
+            textNameMain.text = _selectedStep.totalNpc.nameOfNpc.text;
             iconImage.sprite = _selectedStep.icon;
             iconImage.SetNativeSize();
             _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
@@ -330,9 +330,9 @@ public class DialogsManager : MonoBehaviour
                     _animatingText = false;
                     StopAllCoroutines();
                     if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                        textDialogMain.text = _selectedStep.text;
+                        textDialogMain.text = _selectedStep.dialogText.text;
                     else
-                        textDialogSub.text = _selectedStep.text;
+                        textDialogSub.text = _selectedStep.dialogText.text;
                 }
                 else
                     DialogMoveNext();
@@ -349,7 +349,7 @@ public class DialogsManager : MonoBehaviour
         textDialogMain.text = "";
         textDialogSub.text = "";
         _animatingText = true;
-        char[] textChar = _selectedStep.text.ToCharArray();
+        char[] textChar = _selectedStep.dialogText.text.ToCharArray();
         foreach (char tChar in textChar)
         {
             if (!_animatingText) continue;

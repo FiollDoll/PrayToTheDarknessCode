@@ -59,7 +59,7 @@ public class Notebook : MonoBehaviour
         if (newNote == null) return; // Если пустой
 
         playerNotes.Add(newNote);
-        _scripts.notifyManager.StartNewNoteNotify(newNote.name);
+        _scripts.notifyManager.StartNewNoteNotify(newNote.name.text);
     }
 
     public void ChoicePage(int num)
@@ -84,7 +84,7 @@ public class Notebook : MonoBehaviour
                     var obj = Instantiate(buttonNotePrefab, Vector3.zero, Quaternion.identity,
                         pageChoiceNote.transform);
                     if (playerNotes[i].readed)
-                        obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerNotes[i].name;
+                        obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = playerNotes[i].name.text;
                     else
                         obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
                             "(*)" + playerNotes[i].name;
@@ -127,7 +127,7 @@ public class Notebook : MonoBehaviour
                 {
                     var obj = Instantiate(buttonNpc, Vector3.zero, Quaternion.identity, pageNpсСontainer.transform);
                     obj.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text =
-                        _scripts.player.familiarNpc[i].nameOfNpc;
+                        _scripts.player.familiarNpc[i].nameOfNpc.text;
                     obj.transform.Find("Icon").GetComponent<Image>().sprite =
                         _scripts.player.familiarNpc[i].GetStyleIcon(NpcIcon.IconMood.Standart);
                     obj.transform.Find("Icon").GetComponent<Image>().SetNativeSize();
@@ -149,8 +149,8 @@ public class Notebook : MonoBehaviour
             case 0:
             {
                 pageReadMain.gameObject.SetActive(true);
-                headerMain.text = playerNotes[num].name;
-                noteMain.text = playerNotes[num].description;
+                headerMain.text = playerNotes[num].name.text;
+                noteMain.text = playerNotes[num].description.text;
                 if (!playerNotes[num].readed)
                     playerNotes[num].readed = true;
                 break;
@@ -179,8 +179,8 @@ public class Notebook : MonoBehaviour
             }
             case 2:
                 pageReadHuman.gameObject.SetActive(true);
-                headerHuman.text = _scripts.player.familiarNpc[num].nameOfNpc;
-                noteHuman.text = _scripts.player.familiarNpc[num].description;
+                headerHuman.text = _scripts.player.familiarNpc[num].nameOfNpc.text;
+                noteHuman.text = _scripts.player.familiarNpc[num].description.text;
                 iconHuman.sprite = _scripts.player.familiarNpc[num].GetStyleIcon(NpcIcon.IconMood.Standart);
                 iconHuman.SetNativeSize();
                 break;

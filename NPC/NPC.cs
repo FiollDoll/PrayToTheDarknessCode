@@ -7,11 +7,8 @@ public class Npc : ScriptableObject
 {
     [Header("Основная информация")] public string nameInWorld;
 
-    public string nameOfNpc => PlayerPrefs.GetString("language") == "ru" ? ruName : enName;
-    public string ruName, enName;
-
-    public string description => PlayerPrefs.GetString("language") == "ru" ? ruDescription : enDescription;
-    [TextArea]public string ruDescription, enDescription;
+    public Language nameOfNpc;
+    public Language description;
 
     public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
     private Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();

@@ -18,9 +18,6 @@ public class menu : MonoBehaviour
     public void ChoiceLanguage(string language)
     {
         PlayerPrefs.SetString("language", language);
-        Language[] languagesObj = FindObjectsOfType<Language>();
-        foreach (Language lang in languagesObj)
-            lang.UpdateText();
     }
 
     public void SetCurseStyle()

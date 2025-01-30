@@ -59,8 +59,7 @@ public class DialogStep
 {
     [Header("Диалог")] public Npc totalNpc;
 
-    public string text => PlayerPrefs.GetString("language") == "ru" ? ruText : enText;
-    [TextArea] public string ruText, enText;
+    public Language dialogText;
     public NpcIcon.IconMood iconMoodSelected;
 
     [Header("Настройки диалога")] public Transform cameraTarget;
