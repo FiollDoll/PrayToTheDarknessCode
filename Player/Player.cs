@@ -75,7 +75,7 @@ public class Player : MonoBehaviour, IHumanable
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
 
-        var newColliders = Physics.OverlapSphere(rayStart.position, 1f,
+        var newColliders = Physics.OverlapSphere(rayStart.position, 0.5f,
             layerMaskInteractAuto);
 
         if (newColliders.Length > 0)

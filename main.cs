@@ -44,6 +44,14 @@ public class Main : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Перемещение КОГО-ЛИБО
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="speed"></param>
+    /// <param name="pos"></param>
+    /// <param name="spriteRenderer"></param>
+    /// <param name="animator"></param>
     public void MoveTo(Transform target, float speed, Transform pos, SpriteRenderer spriteRenderer, Animator animator)
     {
         pos.position = Vector3.MoveTowards(pos.position, target.position, speed * Time.deltaTime);
@@ -73,8 +81,6 @@ public class Main : MonoBehaviour
         if (_scripts.player.playerMenu.gameObject.activeSelf)
             return true;
         if (_scripts.interactions.floorChangeMenu.activeSelf)
-            return true;
-        if (_scripts.devTool.menuTools.activeSelf)
             return true;
         if (_scripts.dialogsManager.dialogMenu.activeSelf)
             return true;

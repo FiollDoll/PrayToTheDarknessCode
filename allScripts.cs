@@ -11,7 +11,6 @@ public class AllScripts : MonoBehaviour
     public QuestsSystem questsSystem;
     public CutsceneManager cutsceneManager;
     public Main main;
-    public DevTool devTool;
     public PostProcessingController postProcessingController;
     public NotifyManager notifyManager;
 }
