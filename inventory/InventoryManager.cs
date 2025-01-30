@@ -19,7 +19,7 @@ public class InventoryManager : MonoBehaviour
 
     private AllScripts _scripts;
 
-    public void Initialize()
+    private void Start()
     {
         inventory.UpdateGameItemsDict();
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();

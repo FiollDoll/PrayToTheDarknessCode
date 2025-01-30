@@ -8,7 +8,7 @@ public class DevTool : MonoBehaviour
     [SerializeField] private TMP_InputField inputFieldStage, inputFieldNewQuest, inputFieldToLocation, inputFieldSpawn;
     private AllScripts _scripts;
 
-    public void Initialize() => _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+    private void Start() => _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
 
     public void ActivateMenuTools() => menuTools.gameObject.SetActive(!menuTools.activeSelf);
 
@@ -49,8 +49,8 @@ public class DevTool : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.V))
             ActivateMenuTools();
-        textInfo.text = "dialogStep: " + _scripts.dialogsManager.totalStep + "\ntotalLocation: " +
-                        _scripts.manageLocation.totalLocation.name + "\nplayerCanMove: " + _scripts.player.canMove +
-                        "\ntotalQuest: " + _scripts.questsSystem.totalQuest.name + "\n";
+        //textInfo.text = "dialogStep: " + _scripts.dialogsManager.totalStep + "\ntotalLocation: " +
+                        //_scripts.manageLocation.totalLocation.name + "\nplayerCanMove: " + _scripts.player.canMove +
+                        //"\ntotalQuest: " + _scripts.questsSystem.totalQuest.name + "\n";
     }
 }

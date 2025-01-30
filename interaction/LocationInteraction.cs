@@ -28,11 +28,11 @@ public class LocationInteraction : MonoBehaviour, IInteractable
 
     public void DoInteraction()
     {
-        if (!_scripts.manageLocation.GetLocation(this.gameObject.name).locked)
-        {
-            if (_scripts.manageLocation.GetLocation(this.gameObject.name).autoEnter &&
-                _scripts.manageLocation.totalLocation.autoEnter)
-                _scripts.manageLocation.ActivateLocation(this.gameObject.name, spawnName);
-        }
+        if (_scripts.manageLocation.GetLocation(gameObject.name).locked) return;
+        
+        // Пока вырезано
+        //if (_scripts.manageLocation.GetLocation(gameObject.name).autoEnter &&
+            //_scripts.manageLocation.totalLocation.autoEnter)
+        _scripts.manageLocation.ActivateLocation(gameObject.name, spawnName);
     }
 }

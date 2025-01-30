@@ -20,31 +20,30 @@ public class Player : MonoBehaviour, IHumanable
     [SerializeField] private RectTransform[] buttonsPlayerMenu = new RectTransform[0];
 
     private AllScripts _scripts;
-    private RaycastHit _enteredCollider;
+    private Collider _enteredCollider;
     private Rigidbody _rb;
     private SpriteRenderer _sr;
     private Animator _animator;
 
-    public void Initialize()
+    private void Start()
     {
         _rb = GetComponent<Rigidbody>();
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         ChangeStyle("sleepy");
-        ChoicePagePlayerMenu(0);
     }
-    
+
     public void ChangeStyle(string newStyle)
     {
         selectedStyle = newStyle;
         _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
-    
+
     public void MoveTo(Transform target) =>
         _scripts.main.MoveTo(target, moveSpeed, transform, _sr, _animator);
 
-    private void ChoicePagePlayerMenu(int page)
+    public void ChoicePagePlayerMenu(int page)
     {
         foreach (RectTransform rt in buttonsPlayerMenu)
             rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 189.4f);
@@ -52,6 +51,8 @@ public class Player : MonoBehaviour, IHumanable
 
         _scripts.notebook.ChoicePage(-1);
         _scripts.inventoryManager.ManageInventoryPanel(false);
+
+        // Открытие новых
         switch (page)
         {
             case 0:
@@ -68,16 +69,19 @@ public class Player : MonoBehaviour, IHumanable
                 break;
         }
     }
-    
+
     private void FixedUpdate()
     {
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
-        
-        if (Physics.Raycast(rayStart.position, Vector3.up, out _enteredCollider, 12f,
-                layerMaskInteractAuto) && !_scripts.interactions.lockInter)
+
+        var newColliders = Physics.OverlapSphere(rayStart.position, 1f,
+            layerMaskInteractAuto);
+
+        if (newColliders.Length > 0)
         {
-            if (_enteredCollider.collider.TryGetComponent(out IInteractable interactable))
+            _enteredCollider = newColliders[0];
+            if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
             {
                 _scripts.interactions.EnteredInteraction = interactable;
                 if (_scripts.interactions.CheckActiveInteraction(interactable) && interactable.autoUse)

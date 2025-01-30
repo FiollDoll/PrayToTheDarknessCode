@@ -24,7 +24,7 @@ public class Notebook : MonoBehaviour
 
     [SerializeField] private GameObject notebookMenu;
     [SerializeField] private GameObject pageNote, pageQuest, pageNpc;
-    [SerializeField] [CanBeNull] private GameObject pageReadMain, pageReadNote, pageReadHuman;
+    [SerializeField]  private GameObject pageReadMain, pageReadNote, pageReadHuman;
     [SerializeField] private TextMeshProUGUI headerMain, noteMain;
     [SerializeField] private TextMeshProUGUI headerHuman, noteHuman;
     [SerializeField] private Image iconHuman;
@@ -32,7 +32,7 @@ public class Notebook : MonoBehaviour
 
     private AllScripts _scripts;
 
-    public void Initialize()
+    private void Start()
     {
         foreach (Note note in gameNotes)
             _gameNotesDict.TryAdd(note.gameName, note);
@@ -163,7 +163,7 @@ public class Notebook : MonoBehaviour
                 noteMain.text = selectedQuest.description;
                 if (selectedQuest.steps[selectedQuest.totalStep].name != "")
                     noteMain.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" +
-                                      selectedQuest.steps[selectedQuest.totalStep].description;
+                                     selectedQuest.steps[selectedQuest.totalStep].description;
                 if (selectedQuest != _scripts.questsSystem.totalQuest)
                 {
                     buttonChoiceActiveQuest.gameObject.SetActive(true);

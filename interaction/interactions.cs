@@ -13,7 +13,7 @@ public class Interactions : MonoBehaviour
     private RaycastHit _selectedCollider;
     private AllScripts _scripts;
 
-    public void Initialize()
+    private void Start()    
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
     }
@@ -68,13 +68,17 @@ public class Interactions : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
             EnteredInteraction?.DoInteraction();
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
             SelectedInteraction?.DoInteraction();
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (!_scripts.main.CheckAnyMenuOpen())
+            {
                 _scripts.player.playerMenu.gameObject.SetActive(true);
+                // TODO: сделать выбор по клавишам(какую стр открыть)
+                _scripts.player.ChoicePagePlayerMenu(0); 
+            }
             else
                 _scripts.player.playerMenu.gameObject.SetActive(false);
             _scripts.player.canMove = !_scripts.player.playerMenu.activeSelf;

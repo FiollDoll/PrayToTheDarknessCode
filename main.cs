@@ -30,6 +30,7 @@ public class Main : MonoBehaviour
         
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .OrthographicSize;
+        
         // Инициализация информации об НПС
         foreach (Npc npc in allNpc)
         {
@@ -40,36 +41,6 @@ public class Main : MonoBehaviour
                 npc.NpcController.npcEntity = npc;
 
             npc.animator = npcObj?.GetComponent<Animator>();
-        }
-        
-        // Точка инициализации всех скриптов по порядку
-        // Список методов инициализации
-        var initializers = new Action[]
-        {
-            () => _scripts.Initialize(),
-            () => _scripts.cutsceneManager.Initialize(),
-            () => _scripts.dialogsManager.Initialize(),
-            () => _scripts.manageLocation.Initialize(),
-            () => _scripts.questsSystem.Initialize(),
-            () => _scripts.notebook.Initialize(),
-            () => _scripts.interactions.Initialize(),
-            () => _scripts.inventoryManager.Initialize(),
-            () => _scripts.player.Initialize(),
-            () => _scripts.devTool.Initialize(),
-            () => _scripts.postProcessingController.Initialize()
-        };
-
-        // Выполнение инициализации без перерыва с обработкой ошибок
-        foreach (var initializer in initializers)
-        {
-            try
-            {
-                initializer();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Ошибка при инициализации: {ex.Message}\n{initializer.Method.GetBaseDefinition()}");
-            }
         }
     }
 

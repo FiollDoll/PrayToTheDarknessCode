@@ -12,7 +12,7 @@ public class ManageLocation : MonoBehaviour
     private CinemachineConfiner2D _cinemachineConfiner2D;
     private NpcController[] _npсs;
 
-    public void Initialize()
+    private void Start()
     {
         foreach (Location location in locations)
         {

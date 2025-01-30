@@ -16,7 +16,7 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] private Image noViewPanel;
     private AllScripts _scripts;
 
-    public void Initialize()
+    private void Start()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         if (!svBlock) // dev only

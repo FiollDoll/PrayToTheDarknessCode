@@ -34,7 +34,7 @@ public class DialogsManager : MonoBehaviour
     private Image _noViewPanel;
     private AllScripts _scripts;
 
-    public void Initialize()
+    private void Start()
     {
         foreach (Dialog dialog in dialogs)
         {
