@@ -4,8 +4,8 @@ using GameOptions;
 [System.Serializable]
 public class LanguageSetting
 {
-    [SerializeField] private string ru;
-    [SerializeField] private string en;
+    [TextArea(0, 10)] [SerializeField] private string ru;
+    [TextArea(0, 10)] [SerializeField] private string en;
 
     public string text
     {

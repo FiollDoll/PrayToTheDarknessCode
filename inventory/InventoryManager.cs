@@ -43,8 +43,8 @@ public class InventoryManager : MonoBehaviour
     /// <param name="nameItem"></param>
     public void AddItem(string nameItem)
     {
-        inventory.AddItem(nameItem);
-        _scripts.notifyManager.StartNewItemNotify(inventory.GetGameItem(nameItem).name.text);
+        Item newItem = inventory.AddItem(nameItem);
+        _scripts.notifyManager.StartNewItemNotify(newItem.name.text);
     }
 
     /// <summary>

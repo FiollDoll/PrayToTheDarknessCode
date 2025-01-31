@@ -3,7 +3,7 @@ using TMPro;
 
 public class LanguageText : MonoBehaviour
 {
-    public LanguageSetting languageSetting;
+    public LanguageSetting language;
     private TextMeshProUGUI _textMeshProUGUI;
 
 
@@ -11,6 +11,6 @@ public class LanguageText : MonoBehaviour
     {
         if (!_textMeshProUGUI)
             _textMeshProUGUI = GetComponent<TextMeshProUGUI>();
-        _textMeshProUGUI.text = languageSetting.text;
+        _textMeshProUGUI.text = language.text;
     }
 }

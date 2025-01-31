@@ -4,11 +4,8 @@
 public class Quest
 {
     public string nameInGame;
-    public string nameRu, nameEn;
-    public string name => PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn;
-
-    [TextArea]public string descriptionRu, descriptionEn;
-    public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
+    public LanguageSetting name;
+    public LanguageSetting description;
 
     public Step[] steps = new Step[0];
     public int totalStep;
@@ -18,11 +15,8 @@ public class Quest
 [System.Serializable]
 public class Step
 {
-    public string nameRu, nameEn;
-    public string name => PlayerPrefs.GetString("language") == "ru" ? nameRu : nameEn;
-
-    [TextArea]public string descriptionRu, descriptionEn;
-    public string description => PlayerPrefs.GetString("language") == "ru" ? descriptionRu : descriptionEn;
+    public LanguageSetting name;
+    public LanguageSetting description;
 
     public float delayNextStep;
     public string startDialog;

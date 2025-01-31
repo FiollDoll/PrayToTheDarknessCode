@@ -52,11 +52,12 @@ public class Inventory
     /// Выдача предмета
     /// </summary>
     /// <param name="nameItem">Название предмета</param>
-    public void AddItem(string nameItem)
+    public Item AddItem(string nameItem)
     {
         Item newItem = GetGameItem(nameItem);
         if (newItem != null)
             playerItems.Add(newItem);
+        return newItem;
     }
 
     /// <summary>

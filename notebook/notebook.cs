@@ -109,7 +109,7 @@ public class Notebook : MonoBehaviour
                     if (_scripts.questsSystem.activeQuests[i] == _scripts.questsSystem.totalQuest)
                         textName.text = "-> " + _scripts.questsSystem.activeQuests[i].name;
                     else
-                        textName.text = _scripts.questsSystem.activeQuests[i].name;
+                        textName.text = _scripts.questsSystem.activeQuests[i].name.text;
                     int number = i;
                     obj.GetComponent<Button>().onClick.AddListener(delegate { ReadNote(number, 1); });
                 }
@@ -159,9 +159,9 @@ public class Notebook : MonoBehaviour
             {
                 pageReadMain.gameObject.SetActive(true);
                 Quest selectedQuest = _scripts.questsSystem.activeQuests[num];
-                headerMain.text = selectedQuest.name;
-                noteMain.text = selectedQuest.description;
-                if (selectedQuest.steps[selectedQuest.totalStep].name != "")
+                headerMain.text = selectedQuest.name.text;
+                noteMain.text = selectedQuest.description.text;
+                if (selectedQuest.steps[selectedQuest.totalStep].name.text != "")
                     noteMain.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" +
                                      selectedQuest.steps[selectedQuest.totalStep].description;
                 if (selectedQuest != _scripts.questsSystem.totalQuest)

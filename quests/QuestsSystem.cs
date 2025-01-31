@@ -16,7 +16,7 @@ public class QuestsSystem : MonoBehaviour
     private AllScripts _scripts;
     private RectTransform _textQuestTransform;
 
-    public void Initialize()
+    private void Start()
     {
         foreach (Quest quest in gameQuests)
             _gameQuestDict.Add(quest.nameInGame, quest);
@@ -108,8 +108,8 @@ public class QuestsSystem : MonoBehaviour
             {
                 _scripts.main.EndCursedText(textNameQuest);
                 _scripts.main.EndCursedText(textQuest);
-                textNameQuest.text = totalQuest.name;
-                textQuest.text = totalQuest.steps[totalQuest.totalStep].name;
+                textNameQuest.text = totalQuest.name.text;
+                textQuest.text = totalQuest.steps[totalQuest.totalStep].name.text;
             }
         }
         else
