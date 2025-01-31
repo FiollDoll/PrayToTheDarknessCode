@@ -2,7 +2,7 @@
 
 public class LocationInteraction : MonoBehaviour, IInteractable
 {
-    [Header("Main")] public Language label;
+    [Header("Main")] public LanguageSetting label;
     public string interLabel => label.text;
 
     [Header("Requires")] public bool AutoUse;

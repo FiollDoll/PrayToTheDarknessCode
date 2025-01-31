@@ -6,7 +6,7 @@ public class Location
 {
     [Header("Основные настройки")]
     public string gameName;
-    public Language name;
+    public LanguageSetting name;
     
     public bool locked, autoEnter;
     public Collider2D wallsForCamera;

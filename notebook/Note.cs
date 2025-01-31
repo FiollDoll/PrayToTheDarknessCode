@@ -4,9 +4,9 @@
 public class Note
 {
     public string gameName;
-    public Language name;
+    public LanguageSetting name;
 
-    public Language description;
+    public LanguageSetting description;
 
     public bool readed;
 }

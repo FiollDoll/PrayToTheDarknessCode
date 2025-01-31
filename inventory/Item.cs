@@ -4,8 +4,8 @@
 public class Item
 {
     public string nameInGame;
-    public Language name;
-    public Language description;
+    public LanguageSetting name;
+    public LanguageSetting description;
 
     public Sprite icon
     {
@@ -22,7 +22,7 @@ public class Item
     public bool watchIconOnly;
 
     [Header("UseSettings")] public bool canUse;
-    public Language useText;
+    public LanguageSetting useText;
     public bool removeAfterUse = true;
     public bool useInInventory;
     public bool useInCollider;

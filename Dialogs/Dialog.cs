@@ -59,7 +59,7 @@ public class DialogStep
 {
     [Header("Диалог")] public Npc totalNpc;
 
-    public Language dialogText;
+    public LanguageSetting dialogText;
     public NpcIcon.IconMood iconMoodSelected;
 
     [Header("Настройки диалога")] public Transform cameraTarget;

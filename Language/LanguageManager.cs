@@ -1,33 +1,17 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using GameOptions;
 
-public class LanguageManager: MonoBehaviour
+public class LanguageManager : MonoBehaviour
 {
-    public enum Languages
-    {
-        Ru,
-        En
-    };
-
-    public Languages language;
-
-    private List<LanguageText> _allLanguageTexts;
-
-    private void Start()
-    {
-        LanguageText[] languagesObj = FindObjectsOfType<LanguageText>();
-        // TODO: почему-то цикл не срабатывает
-        foreach (LanguageText lang in languagesObj)
-        {
-            lang.language.languageManager = this;
-            lang.UpdateText();
-            _allLanguageTexts.Add(lang);
-        }
-    }
+    [SerializeField] private Options.Languages language;
     
-    public void UpdateAllTexts()
+    private void Start() =>  Options.SetLanguage(language);
+    
+    private void OnValidate() => Options.SetLanguage(language);
+
+    public void ChangeLanguage(Options.Languages newLanguage)
     {
-        foreach (LanguageText lang in _allLanguageTexts)
-            lang.UpdateText();
+        language = newLanguage;
+        Options.SetLanguage(language);
     }
 }

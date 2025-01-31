@@ -3,11 +3,14 @@ using TMPro;
 
 public class LanguageText : MonoBehaviour
 {
-    public Language language;
+    public LanguageSetting languageSetting;
     private TextMeshProUGUI _textMeshProUGUI;
-    
-    private void Start() => _textMeshProUGUI = GetComponent<TextMeshProUGUI>();
-    
-    public void UpdateText() => _textMeshProUGUI.text = language.text;
-    
+
+
+    public void OnEnable()
+    {
+        if (!_textMeshProUGUI)
+            _textMeshProUGUI = GetComponent<TextMeshProUGUI>();
+        _textMeshProUGUI.text = languageSetting.text;
+    }
 }

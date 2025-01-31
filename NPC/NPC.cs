@@ -7,8 +7,8 @@ public class Npc : ScriptableObject
 {
     [Header("Основная информация")] public string nameInWorld;
 
-    public Language nameOfNpc;
-    public Language description;
+    public LanguageSetting nameOfNpc;
+    public LanguageSetting description;
 
     public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
     private Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
