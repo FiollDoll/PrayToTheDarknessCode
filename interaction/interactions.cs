@@ -71,19 +71,6 @@ public class Interactions : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
             SelectedInteraction?.DoInteraction();
 
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            if (!_scripts.main.CheckAnyMenuOpen())
-            {
-                _scripts.player.playerMenu.gameObject.SetActive(true);
-                // TODO: сделать выбор по клавишам(какую стр открыть)
-                _scripts.player.ChoicePagePlayerMenu(0); 
-            }
-            else
-                _scripts.player.playerMenu.gameObject.SetActive(false);
-            _scripts.player.canMove = !_scripts.player.playerMenu.activeSelf;
-        }
-
         interLabelText.text = "";
         if (SelectedInteraction != null)
             interLabelText.text = SelectedInteraction.interLabel;

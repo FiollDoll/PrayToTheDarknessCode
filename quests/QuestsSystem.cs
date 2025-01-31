@@ -60,7 +60,7 @@ public class QuestsSystem : MonoBehaviour
     {
         totalQuest = GetQuest(questName);
         UpdateQuestUI();
-        _scripts.notebook.ChoicePage(1);
+        //_scripts.notebook.ChoicePage(1);
     }
 
     /// <summary>

@@ -26,6 +26,10 @@ public class ManageLocation : MonoBehaviour
         _scripts.manageLocation = this;
         totalLocation = GetLocation("mainMark");
         _npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
+        
+        LocationInteraction[] locationInteractions = FindObjectsByType<LocationInteraction>(FindObjectsSortMode.None);
+        foreach (LocationInteraction locationInteraction in locationInteractions)
+            locationInteraction.Initialize();
     }
 
     /// <summary>
@@ -94,6 +98,6 @@ public class ManageLocation : MonoBehaviour
     /// <returns></returns>
     public Location GetLocation(string locationName)
     {
-        return _locationsDict[locationName];
+        return _locationsDict.GetValueOrDefault(locationName);
     }
 }

@@ -78,8 +78,8 @@ public class Main : MonoBehaviour
 
     public bool CheckAnyMenuOpen()
     {
-        if (_scripts.player.playerMenu.gameObject.activeSelf)
-            return true;
+        //if (_scripts.player.playerMenu.gameObject.activeSelf)
+            //return true;
         if (_scripts.interactions.floorChangeMenu.activeSelf)
             return true;
         if (_scripts.dialogsManager.dialogMenu.activeSelf)

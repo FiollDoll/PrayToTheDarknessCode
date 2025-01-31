@@ -16,9 +16,6 @@ public class Player : MonoBehaviour, IHumanable
     [SerializeField] private LayerMask layerMaskInteractAuto;
     public CinemachineVirtualCamera virtualCamera;
 
-    [Header("Игровое меню")] public GameObject playerMenu;
-    [SerializeField] private RectTransform[] buttonsPlayerMenu = new RectTransform[0];
-
     private AllScripts _scripts;
     private Collider _enteredCollider;
     private Rigidbody _rb;
@@ -42,33 +39,6 @@ public class Player : MonoBehaviour, IHumanable
 
     public void MoveTo(Transform target) =>
         _scripts.main.MoveTo(target, moveSpeed, transform, _sr, _animator);
-
-    public void ChoicePagePlayerMenu(int page)
-    {
-        foreach (RectTransform rt in buttonsPlayerMenu)
-            rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 189.4f);
-        buttonsPlayerMenu[page].anchoredPosition = new Vector2(buttonsPlayerMenu[page].anchoredPosition.x, 195f);
-
-        _scripts.notebook.ChoicePage(-1);
-        _scripts.inventoryManager.ManageInventoryPanel(false);
-
-        // Открытие новых
-        switch (page)
-        {
-            case 0:
-                _scripts.inventoryManager.ManageInventoryPanel(true);
-                break;
-            case 1:
-                _scripts.notebook.ChoicePage(1);
-                break;
-            case 2:
-                _scripts.notebook.ChoicePage(0);
-                break;
-            case 3:
-                _scripts.notebook.ChoicePage(2);
-                break;
-        }
-    }
 
     private void FixedUpdate()
     {

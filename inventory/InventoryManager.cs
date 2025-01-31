@@ -55,7 +55,7 @@ public class InventoryManager : MonoBehaviour
     {
         itemInfoMenu.gameObject.SetActive(false);
         UpdateInvUI();
-        _scripts.player.playerMenu.gameObject.SetActive(false);
+        //_scripts.player.playerMenu.gameObject.SetActive(false);
     }
 
     /// <summary>
