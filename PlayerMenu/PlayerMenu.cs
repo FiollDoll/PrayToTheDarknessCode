@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using MyBox;
 
@@ -6,14 +7,11 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     [SerializeField] private RectTransform[] buttonsPlayerMenuTransform = new RectTransform[0];
     [Header("Prefabs")] [SerializeField] private GameObject buttonNotePrefab;
     [SerializeField] private GameObject buttonNpcPrefab;
-
+    
     [Foldout("Scene objects", true)] [SerializeField]
     private GameObject playerMenu;
 
-    public GameObject menu
-    {
-        get => playerMenu;
-    }
+    public GameObject menu => playerMenu;
 
     [Header("NotesPage")] [SerializeField] private GameObject pageNote;
     [SerializeField] private GameObject notesContainer;
@@ -79,10 +77,10 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         // Открытие новых
         switch (page)
         {
-            case 0:
+            case 0: // Инвентарь
                 _scripts.inventoryManager.ManageInventoryPanel(true);
                 break;
-            case 1:
+            case 1: // Квесты
                 pageQuest.gameObject.SetActive(true);
                 foreach (Transform child in questsContainer.transform)
                     Destroy(child.gameObject);
@@ -100,7 +98,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
                 _questsAdaptiveScrollView.UpdateContentSize();
                 break;
-            case 2:
+            case 2: // Записки
                 pageNote.gameObject.SetActive(true);
                 foreach (Transform child in notesContainer.transform)
                     Destroy(child.gameObject);
@@ -118,7 +116,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
                 _notesAdaptiveScrollView.UpdateContentSize();
                 break;
-            case 3:
+            case 3: // НПС
                 pageNpc.gameObject.SetActive(true);
                 foreach (Transform child in npcContainer.transform)
                     Destroy(child.gameObject);

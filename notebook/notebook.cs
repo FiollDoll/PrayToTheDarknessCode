@@ -17,10 +17,8 @@ public class Notebook : MonoBehaviour
     [Foldout("Scene objects", true)] [SerializeField]
     private GameObject buttonNpc;
 
-    [SerializeField] private GameObject buttonChoiceActiveQuest;
-
     [SerializeField] private GameObject notebookMenu;
-    [SerializeField] private GameObject pageReadMain, pageReadNote, pageReadHuman;
+    [SerializeField] private GameObject pageReadMenu, pageReadNoteOrQuest, pageReadHuman;
     [SerializeField] private TextMeshProUGUI headerMain, noteMain;
     [SerializeField] private TextMeshProUGUI headerHuman, noteHuman;
     [SerializeField] private Image iconHuman;
@@ -57,12 +55,12 @@ public class Notebook : MonoBehaviour
 
     public void ReadNote(int num, int mode = 0)
     {
-        pageReadNote.gameObject.SetActive(true);
+        pageReadMenu.gameObject.SetActive(true);
         switch (mode)
         {
             case 0:
             {
-                pageReadMain.gameObject.SetActive(true);
+                pageReadNoteOrQuest.gameObject.SetActive(true);
                 headerMain.text = playerNotes[num].name.text;
                 noteMain.text = playerNotes[num].description.text;
                 if (!playerNotes[num].readed)
@@ -71,7 +69,7 @@ public class Notebook : MonoBehaviour
             }
             case 1:
             {
-                pageReadMain.gameObject.SetActive(true);
+                pageReadNoteOrQuest.gameObject.SetActive(true);
                 Quest selectedQuest = _scripts.questsSystem.activeQuests[num];
                 headerMain.text = selectedQuest.name.text;
                 noteMain.text = selectedQuest.description.text;
@@ -80,14 +78,12 @@ public class Notebook : MonoBehaviour
                                      selectedQuest.steps[selectedQuest.totalStep].description;
                 if (selectedQuest != _scripts.questsSystem.totalQuest)
                 {
-                    buttonChoiceActiveQuest.gameObject.SetActive(true);
-                    buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate
-                    {
-                        _scripts.questsSystem.ChoiceActiveQuest(selectedQuest.nameInGame);
-                    });
+                    //buttonChoiceActiveQuest.gameObject.SetActive(true);
+                    //buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate
+                    //{
+                    //_scripts.questsSystem.ChoiceActiveQuest(selectedQuest.nameInGame);
+                    //});
                 }
-                else
-                    buttonChoiceActiveQuest.gameObject.SetActive(false);
 
                 break;
             }
@@ -96,8 +92,15 @@ public class Notebook : MonoBehaviour
                 headerHuman.text = _scripts.player.familiarNpc[num].nameOfNpc.text;
                 noteHuman.text = _scripts.player.familiarNpc[num].description.text;
                 iconHuman.sprite = _scripts.player.familiarNpc[num].GetStyleIcon(NpcIcon.IconMood.Standart);
-                iconHuman.SetNativeSize();
                 break;
         }
+    }
+
+    public void CloseReadMenu()
+    {
+        pageReadHuman.gameObject.SetActive(false);
+        pageReadNoteOrQuest.gameObject.SetActive(false);
+        pageReadNoteOrQuest.gameObject.SetActive(false);
+        pageReadMenu.gameObject.SetActive(false);
     }
 }
