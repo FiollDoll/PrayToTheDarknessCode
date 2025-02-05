@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -20,6 +21,7 @@ public class Main : MonoBehaviour
     [HideInInspector] public bool lockAnyMenu;
     [HideInInspector] public float startCameraSize;
 
+    private List<IMenuable> _allGameMenu = new List<IMenuable>();
     private const string CharsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
     private Dictionary<TextMeshProUGUI, Coroutine> _cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
     private AllScripts _scripts;
@@ -42,6 +44,8 @@ public class Main : MonoBehaviour
 
             npc.animator = npcObj?.GetComponent<Animator>();
         }
+
+        _allGameMenu = FindObjectsOfType<MonoBehaviour>().OfType<IMenuable>().ToList();
     }
 
     /// <summary>
@@ -76,15 +80,22 @@ public class Main : MonoBehaviour
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
     }
 
+    /// <summary>
+    /// Проверка на возможость открытия любого меню
+    /// </summary>
+    /// <returns>true - открытие возможно, false - не возможно</returns>
     public bool CheckAnyMenuOpen()
     {
-        //if (_scripts.player.playerMenu.gameObject.activeSelf)
-            //return true;
-        if (_scripts.interactions.floorChangeMenu.activeSelf)
-            return true;
-        if (_scripts.dialogsManager.dialogMenu.activeSelf)
-            return true;
-        return lockAnyMenu;
+        foreach (IMenuable menuable in _allGameMenu)
+        {
+            if (menuable.menu.gameObject.activeSelf)
+                return false;
+        }
+
+        if (lockAnyMenu)
+            return false;
+        
+        return true;
     }
 
     /// <summary>

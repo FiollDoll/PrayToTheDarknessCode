@@ -6,7 +6,7 @@ using TMPro;
 using DG.Tweening;
 using MyBox;
 
-public class DialogsManager : MonoBehaviour
+public class DialogsManager : MonoBehaviour, IMenuable
 {
     [Header("All dialogs")] public Dialog[] dialogs = new Dialog[0];
     private Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
@@ -18,7 +18,14 @@ public class DialogsManager : MonoBehaviour
 
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
 
-    [Foldout("Scene Objects", true)] public GameObject dialogMenu;
+    [Foldout("Scene Objects", true)] [SerializeField]
+    private GameObject dialogMenu;
+
+    public GameObject menu
+    {
+        get => dialogMenu;
+    }
+
     [SerializeField] private GameObject choicesContainer;
 
     [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub;
@@ -69,6 +76,11 @@ public class DialogsManager : MonoBehaviour
         return _selectedBranch.choices.Length != 0 && totalStep + 1 == _selectedBranch.dialogSteps.Length;
     }
 
+    public void ManageActivationMenu()
+    {
+        
+    }
+    
     /// <summary>
     /// Активация диалоговых меню
     /// </summary>
