@@ -1,21 +1,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using TMPro;
 
 public class ManageLocation : MonoBehaviour
 {
-    public Location totalLocation;
-    public Location[] locations = new Location[0];
+    [Header("Текущая локация")] public Location totalLocation;
+    [Header("Все локации")] public Location[] locations = new Location[0];
+
+    [Header("Отображение взаимодействий")] [SerializeField]
+    private GameObject labelTextPrefab;
+
+    [SerializeField] private GameObject containerOfLabels;
     private readonly Dictionary<string, Location> _locationsDict = new Dictionary<string, Location>();
-    private AllScripts _scripts;
     private GameObject _player;
     private CinemachineConfiner2D _cinemachineConfiner2D;
     private NpcController[] _npсs;
+    private AllScripts _scripts;
 
     private void Start()
     {
         foreach (Location location in locations)
         {
+            location.UpdateLocationGameInScene();
             _locationsDict.TryAdd(location.gameName, location);
             location.UpdateSpawnsDict();
         }
@@ -26,7 +33,7 @@ public class ManageLocation : MonoBehaviour
         _scripts.manageLocation = this;
         totalLocation = GetLocation("mainMark");
         _npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
-        
+
         LocationInteraction[] locationInteractions = FindObjectsByType<LocationInteraction>(FindObjectsSortMode.None);
         foreach (LocationInteraction locationInteraction in locationInteractions)
             locationInteraction.Initialize();
@@ -99,5 +106,29 @@ public class ManageLocation : MonoBehaviour
     public Location GetLocation(string locationName)
     {
         return _locationsDict.GetValueOrDefault(locationName);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            _scripts.player.canMove = false;
+            foreach (KeyValuePair<GameObject, IInteractable> interactableObject in totalLocation
+                         .LocationInteractableObjects)
+            {
+                var obj = Instantiate(labelTextPrefab,
+                    interactableObject.Key.transform.position - new Vector3(0, 0, 1f),
+                    Quaternion.identity,
+                    containerOfLabels.transform);
+                obj.GetComponent<TextMeshProUGUI>().text = interactableObject.Value.interLabel;
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            _scripts.player.canMove = true;
+            foreach (Transform labels in containerOfLabels.transform)
+                Destroy(labels.gameObject);
+        }
     }
 }

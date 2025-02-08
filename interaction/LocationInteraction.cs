@@ -13,11 +13,13 @@ public class LocationInteraction : MonoBehaviour, IInteractable
     public int StageInter;
     public int stageInter => StageInter;
 
-    [Header("Preferences")] public string spawnName;
+    [Header("Preferences")] 
+    public string locationName;
+    public string spawnName;
     public bool destroyAfterInter;
     public bool nextQuestStep;
-    public string ItemNameToUse;
-    public string itemNameUse => ItemNameToUse;
+    public string itemNameToUse;
+    public string itemNameUse => itemNameToUse;
 
     private Location _location;
     private AllScripts _scripts;
@@ -25,7 +27,7 @@ public class LocationInteraction : MonoBehaviour, IInteractable
     public void Initialize()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _location = _scripts.manageLocation.GetLocation(gameObject.name);
+        _location = _scripts.manageLocation.GetLocation(locationName);
         if (useLocationName)
             label = _location.name;
     }
@@ -37,6 +39,6 @@ public class LocationInteraction : MonoBehaviour, IInteractable
         // Пока вырезано
         //if (_scripts.manageLocation.GetLocation(gameObject.name).autoEnter &&
         //_scripts.manageLocation.totalLocation.autoEnter)
-        _scripts.manageLocation.ActivateLocation(gameObject.name, spawnName);
+        _scripts.manageLocation.ActivateLocation(locationName, spawnName);
     }
 }
