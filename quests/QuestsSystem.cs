@@ -33,7 +33,7 @@ public class QuestsSystem : MonoBehaviour
     /// <returns></returns>
     public Quest GetQuest(string questName)
     {
-        return _gameQuestDict[questName];
+        return _gameQuestDict.GetValueOrDefault(questName);
     }
     
     /// <summary>

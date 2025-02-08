@@ -9,7 +9,7 @@ public class Location
     public LanguageSetting name;
 
     public bool locked, autoEnter;
-    public Collider2D wallsForCamera;
+    public Collider wallsForCamera;
     public float modifCamera;
     public SpawnInLocation[] spawns = new SpawnInLocation[0];
     private Dictionary<string, SpawnInLocation> _spawnsDict = new Dictionary<string, SpawnInLocation>();

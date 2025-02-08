@@ -1,23 +1,31 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
 public class Npc : ScriptableObject
 {
-    [Header("Основная информация")] public string nameInWorld;
+    [Header("Main information")] public string nameInWorld;
 
     public LanguageSetting nameOfNpc;
     public LanguageSetting description;
 
     public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
-    private Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
-
-    [Header("Настройки")] public bool canMeet;
+    private readonly Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
+    
+    [Header("TempInfo")] public float relationshipWithPlayer;
+    
+    [Header("Preference")] public bool canMeet;
 
     // Назначаются при старте
     [HideInInspector] public Animator animator;
     [HideInInspector] public IHumanable NpcController;
+
+    private void OnEnable()
+    {
+        // Сброс temp переменных
+        // TODO: сделать подгрузку
+        relationshipWithPlayer = 0;
+    }
 
     public void UpdateNpcStyleDict()
     {

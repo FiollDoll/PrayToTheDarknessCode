@@ -8,7 +8,7 @@ using Cinemachine;
 
 public class CutsceneManager : MonoBehaviour
 {
-    public Cutscene totalCutscene;
+    public Cutscene totalCutscene = new Cutscene();
     [SerializeField] private GameObject virtualCamera;
     [SerializeField] private Cutscene[] cutsceneInGame = new Cutscene[0];
     [SerializeField] private GameObject startViewMenu;
@@ -112,7 +112,7 @@ public class CutsceneManager : MonoBehaviour
 
     public void ActivateCutsceneStep(int step)
     {
-        if (step == -1)
+        if (totalCutscene.name == "" || step == -1)
             return;
 
         if (totalCutscene.steps[step].delayAndNext != 0)

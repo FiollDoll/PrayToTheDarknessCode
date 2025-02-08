@@ -14,7 +14,7 @@ public class ManageLocation : MonoBehaviour
     [SerializeField] private GameObject containerOfLabels;
     private readonly Dictionary<string, Location> _locationsDict = new Dictionary<string, Location>();
     private GameObject _player;
-    private CinemachineConfiner2D _cinemachineConfiner2D;
+    private CinemachineConfiner _cinemachineConfiner;
     private NpcController[] _npсs;
     private AllScripts _scripts;
 
@@ -29,7 +29,7 @@ public class ManageLocation : MonoBehaviour
 
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _player = GameObject.Find("Player");
-        _cinemachineConfiner2D = _scripts.player.virtualCamera.GetComponent<CinemachineConfiner2D>();
+        _cinemachineConfiner = _scripts.player.virtualCamera.GetComponent<CinemachineConfiner>();
         _scripts.manageLocation = this;
         totalLocation = GetLocation("mainMark");
         _npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
@@ -50,7 +50,7 @@ public class ManageLocation : MonoBehaviour
             spawn = location.spawns[0].name;
         Vector3 newPosition = location.GetSpawn(spawn).position;
         _player.transform.position = newPosition;
-        _cinemachineConfiner2D.m_BoundingShape2D = location.wallsForCamera as PolygonCollider2D;
+        _cinemachineConfiner.m_BoundingVolume = location.wallsForCamera;
         _scripts.player.canMove = false;
         _scripts.player.virtualCamera.m_Lens.OrthographicSize =
             _scripts.main.startCameraSize + location.modifCamera;

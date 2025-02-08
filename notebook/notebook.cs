@@ -20,7 +20,8 @@ public class Notebook : MonoBehaviour
     [SerializeField] private GameObject notebookMenu;
     [SerializeField] private GameObject pageReadMenu, pageReadNoteOrQuest, pageReadHuman;
     [SerializeField] private TextMeshProUGUI headerMain, noteMain;
-    [SerializeField] private TextMeshProUGUI headerHuman, noteHuman;
+    [SerializeField] private TextMeshProUGUI headerHuman, noteHuman, relationshipTextHuman;
+    [SerializeField] private Slider sliderHuman;
     [SerializeField] private Image iconHuman;
     [SerializeField] private Button buttonExit;
 
@@ -63,8 +64,8 @@ public class Notebook : MonoBehaviour
                 pageReadNoteOrQuest.gameObject.SetActive(true);
                 headerMain.text = playerNotes[num].name.text;
                 noteMain.text = playerNotes[num].description.text;
-                if (!playerNotes[num].readed)
-                    playerNotes[num].readed = true;
+                if (!playerNotes[num].read)
+                    playerNotes[num].read = true;
                 break;
             }
             case 1:
@@ -88,10 +89,15 @@ public class Notebook : MonoBehaviour
                 break;
             }
             case 2:
+                Npc selectedNpc = _scripts.player.familiarNpc[num];
                 pageReadHuman.gameObject.SetActive(true);
-                headerHuman.text = _scripts.player.familiarNpc[num].nameOfNpc.text;
-                noteHuman.text = _scripts.player.familiarNpc[num].description.text;
-                iconHuman.sprite = _scripts.player.familiarNpc[num].GetStyleIcon(NpcIcon.IconMood.Standart);
+                headerHuman.text = selectedNpc.nameOfNpc.text;
+                noteHuman.text = selectedNpc.description.text;
+                iconHuman.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
+                relationshipTextHuman.text =
+                    new LanguageSetting($"Отношения({selectedNpc.NpcController.npcEntity.relationshipWithPlayer})",
+                        $"Relationships({selectedNpc.NpcController.npcEntity.relationshipWithPlayer})").text;
+                sliderHuman.value = selectedNpc.NpcController.npcEntity.relationshipWithPlayer;
                 break;
         }
     }

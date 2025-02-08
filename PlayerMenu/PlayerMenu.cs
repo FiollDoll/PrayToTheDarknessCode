@@ -87,7 +87,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
                 for (int i = 0; i < _scripts.questsSystem.activeQuests.Count; i++)
                 {
-                    var obj = Instantiate(buttonNotePrefab, questsContainer.transform).GetComponent<NotePrefabInfo>();
+                    var obj = Instantiate(buttonNotePrefab, questsContainer.transform).GetComponent<PrefabInfo>();
                     if (_scripts.questsSystem.activeQuests[i] == _scripts.questsSystem.totalQuest)
                         obj.prefabNameTextMeshProUGUI.text = "-> " + _scripts.questsSystem.activeQuests[i].name;
                     else
@@ -105,8 +105,8 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
                 for (int i = 0; i < _scripts.notebook.playerNotes.Count; i++)
                 {
-                    var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<NotePrefabInfo>();
-                    if (_scripts.notebook.playerNotes[i].readed)
+                    var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
+                    if (_scripts.notebook.playerNotes[i].read)
                         obj.prefabNameTextMeshProUGUI.text = _scripts.notebook.playerNotes[i].name.text;
                     else
                         obj.prefabNameTextMeshProUGUI.text = "(*)" + _scripts.notebook.playerNotes[i].name;
@@ -123,11 +123,10 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
                 for (int i = 0; i < _scripts.player.familiarNpc.Count; i++)
                 {
-                    var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<NotePrefabInfo>();
-                    obj.prefabNameTextMeshProUGUI.text =
-                        _scripts.player.familiarNpc[i].nameOfNpc.text;
-                    obj.prefabImage.sprite =
-                        _scripts.player.familiarNpc[i].GetStyleIcon(NpcIcon.IconMood.Standart);
+                    var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
+                    Npc selectedNpc = _scripts.player.familiarNpc[i];
+                    obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
+                    obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
                     int number = i;
                     obj.prefabButton.onClick.AddListener(delegate { _scripts.notebook.ReadNote(number, 2); });
                 }

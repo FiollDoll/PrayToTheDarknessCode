@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-[System.Serializable]
+﻿[System.Serializable]
 public class Note
 {
     public string gameName;
@@ -8,5 +6,5 @@ public class Note
 
     public LanguageSetting description;
 
-    public bool readed;
+    public bool read;
 }

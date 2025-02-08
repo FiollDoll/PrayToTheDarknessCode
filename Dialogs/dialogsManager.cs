@@ -120,7 +120,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         Dialog newDialog = GetDialog(nameDialog);
         if (newDialog == null) return;
-        if (newDialog.readed) return;
+        if (newDialog.read) return;
 
         _activatedDialog = newDialog;
         _selectedBranch = _activatedDialog.stepBranches[0];
@@ -132,7 +132,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         ActivateDialogWindow();
 
         if (!_activatedDialog.moreRead)
-            _activatedDialog.readed = true;
+            _activatedDialog.read = true;
         _scripts.player.canMove = _activatedDialog.canMove;
 
         _scripts.main.EndCursedText(textDialogMain);
@@ -183,6 +183,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (_activatedDialog.nextStepQuest)
             _scripts.questsSystem.NextStep();
         _scripts.player.canMove = true;
+        _scripts.cutsceneManager.totalCutscene = new Cutscene();
         _scripts.main.EndCursedText(textDialogMain);
         _scripts.player.virtualCamera.Follow = _scripts.player.transform;
         if (_activatedDialog.noteAdd != "")
@@ -213,7 +214,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 choicesContainer.transform);
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                _selectedBranch.choices[i].textQuestion;
+                _selectedBranch.choices[i].textQuestion.text;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
             if (_selectedBranch.choices[i].readed)
@@ -310,10 +311,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _scripts.player.virtualCamera.Follow =
             _selectedStep.cameraTarget ? _selectedStep.cameraTarget : _scripts.player.transform;
 
-        if (_selectedStep.questStart != "")
-            _scripts.questsSystem.ActivateQuest(_selectedStep.questStart, true);
-        if (_selectedStep.activatedCutsceneStep != -1)
-            _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activatedCutsceneStep);
+        _scripts.questsSystem.ActivateQuest(_selectedStep.questStart, true);
+        _selectedStep.totalNpc.relationshipWithPlayer += _selectedStep.changeRelationship;
+        _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activatedCutsceneStep);
     }
 
     /// <summary>
