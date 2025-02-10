@@ -78,9 +78,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     public void ManageActivationMenu()
     {
-        
     }
-    
+
     /// <summary>
     /// Активация диалоговых меню
     /// </summary>
@@ -313,6 +312,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         _scripts.questsSystem.ActivateQuest(_selectedStep.questStart, true);
         _selectedStep.totalNpc.relationshipWithPlayer += _selectedStep.changeRelationship;
+        if (_selectedStep.changeRelationship != 0)
+            _scripts.notifyManager.StartNewRelationshipNotify(_selectedStep.totalNpc.nameOfNpc.text,
+                _selectedStep.changeRelationship);
         _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activatedCutsceneStep);
     }
 

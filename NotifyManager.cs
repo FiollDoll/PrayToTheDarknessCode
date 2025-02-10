@@ -13,6 +13,30 @@ public class NotifyManager : MonoBehaviour
     public void StartNewNoteNotify(string noteName) =>
         StartCoroutine(ActivateNotify(new LanguageSetting($"Новая записка: {noteName}", $"New note: {noteName}")));
 
+    public void StartNewRelationshipNotify(string npc, float changeRelationship)
+    {
+        switch (changeRelationship)
+        {
+            case > 0 and < 1:
+                StartCoroutine(ActivateNotify(new LanguageSetting($"{npc} <color=green>></color>",
+                    $"{npc} <color=green>></color>")));
+                break;
+            case >= 1:
+                StartCoroutine(ActivateNotify(new LanguageSetting($"{npc} <color=green>>></color>",
+                    $"{npc} <color=green>>></color>")));
+                break;
+            case < 0 and > -1:
+                StartCoroutine(ActivateNotify(new LanguageSetting($"{npc} <color=green><</color>",
+                    $"{npc} <color=green><</color>")));
+                break;
+            case >= -1:
+                StartCoroutine(ActivateNotify(new LanguageSetting($"{npc} <color=red><<</color>",
+                    $"{npc} <color=red><<</color>")));
+                break;
+        }
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
     private IEnumerator ActivateNotify(LanguageSetting notifyText)
     {
         TextMeshProUGUI newNotifyText =
