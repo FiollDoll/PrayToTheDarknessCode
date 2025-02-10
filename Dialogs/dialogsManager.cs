@@ -113,7 +113,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     {
         if (_activatedDialog != null)
         {
-            _activatedDialog = new Dialog(); // Если уже назначен - очищаем
+            DialogCLose();
             StopAllCoroutines();
         }
 
@@ -135,6 +135,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _scripts.player.canMove = _activatedDialog.canMove;
 
         _scripts.main.EndCursedText(textDialogMain);
+        _activatedDialog.fastChanges.ActivateChanges(_scripts);
 
         if (_activatedDialog.mainPanelStartDelay == 0)
             OpenPanels();
@@ -155,8 +156,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
     {
         _canStepNext = false;
         _scripts.interactions.lockInter = false;
-        if (_activatedDialog.activatedCutsceneStepAtEnd != -1)
-            _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activatedCutsceneStepAtEnd);
+        if (_activatedDialog.activateCutsceneStepAfterEnd != -1)
+            _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activateCutsceneStepAfterEnd);
 
         if (_activatedDialog.bigPicture)
             _scripts.main.ActivateNoVision(1.5f, DoActionToClose);
@@ -178,20 +179,13 @@ public class DialogsManager : MonoBehaviour, IMenuable
         subDialogMenu.gameObject.SetActive(false);
         if (_activatedDialog.posAfterEnd)
             _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
-
-        if (_activatedDialog.nextStepQuest)
-            _scripts.questsSystem.NextStep();
+        
         _scripts.player.canMove = true;
         _scripts.cutsceneManager.totalCutscene = new Cutscene();
         _scripts.main.EndCursedText(textDialogMain);
         _scripts.player.virtualCamera.Follow = _scripts.player.transform;
-        if (_activatedDialog.noteAdd != "")
-            _scripts.notebook.AddNote(_activatedDialog.noteAdd);
-        string newDialog = _activatedDialog.startNewDialogAfterEnd;
         _activatedDialog = null;
         _canStepNext = true;
-        if (newDialog != "")
-            ActivateDialog(newDialog);
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -216,7 +210,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
                 _selectedBranch.choices[i].textQuestion.text;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
-            if (_selectedBranch.choices[i].readed)
+            if (_selectedBranch.choices[i].read)
                 obj.GetComponent<Button>().interactable = false;
         }
 
@@ -233,7 +227,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         choiceDialogMenu.gameObject.SetActive(false);
         totalStep = 0;
         if (!choice.moreRead)
-            choice.readed = true;
+            choice.read = true;
         ChangeDialogBranch(choice.nameNewBranch);
     }
 
@@ -309,13 +303,10 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         _scripts.player.virtualCamera.Follow =
             _selectedStep.cameraTarget ? _selectedStep.cameraTarget : _scripts.player.transform;
-
-        _scripts.questsSystem.ActivateQuest(_selectedStep.questStart, true);
-        _selectedStep.totalNpc.relationshipWithPlayer += _selectedStep.changeRelationship;
-        if (_selectedStep.changeRelationship != 0)
-            _scripts.notifyManager.StartNewRelationshipNotify(_selectedStep.totalNpc.nameOfNpc.text,
-                _selectedStep.changeRelationship);
-        _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activatedCutsceneStep);
+        
+        _selectedStep.fastChanges.ActivateChanges(_scripts);
+        
+        _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
     }
 
     /// <summary>

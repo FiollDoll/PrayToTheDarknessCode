@@ -27,13 +27,11 @@ public class Dialog
     public bool canMove, canInter;
     public float mainPanelStartDelay; // Задержка перед появлением
 
-    [Header("Actions after end")] public string noteAdd;
-
-    public string startNewDialogAfterEnd;
+    [Header("Actions after end")]
+    public FastChangesController fastChanges;
     public bool darkAfterEnd;
     public Transform posAfterEnd;
-    public bool nextStepQuest;
-    public int activatedCutsceneStepAtEnd = -1;
+    public int activateCutsceneStepAfterEnd = -1;
 
     public void UpdateBranchesDict()
     {
@@ -66,10 +64,9 @@ public class DialogStep
     [Header("Preference")] public Transform cameraTarget;
     public bool cursedText;
     public float delayAfterNext;
-    public int activatedCutsceneStep = -1;
-    public string questStart;
-    public float changeRelationship;
-
+    public int activateCutsceneStep = -1;
+    public FastChangesController fastChanges;
+    
     public Sprite icon => totalNpc.GetStyleIcon(iconMoodSelected);
 }
 
@@ -77,8 +74,8 @@ public class DialogStep
 public class DialogChoice
 {
     [Header("Main")] public string nameNewBranch;
-    [ReadOnly] public bool readed;
+    [ReadOnly] public bool read;
     public LanguageSetting textQuestion;
 
-    [Header("Prefence")] public bool moreRead;
+    [Header("Preference")] public bool moreRead;
 }

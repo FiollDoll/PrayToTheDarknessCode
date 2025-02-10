@@ -9,7 +9,7 @@ using Cinemachine;
 public class CutsceneManager : MonoBehaviour
 {
     public Cutscene totalCutscene = new Cutscene();
-    [SerializeField] private GameObject virtualCamera;
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private Cutscene[] cutsceneInGame = new Cutscene[0];
     [SerializeField] private GameObject startViewMenu;
     [SerializeField] private bool svBlock; // dev only
@@ -47,51 +47,39 @@ public class CutsceneManager : MonoBehaviour
 
     private void StepDo(int step) // Выполнить шаг катсцены.
     {
-        if (totalCutscene.steps[step].startViewMenuActivate != "")
-            StartViewMenuActivate(totalCutscene.steps[step].startViewMenuActivate);
-        _scripts.player.changeSpeed = totalCutscene.steps[step].editSpeed;
-        if (totalCutscene.steps[step].changeVisualPlayer != "")
-            _scripts.player.ChangeStyle(totalCutscene.steps[step].changeVisualPlayer);
-        if (totalCutscene.steps[step].moveToLocation != "")
-            _scripts.manageLocation.ActivateLocation(totalCutscene.steps[step].moveToLocation,
-                totalCutscene.steps[step].moveToLocationSpawn, totalCutscene.steps[step].toLocationWithFade);
-
-        if (totalCutscene.steps[step].closeDialogMenu)
+        Cutscene.CutsceneStep totalCutsceneStep = totalCutscene.steps[step];
+        if (totalCutsceneStep.startViewMenuActivate != "")
+            StartViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
+        
+        if (totalCutsceneStep.closeDialogMenu)
             _scripts.dialogsManager.DialogCLose();
+        
+        totalCutsceneStep.fastChanges.ActivateChanges(_scripts);
+        
+        if (totalCutsceneStep.newVolumeProfile)
+            _scripts.postProcessingController.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
 
-        if (totalCutscene.steps[step].activatedDialog != "")
-            _scripts.dialogsManager.ActivateDialog(totalCutscene.steps[step].activatedDialog);
+        if (totalCutsceneStep.editCameraSize != 0)
+            virtualCamera.m_Lens.OrthographicSize =
+                _scripts.main.startCameraSize + totalCutsceneStep.editCameraSize;
 
-        if (totalCutscene.steps[step].addNote != "")
-            _scripts.notebook.AddNote(totalCutscene.steps[step].addNote);
-
-        if (totalCutscene.steps[step].questStepNext)
-            _scripts.questsSystem.NextStep();
-
-        if (totalCutscene.steps[step].newVolumeProfile)
-            _scripts.postProcessingController.SetVolumeProfile(totalCutscene.steps[step].newVolumeProfile);
-
-        if (totalCutscene.steps[step].editCameraSize != 0)
-            virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.OrthographicSize =
-                _scripts.main.startCameraSize + totalCutscene.steps[step].editCameraSize;
-
-        foreach (Cutscene.ObjectState objState in totalCutscene.steps[step].objectsChangeState)
+        foreach (Cutscene.ObjectState objState in totalCutsceneStep.objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
-        foreach (Cutscene.ObjectSprite objectSprite in totalCutscene.steps[step].objectsChangeSprite)
+        foreach (Cutscene.ObjectSprite objectSprite in totalCutsceneStep.objectsChangeSprite)
             objectSprite.spriteRenderer.sprite = objectSprite.newSprite;
-        foreach (Cutscene.ObjectTransform objectTransform in totalCutscene.steps[step].objectsChangeTransform)
+        foreach (Cutscene.ObjectTransform objectTransform in totalCutsceneStep.objectsChangeTransform)
             objectTransform.obj.transform.position = objectTransform.newTransform.position;
-        foreach (Cutscene.Animations animations in totalCutscene.steps[step].animatorsChanges)
+        foreach (Cutscene.Animations animations in totalCutsceneStep.animatorsChanges)
             animations.animator.SetBool(animations.boolName, animations.boolStatus);
 
-        foreach (Cutscene.LocationsLock locationsLock in totalCutscene.steps[step].locksLocations)
+        foreach (Cutscene.LocationsLock locationsLock in totalCutsceneStep.locksLocations)
             _scripts.manageLocation.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
-        _scripts.main.lockAnyMenu = totalCutscene.steps[step].lockAllMenu;
+        _scripts.main.lockAnyMenu = totalCutsceneStep.lockAllMenu;
 
-        foreach (Cutscene.NpcMoveToPlayer npcMoveToPlayer in totalCutscene.steps[step].npcMoveToPlayer)
+        foreach (Cutscene.NpcMoveToPlayer npcMoveToPlayer in totalCutsceneStep.npcMoveToPlayer)
             npcMoveToPlayer.npc.moveToPlayer = npcMoveToPlayer.move;
 
-        foreach (Cutscene.HumanMove humanMove in totalCutscene.steps[step].humansMove)
+        foreach (Cutscene.HumanMove humanMove in totalCutsceneStep.humansMove)
         {
             NpcController npcController = humanMove.human.GetComponent<NpcController>();
             if (npcController)
@@ -103,11 +91,6 @@ public class CutsceneManager : MonoBehaviour
             else
                 humanMove.human.GetComponent<Player>()?.MoveTo(humanMove.pointMove);
         }
-
-        foreach (string quest in totalCutscene.steps[step].addQuests)
-            _scripts.questsSystem.ActivateQuest(quest, true);
-        foreach (string item in totalCutscene.steps[step].addItem)
-            _scripts.inventoryManager.AddItem(item);
     }
 
     public void ActivateCutsceneStep(int step)
@@ -200,36 +183,22 @@ public class Cutscene
     {
         public string name;
 
-        [Header("-DoInScripts")] public bool questStepNext;
-        public float editSpeed;
-        public string changeVisualPlayer = "";
-
-        [Header("-Dialogs")] public string activatedDialog;
         public bool closeDialogMenu;
 
-        [Header("-AddAnything")] public string[] addItem;
-        public string[] addQuests;
-        public string addNote;
+        [Header("MainChanges")] public FastChangesController fastChanges;
 
-
-        [Header("-Locations")] public string moveToLocation;
-        public string moveToLocationSpawn;
-        public bool toLocationWithFade = true;
-
-
-        [Header("-Locks")] public bool lockAllMenu;
+        [Header("Locks")] public bool lockAllMenu;
         public LocationsLock[] locksLocations = new LocationsLock[0];
 
-
-        [Header("-UltraChanges")] public ObjectState[] objectsChangeState = new ObjectState[0];
+        [Header("UltraChanges")] public ObjectState[] objectsChangeState = new ObjectState[0];
         public ObjectTransform[] objectsChangeTransform = new ObjectTransform[0];
         public ObjectSprite[] objectsChangeSprite = new ObjectSprite[0];
         public Animations[] animatorsChanges = new Animations[0];
 
-        [Header("-Other")] public string startViewMenuActivate;
+        [Header("Other")] public string startViewMenuActivate;
+        public float editCameraSize;
         public NpcMoveToPlayer[] npcMoveToPlayer = new NpcMoveToPlayer[0];
         public HumanMove[] humansMove = new HumanMove[0];
-        public float editCameraSize;
         public VolumeProfile newVolumeProfile;
         public float timeDarkStart;
         public float timeDarkEnd = 1f;
