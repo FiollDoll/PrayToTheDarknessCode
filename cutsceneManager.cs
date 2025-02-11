@@ -12,7 +12,7 @@ public class CutsceneManager : MonoBehaviour
     public Cutscene totalCutscene = new Cutscene();
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private Cutscene[] allCutscene = new Cutscene[0];
-    private Dictionary<string, Cutscene> _allCutsceneDict = new Dictionary<string, Cutscene>();
+    private readonly Dictionary<string, Cutscene> _allCutsceneDict = new Dictionary<string, Cutscene>();
     [SerializeField] private GameObject startViewMenu;
     [SerializeField] private bool svBlock; // dev only
     [SerializeField] private Image noViewPanel;

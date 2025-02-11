@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using Cinemachine;
-using Random = UnityEngine.Random;
+using LastFramework;
 
 public class Main : MonoBehaviour
 {
@@ -22,17 +22,15 @@ public class Main : MonoBehaviour
     [HideInInspector] public float startCameraSize;
 
     private List<IMenuable> _allGameMenu = new List<IMenuable>();
-    private const string CharsOnString = "QWERTYUIOP{}ASDFGHJKLZXCVBNM<>/ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБ401";
-    private Dictionary<TextMeshProUGUI, Coroutine> _cursedTextCoroutines = new Dictionary<TextMeshProUGUI, Coroutine>();
     private AllScripts _scripts;
 
     public void Start()
     {
         _scripts = GetComponent<AllScripts>();
-        
+
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .OrthographicSize;
-        
+
         // Инициализация информации об НПС
         foreach (Npc npc in allNpc)
         {
@@ -94,7 +92,7 @@ public class Main : MonoBehaviour
 
         if (lockAnyMenu)
             return false;
-        
+
         return true;
     }
 
@@ -136,49 +134,8 @@ public class Main : MonoBehaviour
         }
     }
 
-    private string CursedText(int len)
+    private void Update()
     {
-        string totalString = "";
-        char[] chars = CharsOnString.ToCharArray();
-
-        for (int i = 0; i < len; i++)
-        {
-            if (Random.Range(0, 2) == 0)
-                totalString += char.ToUpper(chars[Random.Range(0, chars.Length)]);
-            else
-                totalString += char.ToLower(chars[Random.Range(0, chars.Length)]);
-        }
-
-        return totalString;
-    }
-
-    public void SetCursedText(TextMeshProUGUI text, int len)
-    {
-        if (_cursedTextCoroutines.ContainsKey(text))
-        {
-            StopCoroutine(_cursedTextCoroutines[text]);
-            _cursedTextCoroutines.Remove(text);
-        }
-
-        Coroutine newCoroutine = StartCoroutine(GenerateCursedText(text, len));
-        _cursedTextCoroutines[text] = newCoroutine;
-    }
-
-    public void EndCursedText(TextMeshProUGUI text)
-    {
-        if (_cursedTextCoroutines.TryGetValue(text, out Coroutine coroutine))
-        {
-            StopCoroutine(coroutine);
-            _cursedTextCoroutines.Remove(text);
-        }
-    }
-
-    private IEnumerator GenerateCursedText(TextMeshProUGUI text, int len)
-    {
-        while (true)
-        {
-            text.text = CursedText(len);
-            yield return new WaitForSeconds(0.15f);
-        }
+        TextManager.UpdateCursedText();
     }
 }

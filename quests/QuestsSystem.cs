@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 using Random = UnityEngine.Random;
+using LastFramework;
 
 public class QuestsSystem : MonoBehaviour
 {
@@ -95,19 +96,19 @@ public class QuestsSystem : MonoBehaviour
             _scripts.dialogsManager.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
     }
 
-    public void UpdateQuestUI()
+    private void UpdateQuestUI()
     {
         if (totalQuest != null)
         {
             if (totalQuest.cursedText)
             {
-                _scripts.main.SetCursedText(textNameQuest, Random.Range(5, 15));
-                _scripts.main.SetCursedText(textQuest, Random.Range(5, 15));
+                TextManager.SetCursedText(textNameQuest, Random.Range(5, 15));
+                TextManager.SetCursedText(textQuest, Random.Range(5, 15));
             }
             else
             {
-                _scripts.main.EndCursedText(textNameQuest);
-                _scripts.main.EndCursedText(textQuest);
+                TextManager.EndCursedText(textNameQuest);
+                TextManager.EndCursedText(textQuest);
                 textNameQuest.text = totalQuest.name.text;
                 textQuest.text = totalQuest.steps[totalQuest.totalStep].name.text;
             }

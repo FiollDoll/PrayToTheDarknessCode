@@ -5,11 +5,12 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using MyBox;
+using LastFramework;
 
 public class DialogsManager : MonoBehaviour, IMenuable
 {
     [Header("All dialogs")] public Dialog[] dialogs = new Dialog[0];
-    private Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
+    private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
     [Header("Current dialog")] public int totalStep;
     private Dialog _activatedDialog;
@@ -20,11 +21,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     [Foldout("Scene Objects", true)] [SerializeField]
     private GameObject dialogMenu;
-
-    public GameObject menu
-    {
-        get => dialogMenu;
-    }
+    public GameObject menu => dialogMenu;
 
     [SerializeField] private GameObject choicesContainer;
 
@@ -35,10 +32,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
     private RectTransform _iconImageTransform;
-
-
+    
     private bool _animatingText, _canStepNext;
-    private Image _noViewPanel;
     private AllScripts _scripts;
 
     private void Start()
@@ -48,9 +43,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
             _dialogsDict.TryAdd(dialog.nameDialog, dialog);
             dialog.UpdateBranchesDict();
         }
-
+        
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _noViewPanel = _scripts.main.noViewPanel;
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
         _iconImageTransform = iconImage.GetComponent<RectTransform>();
@@ -64,7 +58,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// <returns>Возвращает диалог</returns>
     private Dialog GetDialog(string nameDialog)
     {
-        return _dialogsDict[nameDialog];
+        return _dialogsDict.GetValueOrDefault(nameDialog);
     }
 
     /// <summary>
@@ -133,8 +127,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (!_activatedDialog.moreRead)
             _activatedDialog.read = true;
         _scripts.player.canMove = _activatedDialog.canMove;
-
-        _scripts.main.EndCursedText(textDialogMain);
+        
+        TextManager.EndCursedText(textDialogMain);
+        
         _activatedDialog.fastChanges.ActivateChanges(_scripts);
 
         if (_activatedDialog.mainPanelStartDelay == 0)
@@ -179,10 +174,10 @@ public class DialogsManager : MonoBehaviour, IMenuable
         subDialogMenu.gameObject.SetActive(false);
         if (_activatedDialog.posAfterEnd)
             _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
-        
+
         _scripts.player.canMove = true;
         _scripts.cutsceneManager.totalCutscene = new Cutscene();
-        _scripts.main.EndCursedText(textDialogMain);
+        TextManager.EndCursedText(textDialogMain);
         _scripts.player.virtualCamera.Follow = _scripts.player.transform;
         _activatedDialog = null;
         _canStepNext = true;
@@ -297,15 +292,15 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _selectedStep.totalNpc.animator?.SetBool("talk", true);
 
         if (_selectedStep.cursedText)
-            _scripts.main.SetCursedText(textDialogMain, Random.Range(5, 40));
+            TextManager.SetCursedText(textDialogMain, Random.Range(5, 40));
         else
             StartCoroutine(SetText());
 
         _scripts.player.virtualCamera.Follow =
             _selectedStep.cameraTarget ? _selectedStep.cameraTarget : _scripts.player.transform;
-        
+
         _selectedStep.fastChanges.ActivateChanges(_scripts);
-        
+
         _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
     }
 

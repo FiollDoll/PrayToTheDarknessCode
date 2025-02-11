@@ -20,15 +20,14 @@ public class Dialog
 
     public StepBranch[] stepBranches = Array.Empty<StepBranch>(); // Ветки диалога
     private Dictionary<string, StepBranch> _stepBranchesDict = new Dictionary<string, StepBranch>();
-    
+
     public Sprite bigPicture;
-    
+
     [Header("Preference")] public bool moreRead;
     public bool canMove, canInter;
     public float mainPanelStartDelay; // Задержка перед появлением
 
-    [Header("Actions after end")]
-    public FastChangesController fastChanges;
+    [Header("Actions after end")] public FastChangesController fastChanges;
     public bool darkAfterEnd;
     public Transform posAfterEnd;
     public int activateCutsceneStepAfterEnd = -1;
@@ -66,7 +65,7 @@ public class DialogStep
     public float delayAfterNext;
     public int activateCutsceneStep = -1;
     public FastChangesController fastChanges;
-    
+
     public Sprite icon => totalNpc.GetStyleIcon(iconMoodSelected);
 }
 
