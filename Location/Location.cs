@@ -51,7 +51,7 @@ public class Location
     /// <returns></returns>
     public Transform GetSpawn(string spawnName)
     {
-        return _spawnsDict[spawnName].spawn;
+        return _spawnsDict.GetValueOrDefault(spawnName).spawn;
     }
 }
 

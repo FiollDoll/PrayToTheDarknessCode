@@ -26,7 +26,7 @@ public class Inventory
     /// <returns></returns>
     public Item GetGameItem(string nameItem)
     {
-        return _gameItemsDict[nameItem];
+        return _gameItemsDict.GetValueOrDefault(nameItem);
     }
 
     /// <summary>

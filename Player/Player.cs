@@ -4,6 +4,7 @@ using Cinemachine;
 
 public class Player : MonoBehaviour, IHumanable
 {
+    private static readonly int s_Walk = Animator.StringToHash("walk");
     public Npc npcEntity { get; set; }
     public string selectedStyle { get; set; } = "standard";
 
@@ -62,7 +63,7 @@ public class Player : MonoBehaviour, IHumanable
         if (canMove)
         {
             _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
-            _animator.SetBool("walk", horiz != 0 || vert != 0);
+            _animator.SetBool(s_Walk, horiz != 0 || vert != 0);
             if (horiz > 0)
                 _sr.flipX = true;
             else if (horiz < 0)

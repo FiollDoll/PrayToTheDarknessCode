@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering;
@@ -10,7 +11,8 @@ public class CutsceneManager : MonoBehaviour
 {
     public Cutscene totalCutscene = new Cutscene();
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
-    [SerializeField] private Cutscene[] cutsceneInGame = new Cutscene[0];
+    [SerializeField] private Cutscene[] allCutscene = new Cutscene[0];
+    private Dictionary<string, Cutscene> _allCutsceneDict = new Dictionary<string, Cutscene>();
     [SerializeField] private GameObject startViewMenu;
     [SerializeField] private bool svBlock; // dev only
     [SerializeField] private Image noViewPanel;
@@ -19,6 +21,9 @@ public class CutsceneManager : MonoBehaviour
     private void Start()
     {
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        foreach (Cutscene cutscene in allCutscene)
+            _allCutsceneDict.Add(cutscene.name, cutscene);
+
         if (!svBlock) // dev only
             startViewMenu.gameObject.SetActive(true);
         StartViewMenuActivate();
@@ -34,15 +39,9 @@ public class CutsceneManager : MonoBehaviour
 
     public void ActivateCutscene(string cutsceneName)
     {
-        foreach (Cutscene cutscene in cutsceneInGame)
-        {
-            if (cutscene.name == cutsceneName)
-            {
-                totalCutscene = cutscene;
-                ActivateCutsceneStep(0);
-                break;
-            }
-        }
+        totalCutscene = _allCutsceneDict.GetValueOrDefault(cutsceneName);
+        if (totalCutscene != null)
+            ActivateCutsceneStep(0);
     }
 
     private void StepDo(int step) // Выполнить шаг катсцены.
@@ -50,12 +49,12 @@ public class CutsceneManager : MonoBehaviour
         Cutscene.CutsceneStep totalCutsceneStep = totalCutscene.steps[step];
         if (totalCutsceneStep.startViewMenuActivate != "")
             StartViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
-        
+
         if (totalCutsceneStep.closeDialogMenu)
             _scripts.dialogsManager.DialogCLose();
-        
+
         totalCutsceneStep.fastChanges.ActivateChanges(_scripts);
-        
+
         if (totalCutsceneStep.newVolumeProfile)
             _scripts.postProcessingController.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
 

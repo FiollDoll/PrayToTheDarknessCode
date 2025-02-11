@@ -41,7 +41,7 @@ public class Dialog
 
     public StepBranch FindBranch(string branchName)
     {
-        return _stepBranchesDict[branchName];
+        return _stepBranchesDict.GetValueOrDefault(branchName);
     }
 }
 

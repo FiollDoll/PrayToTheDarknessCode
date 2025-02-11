@@ -35,7 +35,7 @@ public class Npc : ScriptableObject
 
     public NpcStyle GetNpcStyle(string styleName)
     {
-        return _stylesDict[styleName];
+        return _stylesDict.GetValueOrDefault(styleName);
     }
     
     public Sprite GetStyleIcon(NpcIcon.IconMood iconMood)
