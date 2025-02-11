@@ -29,9 +29,8 @@ namespace LastFramework
 
         public static void SetCursedText(TextMeshProUGUI text, int len)
         {
-            EndCursedText(text); // Если такой уже есть - удаляем
-
-            _cursedTextCoroutines.Add(text);
+            if (!_cursedTextCoroutines.Contains(text))
+                _cursedTextCoroutines.Add(text);
         }
 
         public static void EndCursedText(TextMeshProUGUI text)

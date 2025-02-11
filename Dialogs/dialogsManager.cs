@@ -364,7 +364,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (_selectedStep.delayAfterNext != 0)
         {
             yield return new WaitForSeconds(_selectedStep.delayAfterNext);
-            if (totalStep + 1 == _activatedDialog.stepBranches.Length) // Завершение
+            if (totalStep + 1 == _activatedDialog.stepBranches.Count) // Завершение
                 DialogCLose();
             else
             {

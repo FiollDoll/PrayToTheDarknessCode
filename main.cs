@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using DG.Tweening;
 using Cinemachine;
 using LastFramework;
@@ -47,7 +45,7 @@ public class Main : MonoBehaviour
     }
 
     /// <summary>
-    /// Перемещение КОГО-ЛИБО
+    /// Насильное пермещение кого-либо или чего-либо
     /// </summary>
     /// <param name="target"></param>
     /// <param name="speed"></param>

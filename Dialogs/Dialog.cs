@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.Collections;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class Dialog
 {
     [Header("Main")] public string nameDialog;
-    [ReadOnly] public bool read;
+    public bool read;
 
     public DialogStyle styleOfDialog;
 
@@ -18,10 +16,11 @@ public class Dialog
         BigPicture
     };
 
-    public StepBranch[] stepBranches = Array.Empty<StepBranch>(); // Ветки диалога
-    private Dictionary<string, StepBranch> _stepBranchesDict = new Dictionary<string, StepBranch>();
-
     public Sprite bigPicture;
+
+    [Header("Branches")] public List<StepBranch> stepBranches = new List<StepBranch>();
+
+    private Dictionary<string, StepBranch> _stepBranchesDict = new Dictionary<string, StepBranch>();
 
     [Header("Preference")] public bool moreRead;
     public bool canMove, canInter;
@@ -44,15 +43,24 @@ public class Dialog
     }
 }
 
-[Serializable]
+[System.Serializable]
 public class StepBranch
 {
     public string branchName;
-    [Header("Main branch")] public DialogStep[] dialogSteps = Array.Empty<DialogStep>();
-    [Header("After end of branch")] public DialogChoice[] choices = Array.Empty<DialogChoice>();
+    [Header("Main branch")] public DialogStep[] dialogSteps = new DialogStep[0];
+    [Header("After end of branch")] public DialogChoice[] choices = new DialogChoice[0];
+
+    public StepBranch()
+    {
+    }
+
+    public StepBranch(string name)
+    {
+        branchName = name;
+    }
 }
 
-[Serializable]
+[System.Serializable]
 public class DialogStep
 {
     [Header("Main")] public Npc totalNpc;
@@ -69,11 +77,11 @@ public class DialogStep
     public Sprite icon => totalNpc.GetStyleIcon(iconMoodSelected);
 }
 
-[Serializable]
+[System.Serializable]
 public class DialogChoice
 {
     [Header("Main")] public string nameNewBranch;
-    [ReadOnly] public bool read;
+    public bool read;
     public LanguageSetting textQuestion;
 
     [Header("Preference")] public bool moreRead;

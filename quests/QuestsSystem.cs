@@ -1,17 +1,15 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
-using Random = UnityEngine.Random;
 using LastFramework;
 
 public class QuestsSystem : MonoBehaviour
 {
     public Quest totalQuest;
     public List<Quest> activeQuests = new List<Quest>();
-    public Quest[] gameQuests = Array.Empty<Quest>();
+    public Quest[] gameQuests = new Quest[0];
     private Dictionary<string, Quest> _gameQuestDict = new Dictionary<string, Quest>();
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
     private AllScripts _scripts;
@@ -77,13 +75,12 @@ public class QuestsSystem : MonoBehaviour
             activeQuests.Remove(totalQuest);
             totalQuest = activeQuests.Count != 0 ? activeQuests[^1] : null;
         }
-
+        
         Sequence sequence = DOTween.Sequence();
-
-        Tween fadeAnimation = _textQuestTransform.DOAnchorPosX(-600, 0.5f)
+        Tween textMoveAnimation = _textQuestTransform.DOAnchorPosX(-600, 0.5f)
             .SetEase(Ease.InQuart);
-        fadeAnimation.OnComplete(UpdateQuestUI);
-        sequence.Append(fadeAnimation);
+        textMoveAnimation.OnComplete(UpdateQuestUI);
+        sequence.Append(textMoveAnimation);
         sequence.Append(_textQuestTransform.DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
 

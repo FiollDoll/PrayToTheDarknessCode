@@ -14,7 +14,7 @@ public class PostProcessingController : MonoBehaviour
     private ColorAdjustments _colorAdjustments;
     private Volume _volume;
 
-    public void Initialize()
+    private void Start()
     {
         _volume = playerCamera.GetComponent<Volume>();
     }
