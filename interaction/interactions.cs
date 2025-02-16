@@ -49,7 +49,7 @@ public class Interactions : MonoBehaviour
 
         // Взаимодействия по мыши
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f,
-                layerMaskInteract) && !lockInter)
+                layerMaskInteract))
         {
             if (_selectedCollider.collider.TryGetComponent(out IInteractable interactable))
             {
@@ -65,11 +65,14 @@ public class Interactions : MonoBehaviour
         Debug.DrawLine(transform.position, _selectedCollider.point, Color.green);
 
         // Перебор по коллайдерам, в которые вошёл игрок, и в которых !autoUse
-        if (Input.GetKeyDown(KeyCode.E))
-            EnteredInteraction?.DoInteraction();
+        if(!lockInter)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+                EnteredInteraction?.DoInteraction();
 
-        if (Input.GetMouseButtonDown(0))
-            SelectedInteraction?.DoInteraction();
+            if (Input.GetMouseButtonDown(0))
+                SelectedInteraction?.DoInteraction();
+        }
 
         interLabelText.text = "";
         if (SelectedInteraction != null)

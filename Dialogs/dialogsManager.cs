@@ -50,6 +50,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
         _iconImageTransform = iconImage.GetComponent<RectTransform>();
+        _mainDialogMenuTransform.DOPivotY(3f, 0.01f);
+        _choiceDialogMenuTransform.DOPivotY(3f, 0.01f);
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -123,25 +125,18 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _activatedDialog = newDialog;
         _selectedBranch = _activatedDialog.stepBranches[0];
         _selectedStep = _selectedBranch.dialogSteps[0];
-
-        dialogMenu.gameObject.SetActive(true);
-        _canStepNext = false;
-        _scripts.interactions.lockInter = _activatedDialog.canInter;
-        ActivateDialogWindow();
-
+        _scripts.player.canMove = _activatedDialog.canMove;
+        _scripts.interactions.lockInter = !_activatedDialog.canInter;
         if (!_activatedDialog.moreRead)
             _activatedDialog.read = true;
-        _scripts.player.canMove = _activatedDialog.canMove;
+        _canStepNext = false;
 
+        dialogMenu.gameObject.SetActive(true);
+        ActivateDialogWindow();
         TextManager.EndCursedText(textDialogMain);
 
         _activatedDialog.fastChanges.ActivateChanges(_scripts);
-
-        if (_activatedDialog.mainPanelStartDelay == 0)
-            OpenPanels();
-        else
-            StartCoroutine(ActivateUIMainMenuWithDelay(
-                _activatedDialog.mainPanelStartDelay));
+        StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog.mainPanelStartDelay));
 
         if (!CanChoice())
             DialogUpdateAction();
@@ -173,19 +168,23 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private void DoActionToClose()
     {
         totalStep = 0;
-        dialogMenu.gameObject.SetActive(false);
-        bigPicture.gameObject.SetActive(false);
-        mainDialogMenu.gameObject.SetActive(false);
-        subDialogMenu.gameObject.SetActive(false);
-        if (_activatedDialog.posAfterEnd)
-            _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
+        _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
+        _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
+        {
+            dialogMenu.gameObject.SetActive(false);
+            bigPicture.gameObject.SetActive(false);
+            mainDialogMenu.gameObject.SetActive(false);
+            subDialogMenu.gameObject.SetActive(false);
+            if (_activatedDialog.posAfterEnd)
+                _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
-        _scripts.player.canMove = true;
-        _scripts.cutsceneManager.totalCutscene = new Cutscene();
-        TextManager.EndCursedText(textDialogMain);
-        _scripts.player.virtualCamera.Follow = _scripts.player.transform;
-        _activatedDialog = null;
-        _canStepNext = true;
+            _scripts.player.canMove = true;
+            _scripts.cutsceneManager.totalCutscene = new Cutscene();
+            TextManager.EndCursedText(textDialogMain);
+            _scripts.player.virtualCamera.Follow = _scripts.player.transform;
+            _activatedDialog = null;
+            _canStepNext = true;
+        });
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -287,6 +286,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
             {
                 if (_selectedStep.bigPictureName != "") // Меняем
                 {
+                    StopCoroutine(AnimateBigPicture());
                     _selectedBigPicture = _activatedDialog.FindBigPicture(_selectedStep.bigPictureName);
                     // Для экономии ресурсов
                     if (_selectedBigPicture.sprites.Length > 1)
