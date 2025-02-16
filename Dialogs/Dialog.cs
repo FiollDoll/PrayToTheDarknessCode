@@ -16,13 +16,13 @@ public class Dialog
         BigPicture
     };
 
-    public Sprite bigPicture;
-
     [Header("Branches")] public List<StepBranch> stepBranches = new List<StepBranch>();
 
     private Dictionary<string, StepBranch> _stepBranchesDict = new Dictionary<string, StepBranch>();
 
-    [Header("Preference")] public bool moreRead;
+    [Header("Preference")] public BigPicture[] bigPicturesPresets = new BigPicture[0];
+    private Dictionary<string, BigPicture> _bigPicturePresetsDict = new Dictionary<string, BigPicture>();
+    public bool moreRead;
     public bool canMove, canInter;
     public float mainPanelStartDelay; // Задержка перед появлением
 
@@ -31,15 +31,23 @@ public class Dialog
     public Transform posAfterEnd;
     public int activateCutsceneStepAfterEnd = -1;
 
-    public void UpdateBranchesDict()
+    public void UpdateDialogDicts()
     {
         foreach (StepBranch stepBranch in stepBranches)
             _stepBranchesDict.TryAdd(stepBranch.branchName, stepBranch);
+
+        foreach (BigPicture bigPicture in bigPicturesPresets)
+            _bigPicturePresetsDict.Add(bigPicture.bigPictureName, bigPicture);
     }
 
     public StepBranch FindBranch(string branchName)
     {
         return _stepBranchesDict.GetValueOrDefault(branchName);
+    }
+
+    public BigPicture FindBigPicture(string bigPictureName)
+    {
+        return _bigPicturePresetsDict.GetValueOrDefault(bigPictureName);
     }
 }
 
@@ -67,6 +75,7 @@ public class DialogStep
 
     public LanguageSetting dialogText;
     public NpcIcon.IconMood iconMoodSelected;
+    public string bigPictureName;
 
     [Header("Preference")] public Transform cameraTarget;
     public bool cursedText;
@@ -85,4 +94,11 @@ public class DialogChoice
     public LanguageSetting textQuestion;
 
     [Header("Preference")] public bool moreRead;
+}
+
+[System.Serializable]
+public class BigPicture
+{
+    public string bigPictureName;
+    public Sprite[] sprites = new Sprite[0];
 }

@@ -16,11 +16,13 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private Dialog _activatedDialog;
     private StepBranch _selectedBranch;
     private DialogStep _selectedStep;
+    private BigPicture _selectedBigPicture;
 
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
 
     [Foldout("Scene Objects", true)] [SerializeField]
     private GameObject dialogMenu;
+
     public GameObject menu => dialogMenu;
 
     [SerializeField] private GameObject choicesContainer;
@@ -32,7 +34,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
     private RectTransform _iconImageTransform;
-    
+
     private bool _animatingText, _canStepNext;
     private AllScripts _scripts;
 
@@ -41,9 +43,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
         foreach (Dialog dialog in dialogs)
         {
             _dialogsDict.TryAdd(dialog.nameDialog, dialog);
-            dialog.UpdateBranchesDict();
+            dialog.UpdateDialogDicts();
         }
-        
+
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
@@ -65,7 +67,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// Проверка - пора ли активировать выборы и есть ли они вообще?
     /// </summary>
     /// <returns></returns>
-    private bool CheckCanChoice()
+    private bool CanChoice()
     {
         return _selectedBranch.choices.Length != 0 && totalStep + 1 == _selectedBranch.dialogSteps.Length;
     }
@@ -79,21 +81,24 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// </summary>
     private void ActivateDialogWindow()
     {
-        if (_activatedDialog.bigPicture) // Сначала затемнение
+        if (!CanChoice()) // Потом уже управление менюшками
         {
-            _scripts.main.ActivateNoVision(1.2f, () =>
+            switch (_activatedDialog.styleOfDialog)
             {
-                bigPicture.gameObject.SetActive(true);
-                bigPicture.sprite = _activatedDialog.bigPicture;
-            });
-        }
-
-        if (!CheckCanChoice()) // Потом уже управление менюшками
-        {
-            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                mainDialogMenu.gameObject.SetActive(true);
-            else
-                subDialogMenu.gameObject.SetActive(true);
+                case Dialog.DialogStyle.Main:
+                    mainDialogMenu.gameObject.SetActive(true);
+                    break;
+                case Dialog.DialogStyle.BigPicture:
+                    _scripts.main.ActivateNoVision(1.2f, () =>
+                    {
+                        bigPicture.gameObject.SetActive(true);
+                        mainDialogMenu.gameObject.SetActive(true);
+                    });
+                    break;
+                case Dialog.DialogStyle.SubMain:
+                    subDialogMenu.gameObject.SetActive(true);
+                    break;
+            }
         }
         else
             choiceDialogMenu.gameObject.SetActive(true);
@@ -127,9 +132,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (!_activatedDialog.moreRead)
             _activatedDialog.read = true;
         _scripts.player.canMove = _activatedDialog.canMove;
-        
+
         TextManager.EndCursedText(textDialogMain);
-        
+
         _activatedDialog.fastChanges.ActivateChanges(_scripts);
 
         if (_activatedDialog.mainPanelStartDelay == 0)
@@ -138,7 +143,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
             StartCoroutine(ActivateUIMainMenuWithDelay(
                 _activatedDialog.mainPanelStartDelay));
 
-        if (!CheckCanChoice())
+        if (!CanChoice())
             DialogUpdateAction();
         else
             ActivateChoiceMenu();
@@ -154,7 +159,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (_activatedDialog.activateCutsceneStepAfterEnd != -1)
             _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activateCutsceneStepAfterEnd);
 
-        if (_activatedDialog.bigPicture)
+        if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
             _scripts.main.ActivateNoVision(1.5f, DoActionToClose);
         else if (_activatedDialog.darkAfterEnd)
             _scripts.main.ActivateNoVision(1.2f, DoActionToClose);
@@ -233,7 +238,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _selectedStep = _selectedBranch.dialogSteps[0];
         ActivateDialogWindow();
 
-        if (!CheckCanChoice())
+        if (!CanChoice())
             DialogUpdateAction();
         else
             ActivateChoiceMenu();
@@ -257,7 +262,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (totalStep + 1 == _selectedBranch.dialogSteps.Length)
         {
             // Если выбора нет.
-            if (!CheckCanChoice())
+            if (!CanChoice())
                 DialogCLose();
             else
                 ActivateChoiceMenu();
@@ -272,12 +277,24 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// </summary>
     private void DialogUpdateAction()
     {
-        if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+        if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main or Dialog.DialogStyle.BigPicture)
         {
             textNameMain.text = _selectedStep.totalNpc.nameOfNpc.text;
             iconImage.sprite = _selectedStep.icon;
             iconImage.SetNativeSize();
             _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+            {
+                if (_selectedStep.bigPictureName != "") // Меняем
+                {
+                    _selectedBigPicture = _activatedDialog.FindBigPicture(_selectedStep.bigPictureName);
+                    // Для экономии ресурсов
+                    if (_selectedBigPicture.sprites.Length > 1)
+                        StartCoroutine(AnimateBigPicture());
+                    else
+                        bigPicture.sprite = _selectedBigPicture.sprites[0];
+                }
+            }
         }
 
         foreach (Npc totalNpc in _scripts.main.allNpc)
@@ -353,7 +370,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         foreach (char tChar in textChar)
         {
             if (!_animatingText) continue;
-            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+            if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main or Dialog.DialogStyle.BigPicture)
                 textDialogMain.text += tChar;
             else
                 textDialogSub.text += tChar;
@@ -368,12 +385,23 @@ public class DialogsManager : MonoBehaviour, IMenuable
                 DialogCLose();
             else
             {
-                if (!CheckCanChoice())
+                if (!CanChoice())
                     DialogUpdateAction();
                 else
                     ActivateChoiceMenu();
             }
         }
+    }
+
+    private IEnumerator AnimateBigPicture()
+    {
+        foreach (Sprite newSprite in _selectedBigPicture.sprites)
+        {
+            bigPicture.sprite = newSprite;
+            yield return new WaitForSeconds(0.15f);
+        }
+
+        StartCoroutine(AnimateBigPicture());
     }
 
     private IEnumerator ActivateUIMainMenuWithDelay(float delay)
