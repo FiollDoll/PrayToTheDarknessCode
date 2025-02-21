@@ -29,7 +29,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub;
     [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu;
-    [SerializeField] private Image iconImage;
+    [SerializeField] private Image iconImageMain, iconImageChoice;
     [SerializeField] private Image bigPicture;
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
@@ -49,7 +49,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
-        _iconImageTransform = iconImage.GetComponent<RectTransform>();
+        _iconImageTransform = iconImageMain.GetComponent<RectTransform>();
         _mainDialogMenuTransform.DOPivotY(3f, 0.01f);
         _choiceDialogMenuTransform.DOPivotY(3f, 0.01f);
     }
@@ -71,7 +71,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// <returns></returns>
     private bool CanChoice()
     {
-        return _selectedBranch.choices.Length != 0 && totalStep + 1 == _selectedBranch.dialogSteps.Length;
+        return _selectedBranch.choices.Length != 0 && totalStep == _selectedBranch.dialogSteps.Length;
     }
 
     public void ManageActivationMenu()
@@ -195,6 +195,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private void ActivateChoiceMenu(bool setScale = false)
     {
         choiceDialogMenu.gameObject.SetActive(true);
+        iconImageChoice.sprite = _scripts.player.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standart);
         adaptiveScrollViewChoice.UpdateContentSize();
         if (setScale)
             _choiceDialogMenuTransform.localScale = new Vector2(1f, 1f);
@@ -223,11 +224,16 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private void ActivateChoiceStep(int id)
     {
         DialogChoice choice = _selectedBranch.choices[id];
-        choiceDialogMenu.gameObject.SetActive(false);
-        totalStep = 0;
-        if (!choice.moreRead)
-            choice.read = true;
-        ChangeDialogBranch(choice.nameNewBranch);
+        if (choice.nameNewBranch == "") // Быстрое закрытие диалога
+            DialogCLose();
+        else
+        {
+            choiceDialogMenu.gameObject.SetActive(false);
+            totalStep = 0;
+            if (!choice.moreRead)
+                choice.read = true;
+            ChangeDialogBranch(choice.nameNewBranch);
+        }
     }
 
     private void ChangeDialogBranch(string nameOfBranch)
@@ -248,27 +254,30 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// </summary>
     private void DialogMoveNext()
     {
-        void AddStep()
+        bool AddStep()
         {
             totalStep++;
-            _selectedStep = _selectedBranch.dialogSteps[totalStep];
-            DialogUpdateAction();
+            if (totalStep != _selectedBranch.dialogSteps.Length)
+            {
+                _selectedStep = _selectedBranch.dialogSteps[totalStep];
+                DialogUpdateAction();
+                return true;
+            }
+
+            // Продолжение не найдено, выдаём false
+            return false;
         }
 
         _selectedStep.totalNpc.animator?.SetBool("talk", false);
-
         // Окончание обычного диалога
-        if (totalStep + 1 == _selectedBranch.dialogSteps.Length)
+        if (!AddStep())
         {
             // Если выбора нет.
             if (!CanChoice())
                 DialogCLose();
             else
                 ActivateChoiceMenu();
-            return;
         }
-
-        AddStep();
     }
 
     /// <summary>
@@ -279,8 +288,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main or Dialog.DialogStyle.BigPicture)
         {
             textNameMain.text = _selectedStep.totalNpc.nameOfNpc.text;
-            iconImage.sprite = _selectedStep.icon;
-            iconImage.SetNativeSize();
+            iconImageMain.sprite = _selectedStep.icon;
+            iconImageMain.SetNativeSize();
             _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
             if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
             {

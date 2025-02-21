@@ -89,7 +89,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                 {
                     var obj = Instantiate(buttonNotePrefab, questsContainer.transform).GetComponent<PrefabInfo>();
                     if (_scripts.questsSystem.activeQuests[i] == _scripts.questsSystem.totalQuest)
-                        obj.prefabNameTextMeshProUGUI.text = "-> " + _scripts.questsSystem.activeQuests[i].name;
+                        obj.prefabNameTextMeshProUGUI.text = "-> " + _scripts.questsSystem.activeQuests[i].name.text;
                     else
                         obj.prefabNameTextMeshProUGUI.text = _scripts.questsSystem.activeQuests[i].name.text;
                     int number = i;
