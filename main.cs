@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +28,7 @@ public class Main : MonoBehaviour
         _scripts = GetComponent<AllScripts>();
 
         startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
-            .OrthographicSize;
+            .FieldOfView;
 
         // Инициализация информации об НПС
         foreach (Npc npc in allNpc)
@@ -74,6 +75,36 @@ public class Main : MonoBehaviour
         sequence.Append(noViewPanel.DOFade(0f, time / 2).SetEase(Ease.OutQuart));
         sequence.OnComplete(() => { actionAfterEnd?.Invoke(); });
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+    }
+
+    public void CameraZoom(float changeSize, bool smoothly = false)
+    {
+        if (smoothly)
+            StartCoroutine(SmoothlyZoom(changeSize));
+        else
+            _scripts.player.virtualCamera.m_Lens.FieldOfView = _scripts.main.startCameraSize + changeSize;
+    }
+
+    private IEnumerator SmoothlyZoom(float changeSize)
+    {
+        if (changeSize < 0) // Если отрицательное
+        {
+            for (float i = 0; i > changeSize; i--)
+            {
+                _scripts.player.virtualCamera.m_Lens.FieldOfView -= 1f;
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
+        else if (changeSize > 0)
+        {
+            for (float i = 0; i < changeSize; i++)
+            {
+                _scripts.player.virtualCamera.m_Lens.FieldOfView += 1f;
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
+        else
+            StartCoroutine(SmoothlyZoom(startCameraSize - _scripts.player.virtualCamera.m_Lens.FieldOfView));
     }
 
     /// <summary>

@@ -133,6 +133,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         dialogMenu.gameObject.SetActive(true);
         ActivateDialogWindow();
+        _scripts.main.CameraZoom(-10f, true);
         TextManager.EndCursedText(textDialogMain);
 
         _activatedDialog.fastChanges.ActivateChanges(_scripts);
@@ -171,6 +172,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
         {
+            _scripts.main.CameraZoom(0, true);
             dialogMenu.gameObject.SetActive(false);
             bigPicture.gameObject.SetActive(false);
             mainDialogMenu.gameObject.SetActive(false);
@@ -197,6 +199,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         choiceDialogMenu.gameObject.SetActive(true);
         iconImageChoice.sprite = _scripts.player.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standart);
         adaptiveScrollViewChoice.UpdateContentSize();
+        _scripts.player.virtualCamera.Follow = _scripts.player.transform;
         if (setScale)
             _choiceDialogMenuTransform.localScale = new Vector2(1f, 1f);
         foreach (Transform child in choicesContainer.transform)

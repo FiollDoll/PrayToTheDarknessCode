@@ -59,8 +59,7 @@ public class CutsceneManager : MonoBehaviour
             _scripts.postProcessingController.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
 
         if (totalCutsceneStep.editCameraSize != 0)
-            virtualCamera.m_Lens.OrthographicSize =
-                _scripts.main.startCameraSize + totalCutsceneStep.editCameraSize;
+            _scripts.main.CameraZoom(totalCutsceneStep.editCameraSize, true);
 
         foreach (Cutscene.ObjectState objState in totalCutsceneStep.objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
