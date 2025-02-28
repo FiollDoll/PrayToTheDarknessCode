@@ -1,10 +1,12 @@
-﻿[System.Serializable]
+﻿using Newtonsoft.Json;
+
+[System.Serializable]
 public class Note
 {
     public string gameName;
-    public LanguageSetting name;
+    [JsonIgnore] public LanguageSetting name;
 
-    public LanguageSetting description;
+    [JsonIgnore] public LanguageSetting description;
 
     public bool read;
 }

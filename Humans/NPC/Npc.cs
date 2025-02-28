@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
@@ -6,19 +7,19 @@ public class Npc : ScriptableObject
 {
     [Header("Main information")] public string nameInWorld;
 
-    public LanguageSetting nameOfNpc;
-    public LanguageSetting description;
+    [JsonIgnore] public LanguageSetting nameOfNpc;
+    [JsonIgnore] public LanguageSetting description;
 
-    public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
+    [JsonIgnore] public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
     private readonly Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
-    
+
     [Header("TempInfo")] public float relationshipWithPlayer;
-    
-    [Header("Preference")] public bool canMeet;
+
+    [Header("Preference")] [JsonIgnore] public bool canMeet;
 
     // Назначаются при старте
-    [HideInInspector] public Animator animator;
-    [HideInInspector] public IHumanable NpcController;
+    [JsonIgnore] [HideInInspector] public Animator animator;
+    [JsonIgnore] [HideInInspector] public IHumanable NpcController;
 
     private void OnEnable()
     {
@@ -37,7 +38,7 @@ public class Npc : ScriptableObject
     {
         return _stylesDict.GetValueOrDefault(styleName);
     }
-    
+
     public Sprite GetStyleIcon(NpcIcon.IconMood iconMood)
     {
         if (NpcController != null && NpcController.selectedStyle != "")

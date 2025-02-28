@@ -82,6 +82,8 @@ public class ManageLocation : MonoBehaviour
             LocationSetup(totalLocation, spawn);
             _scripts.player.canMove = true;
         }
+
+        _scripts.saveAndLoadManager.SaveGame();
     }
 
     public void FastMoveToLocation(string locationName)

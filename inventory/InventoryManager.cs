@@ -5,7 +5,7 @@ using MyBox;
 
 public class InventoryManager : MonoBehaviour
 {
-    [Header("Inventory")] [SerializeField] private Inventory inventory;
+    [Header("Inventory")] public Inventory inventory;
 
     [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
 

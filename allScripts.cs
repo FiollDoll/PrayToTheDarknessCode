@@ -13,4 +13,5 @@ public class AllScripts : MonoBehaviour
     public Main main;
     public PostProcessingController postProcessingController;
     public NotifyManager notifyManager;
+    public SaveAndLoadManager saveAndLoadManager;
 }

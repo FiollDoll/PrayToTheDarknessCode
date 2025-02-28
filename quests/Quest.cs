@@ -1,13 +1,15 @@
-﻿[System.Serializable]
+﻿using Newtonsoft.Json;
+
+[System.Serializable]
 public class Quest
 {
     public string nameInGame;
-    public LanguageSetting name;
-    public LanguageSetting description;
+    [JsonIgnore] public LanguageSetting name;
+    [JsonIgnore] public LanguageSetting description;
 
-    public Step[] steps = new Step[0];
+    [JsonIgnore] public Step[] steps = new Step[0];
     public int totalStep;
-    public bool cursedText;
+    [JsonIgnore] public bool cursedText;
 }
 
 [System.Serializable]

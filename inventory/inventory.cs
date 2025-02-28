@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class Inventory
 {
-    [SerializeField] private List<Item> playerItems = new List<Item>();
+    [SerializeField] public List<Item> playerItems = new List<Item>();
     [SerializeField] private Item[] gameItems = new Item[0];
     private Dictionary<string, Item> _gameItemsDict = new Dictionary<string, Item>();
 
