@@ -22,12 +22,10 @@ public class LocationInteraction : MonoBehaviour, IInteractable
     public string itemNameUse => itemNameToUse;
 
     private Location _location;
-    private AllScripts _scripts;
 
     public void Initialize()
     {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-        _location = _scripts.manageLocation.GetLocation(locationName);
+        _location = ManageLocation.singleton.GetLocation(locationName);
         if (useLocationName)
             label = _location.name;
     }
@@ -37,8 +35,8 @@ public class LocationInteraction : MonoBehaviour, IInteractable
         if (_location.locked) return;
 
         // Пока вырезано
-        //if (_scripts.manageLocation.GetLocation(gameObject.name).autoEnter &&
-        //_scripts.manageLocation.totalLocation.autoEnter)
-        _scripts.manageLocation.ActivateLocation(locationName, spawnName);
+        //if (ManageLocation.singleton.GetLocation(gameObject.name).autoEnter &&
+        //ManageLocation.singleton.totalLocation.autoEnter)
+        ManageLocation.singleton.ActivateLocation(locationName, spawnName);
     }
 }

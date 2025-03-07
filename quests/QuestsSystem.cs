@@ -1,26 +1,32 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
 using LastFramework;
+using Random = UnityEngine.Random;
 
 public class QuestsSystem : MonoBehaviour
 {
+    public static QuestsSystem singleton { get; private set; }
     public Quest totalQuest;
     public List<Quest> activeQuests = new List<Quest>();
     public Quest[] gameQuests = new Quest[0];
     private Dictionary<string, Quest> _gameQuestDict = new Dictionary<string, Quest>();
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
-    private AllScripts _scripts;
     private RectTransform _textQuestTransform;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {
         foreach (Quest quest in gameQuests)
             _gameQuestDict.Add(quest.nameInGame, quest);
         
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _textQuestTransform = textQuest.GetComponent<RectTransform>();
         ActivateQuest("Good morning");
     }
@@ -59,7 +65,7 @@ public class QuestsSystem : MonoBehaviour
     {
         totalQuest = GetQuest(questName);
         UpdateQuestUI();
-        //_scripts.notebook.ChoicePage(1);
+        //Notebook.singleton.ChoicePage(1);
     }
 
     /// <summary>
@@ -90,7 +96,7 @@ public class QuestsSystem : MonoBehaviour
         if (totalQuest.steps[totalQuest.totalStep].delayNextStep != 0)
             StartCoroutine(StartStepDelay(totalQuest.steps[totalQuest.totalStep].delayNextStep));
         if (totalQuest.steps[totalQuest.totalStep].startDialog != "")
-            _scripts.dialogsManager.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
+            DialogsManager.singleton.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
     }
 
     private void UpdateQuestUI()

@@ -20,22 +20,15 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
     public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
 
-    private AllScripts _scripts;
-
-    private void Awake()
-    {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-    }
-
     public void DoInteraction()
     {
         if (dialogStart != "")
-            _scripts.dialogsManager.ActivateDialog(dialogStart);
+            DialogsManager.singleton.ActivateDialog(dialogStart);
 
         if (playerVisual != "")
-            _scripts.player.ChangeStyle(playerVisual);
+            Player.singleton.ChangeStyle(playerVisual);
 
         if (destroyAfterInter)
-            Destroy(this.gameObject);
+            Destroy(gameObject);
     }
 }

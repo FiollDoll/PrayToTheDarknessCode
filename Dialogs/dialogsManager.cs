@@ -6,9 +6,11 @@ using TMPro;
 using DG.Tweening;
 using MyBox;
 using LastFramework;
+using Random = UnityEngine.Random;
 
 public class DialogsManager : MonoBehaviour, IMenuable
 {
+    public static DialogsManager singleton { get; private set; }
     [Header("All dialogs")] public Dialog[] dialogs = new Dialog[0];
     private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
@@ -36,7 +38,11 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private RectTransform _iconImageTransform;
 
     private bool _animatingText, _canStepNext;
-    private AllScripts _scripts;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {
@@ -46,7 +52,6 @@ public class DialogsManager : MonoBehaviour, IMenuable
             dialog.UpdateDialogDicts();
         }
 
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
         _iconImageTransform = iconImageMain.GetComponent<RectTransform>();
@@ -91,7 +96,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
                     mainDialogMenu.gameObject.SetActive(true);
                     break;
                 case Dialog.DialogStyle.BigPicture:
-                    _scripts.main.ActivateNoVision(1.2f, () =>
+                    Main.singleton.ActivateNoVision(1.2f, () =>
                     {
                         bigPicture.gameObject.SetActive(true);
                         mainDialogMenu.gameObject.SetActive(true);
@@ -125,18 +130,18 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _activatedDialog = newDialog;
         _selectedBranch = _activatedDialog.stepBranches[0];
         _selectedStep = _selectedBranch.dialogSteps[0];
-        _scripts.player.canMove = _activatedDialog.canMove;
-        _scripts.interactions.lockInter = !_activatedDialog.canInter;
+        Player.singleton.canMove = _activatedDialog.canMove;
+        Interactions.singleton.lockInter = !_activatedDialog.canInter;
         if (!_activatedDialog.moreRead)
             _activatedDialog.read = true;
         _canStepNext = false;
 
         dialogMenu.gameObject.SetActive(true);
         ActivateDialogWindow();
-        _scripts.main.CameraZoom(-10f, true);
+        Main.singleton.CameraZoom(-10f, true);
         TextManager.EndCursedText(textDialogMain);
 
-        _activatedDialog.fastChanges.ActivateChanges(_scripts);
+        _activatedDialog.fastChanges.ActivateChanges();
         StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog.mainPanelStartDelay));
 
         if (!CanChoice())
@@ -151,14 +156,14 @@ public class DialogsManager : MonoBehaviour, IMenuable
     public void DialogCLose()
     {
         _canStepNext = false;
-        _scripts.interactions.lockInter = false;
+        Interactions.singleton.lockInter = false;
         if (_activatedDialog.activateCutsceneStepAfterEnd != -1)
-            _scripts.cutsceneManager.ActivateCutsceneStep(_activatedDialog.activateCutsceneStepAfterEnd);
+            CutsceneManager.singleton.ActivateCutsceneStep(_activatedDialog.activateCutsceneStepAfterEnd);
 
         if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
-            _scripts.main.ActivateNoVision(1.5f, DoActionToClose);
+            Main.singleton.ActivateNoVision(1.5f, DoActionToClose);
         else if (_activatedDialog.darkAfterEnd)
-            _scripts.main.ActivateNoVision(1.2f, DoActionToClose);
+            Main.singleton.ActivateNoVision(1.2f, DoActionToClose);
         else
             DoActionToClose();
     }
@@ -172,18 +177,18 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
         {
-            _scripts.main.CameraZoom(0, true);
+            Main.singleton.CameraZoom(0, true);
             dialogMenu.gameObject.SetActive(false);
             bigPicture.gameObject.SetActive(false);
             mainDialogMenu.gameObject.SetActive(false);
             subDialogMenu.gameObject.SetActive(false);
             if (_activatedDialog.posAfterEnd)
-                _scripts.player.transform.localPosition = _activatedDialog.posAfterEnd.position;
+                Player.singleton.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
-            _scripts.player.canMove = true;
-            _scripts.cutsceneManager.totalCutscene = new Cutscene();
+            Player.singleton.canMove = true;
+            CutsceneManager.singleton.totalCutscene = new Cutscene();
             TextManager.EndCursedText(textDialogMain);
-            _scripts.player.virtualCamera.Follow = _scripts.player.transform;
+            Player.singleton.virtualCamera.Follow = Player.singleton.transform;
             _activatedDialog = null;
             _canStepNext = true;
         });
@@ -197,9 +202,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private void ActivateChoiceMenu(bool setScale = false)
     {
         choiceDialogMenu.gameObject.SetActive(true);
-        iconImageChoice.sprite = _scripts.player.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standart);
+        iconImageChoice.sprite = Player.singleton.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standart);
         adaptiveScrollViewChoice.UpdateContentSize();
-        _scripts.player.virtualCamera.Follow = _scripts.player.transform;
+        Player.singleton.virtualCamera.Follow = Player.singleton.transform;
         if (setScale)
             _choiceDialogMenuTransform.localScale = new Vector2(1f, 1f);
         foreach (Transform child in choicesContainer.transform)
@@ -309,12 +314,12 @@ public class DialogsManager : MonoBehaviour, IMenuable
             }
         }
 
-        foreach (Npc totalNpc in _scripts.main.allNpc)
+        foreach (Npc totalNpc in Main.singleton.allNpc)
         {
             if (!totalNpc.canMeet) continue;
             if (totalNpc.nameOfNpc != _selectedStep.totalNpc.nameOfNpc) continue;
-            if (_scripts.player.familiarNpc.Contains(totalNpc)) continue;
-            _scripts.player.familiarNpc.Add(totalNpc);
+            if (Player.singleton.familiarNpc.Contains(totalNpc)) continue;
+            Player.singleton.familiarNpc.Add(totalNpc);
             break;
         }
 
@@ -325,12 +330,12 @@ public class DialogsManager : MonoBehaviour, IMenuable
         else
             StartCoroutine(SetText());
 
-        _scripts.player.virtualCamera.Follow =
-            _selectedStep.cameraTarget ? _selectedStep.cameraTarget : _scripts.player.transform;
+        Player.singleton.virtualCamera.Follow =
+            _selectedStep.cameraTarget ? _selectedStep.cameraTarget : Player.singleton.transform;
 
-        _selectedStep.fastChanges.ActivateChanges(_scripts);
+        _selectedStep.fastChanges.ActivateChanges();
 
-        _scripts.cutsceneManager.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
+        CutsceneManager.singleton.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
     }
 
     /// <summary>

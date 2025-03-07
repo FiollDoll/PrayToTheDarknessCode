@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using MyBox;
@@ -7,6 +8,7 @@ using TMPro;
 
 public class Notebook : MonoBehaviour
 {
+    public static Notebook singleton { get; private set; }
     [Header("Записки игрока")] public List<Note> playerNotes = new List<Note>();
 
     [Header("Записки в игре")] [SerializeField]
@@ -25,14 +27,15 @@ public class Notebook : MonoBehaviour
     [SerializeField] private Image iconHuman;
     [SerializeField] private Button buttonExit;
 
-    private AllScripts _scripts;
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {
         foreach (Note note in gameNotes)
             _gameNotesDict.TryAdd(note.gameName, note);
-
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
     }
 
     /// <summary>
@@ -51,7 +54,7 @@ public class Notebook : MonoBehaviour
         if (newNote == null) return; // Если пустой
 
         playerNotes.Add(newNote);
-        _scripts.notifyManager.StartNewNoteNotify(newNote.name.text);
+        NotifyManager.singleton.StartNewNoteNotify(newNote.name.text);
     }
 
     public void ReadNote(int num, int mode = 0)
@@ -71,25 +74,25 @@ public class Notebook : MonoBehaviour
             case 1:
             {
                 pageReadNoteOrQuest.gameObject.SetActive(true);
-                Quest selectedQuest = _scripts.questsSystem.activeQuests[num];
+                Quest selectedQuest = QuestsSystem.singleton.activeQuests[num];
                 headerMain.text = selectedQuest.name.text;
                 noteMain.text = selectedQuest.description.text;
                 if (selectedQuest.steps[selectedQuest.totalStep].name.text != "")
                     noteMain.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" +
                                      selectedQuest.steps[selectedQuest.totalStep].description;
-                if (selectedQuest != _scripts.questsSystem.totalQuest)
+                if (selectedQuest != QuestsSystem.singleton.totalQuest)
                 {
                     //buttonChoiceActiveQuest.gameObject.SetActive(true);
                     //buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate
                     //{
-                    //_scripts.questsSystem.ChoiceActiveQuest(selectedQuest.nameInGame);
+                    //QuestsSystem.singleton.ChoiceActiveQuest(selectedQuest.nameInGame);
                     //});
                 }
 
                 break;
             }
             case 2:
-                Npc selectedNpc = _scripts.player.familiarNpc[num];
+                Npc selectedNpc = Player.singleton.familiarNpc[num];
                 pageReadHuman.gameObject.SetActive(true);
                 headerHuman.text = selectedNpc.nameOfNpc.text;
                 noteHuman.text = selectedNpc.description.text;

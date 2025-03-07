@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -5,6 +6,7 @@ using MyBox;
 
 public class InventoryManager : MonoBehaviour
 {
+    public static InventoryManager singleton { get; private set; }
     [Header("Inventory")] public Inventory inventory;
 
     [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
@@ -17,12 +19,14 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textItemName, textItemDescription;
     [SerializeField] private Image iconInMain, iconInOnly;
 
-    private AllScripts _scripts;
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {
         inventory.UpdateGameItemsDict();
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
     }
 
     /// <summary>
@@ -44,7 +48,7 @@ public class InventoryManager : MonoBehaviour
     public void AddItem(string nameItem)
     {
         Item newItem = inventory.AddItem(nameItem);
-        _scripts.notifyManager.StartNewItemNotify(newItem.name.text);
+        NotifyManager.singleton.StartNewItemNotify(newItem.name.text);
     }
 
     /// <summary>
@@ -55,7 +59,7 @@ public class InventoryManager : MonoBehaviour
     {
         itemInfoMenu.gameObject.SetActive(false);
         UpdateInvUI();
-        //_scripts.player.playerMenu.gameObject.SetActive(false);
+        //Player.singleton.playerMenu.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -90,17 +94,17 @@ public class InventoryManager : MonoBehaviour
             {
                 if (selectedItem.questName != "")
                 {
-                    if (selectedItem.questName != _scripts.questsSystem.totalQuest.nameInGame
-                        || (_scripts.questsSystem.totalQuest.totalStep != selectedItem.questStage &&
+                    if (selectedItem.questName != QuestsSystem.singleton.totalQuest.nameInGame
+                        || (QuestsSystem.singleton.totalQuest.totalStep != selectedItem.questStage &&
                             selectedItem.questStage > 0))
                         buttonItemActivate.gameObject.SetActive(false);
                 }
             }
             else if (selectedItem.useInCollider) // Только для enteredColliders
             {
-                if (_scripts.interactions.EnteredInteraction == null ||
-                    (_scripts.interactions.EnteredInteraction != null &&
-                     _scripts.interactions.EnteredInteraction.itemNameUse != selectedItem.nameInGame))
+                if (Interactions.singleton.EnteredInteraction == null ||
+                    (Interactions.singleton.EnteredInteraction != null &&
+                     Interactions.singleton.EnteredInteraction.itemNameUse != selectedItem.nameInGame))
                     buttonItemActivate.gameObject.SetActive(false);
             }
         }

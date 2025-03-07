@@ -9,7 +9,6 @@ public class NpcController : MonoBehaviour, IHumanable
     [Header("Preference")] [SerializeField]
     private float speed;
 
-    private AllScripts _scripts;
     private bool _playerInCollider;
     private Transform _playerTransform;
     private SpriteRenderer _sr;
@@ -26,7 +25,6 @@ public class NpcController : MonoBehaviour, IHumanable
     {
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _playerTransform = GameObject.Find("Player").transform;
     }
 
@@ -36,14 +34,14 @@ public class NpcController : MonoBehaviour, IHumanable
         _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
 
-    public void MoveTo(Transform target) => _scripts.main.MoveTo(target, speed, transform, _sr, _animator);
+    public void MoveTo(Transform target) => Main.singleton.MoveTo(target, speed, transform, _sr, _animator);
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         switch (other.gameObject.name)
         {
             case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
-                transform.position = _scripts.manageLocation.GetLocation(locationOfPointName).spawns[0].spawn.position;
+                transform.position = ManageLocation.singleton.GetLocation(locationOfPointName).spawns[0].spawn.position;
                 totalLocation = locationOfPointName;
                 break;
             case "Player":
@@ -74,7 +72,7 @@ public class NpcController : MonoBehaviour, IHumanable
             {
                 MoveTo(locationOfPointName == totalLocation
                     ? point
-                    : _scripts.manageLocation.GetLocation(totalLocation).transformOfStairs);
+                    : ManageLocation.singleton.GetLocation(totalLocation).transformOfStairs);
             }
             else
                 _animator?.SetBool("walk", false);

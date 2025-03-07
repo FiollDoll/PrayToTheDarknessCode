@@ -15,15 +15,9 @@ public class DialogInteraction : MonoBehaviour, IInteractable
     [Header("Preferences")] public bool nextQuestStep { get; set; }
     public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
-    private AllScripts _scripts;
-
-    private void Awake()
-    {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-    }
 
     public void DoInteraction()
     {
-        _scripts.dialogsManager.ActivateDialog(gameObject.name);
+        DialogsManager.singleton.ActivateDialog(gameObject.name);
     }
 }

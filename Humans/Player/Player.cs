@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
 public class Player : MonoBehaviour, IHumanable
 {
+    public static Player singleton { get; private set; }
     private static readonly int s_Walk = Animator.StringToHash("walk");
     public Npc npcEntity { get; set; }
     public string selectedStyle { get; set; } = "standard";
@@ -17,18 +19,22 @@ public class Player : MonoBehaviour, IHumanable
     [SerializeField] private LayerMask layerMaskInteractAuto;
     public CinemachineVirtualCamera virtualCamera;
 
-    private AllScripts _scripts;
     private Collider _enteredCollider;
     private Rigidbody _rb;
     private SpriteRenderer _sr;
     private Animator _animator;
 
+    private void Awake()
+    {
+        singleton = this;
+    }
+
     private void Start()
     {
+        
         _rb = GetComponent<Rigidbody>();
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         ChangeStyle("sleepy");
     }
 
@@ -39,7 +45,7 @@ public class Player : MonoBehaviour, IHumanable
     }
 
     public void MoveTo(Transform target) =>
-        _scripts.main.MoveTo(target, moveSpeed, transform, _sr, _animator);
+        Main.singleton.MoveTo(target, moveSpeed, transform, _sr, _animator);
 
     private void FixedUpdate()
     {
@@ -54,8 +60,8 @@ public class Player : MonoBehaviour, IHumanable
             _enteredCollider = newColliders[0];
             if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
             {
-                _scripts.interactions.EnteredInteraction = interactable;
-                if (_scripts.interactions.CheckActiveInteraction(interactable) && interactable.autoUse)
+                Interactions.singleton.EnteredInteraction = interactable;
+                if (Interactions.singleton.CheckActiveInteraction(interactable) && interactable.autoUse)
                     interactable.DoInteraction();
             }
         }

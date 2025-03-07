@@ -10,6 +10,7 @@ using LastFramework;
 
 public class Main : MonoBehaviour
 {
+    public static Main singleton { get; private set; }
     [Header("Игровые переменные")] public float karma;
     public int hour, minute;
 
@@ -21,13 +22,16 @@ public class Main : MonoBehaviour
     [HideInInspector] public float startCameraSize;
 
     private List<IMenuable> _allGameMenu = new List<IMenuable>();
-    private AllScripts _scripts;
 
-    public void Start()
+    private void Awake()
     {
-        _scripts = GetComponent<AllScripts>();
+        singleton = this;
+    }
 
-        startCameraSize = _scripts.player.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
+    private void Start()
+    {
+
+        startCameraSize = Player.singleton.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
 
         // Инициализация информации об НПС
@@ -82,7 +86,7 @@ public class Main : MonoBehaviour
         if (smoothly)
             StartCoroutine(SmoothlyZoom(changeSize));
         else
-            _scripts.player.virtualCamera.m_Lens.FieldOfView = _scripts.main.startCameraSize + changeSize;
+            Player.singleton.virtualCamera.m_Lens.FieldOfView = Main.singleton.startCameraSize + changeSize;
     }
 
     private IEnumerator SmoothlyZoom(float changeSize)
@@ -91,7 +95,7 @@ public class Main : MonoBehaviour
         {
             for (float i = 0; i > changeSize; i--)
             {
-                _scripts.player.virtualCamera.m_Lens.FieldOfView -= 1f;
+                Player.singleton.virtualCamera.m_Lens.FieldOfView -= 1f;
                 yield return new WaitForSeconds(0.01f);
             }
         }
@@ -99,12 +103,12 @@ public class Main : MonoBehaviour
         {
             for (float i = 0; i < changeSize; i++)
             {
-                _scripts.player.virtualCamera.m_Lens.FieldOfView += 1f;
+                Player.singleton.virtualCamera.m_Lens.FieldOfView += 1f;
                 yield return new WaitForSeconds(0.01f);
             }
         }
         else
-            StartCoroutine(SmoothlyZoom(startCameraSize - _scripts.player.virtualCamera.m_Lens.FieldOfView));
+            StartCoroutine(SmoothlyZoom(startCameraSize - Player.singleton.virtualCamera.m_Lens.FieldOfView));
     }
 
     /// <summary>

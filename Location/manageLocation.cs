@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
@@ -5,6 +6,7 @@ using TMPro;
 
 public class ManageLocation : MonoBehaviour
 {
+    public static ManageLocation singleton { get; private set; }
     [Header("Текущая локация")] public Location totalLocation;
     [Header("Все локации")] public Location[] locations = new Location[0];
 
@@ -16,7 +18,11 @@ public class ManageLocation : MonoBehaviour
     private GameObject _player;
     private CinemachineConfiner _cinemachineConfiner;
     private NpcController[] _npсs;
-    private AllScripts _scripts;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {
@@ -27,10 +33,8 @@ public class ManageLocation : MonoBehaviour
             location.UpdateSpawnsDict();
         }
 
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _player = GameObject.Find("Player");
-        _cinemachineConfiner = _scripts.player.virtualCamera.GetComponent<CinemachineConfiner>();
-        _scripts.manageLocation = this;
+        _cinemachineConfiner = Player.singleton.virtualCamera.GetComponent<CinemachineConfiner>();
         totalLocation = GetLocation("mainMark");
         _npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
 
@@ -51,9 +55,9 @@ public class ManageLocation : MonoBehaviour
         Vector3 newPosition = location.GetSpawn(spawn).position;
         _player.transform.position = newPosition;
         _cinemachineConfiner.m_BoundingVolume = location.wallsForCamera;
-        _scripts.player.canMove = false;
-        _scripts.player.virtualCamera.m_Lens.OrthographicSize =
-            _scripts.main.startCameraSize + location.modifCamera;
+        Player.singleton.canMove = false;
+        Player.singleton.virtualCamera.m_Lens.OrthographicSize =
+            Main.singleton.startCameraSize + location.modifCamera;
 
 
         foreach (NpcController totalNpc in _npсs)
@@ -74,22 +78,22 @@ public class ManageLocation : MonoBehaviour
         totalLocation = GetLocation(locationName);
         if (withFade)
         {
-            _scripts.main.ActivateNoVision(1f, () => LocationSetup(totalLocation, spawn),
-                () => { _scripts.player.canMove = true; });
+            Main.singleton.ActivateNoVision(1f, () => LocationSetup(totalLocation, spawn),
+                () => { Player.singleton.canMove = true; });
         }
         else
         {
             LocationSetup(totalLocation, spawn);
-            _scripts.player.canMove = true;
+            Player.singleton.canMove = true;
         }
 
-        _scripts.saveAndLoadManager.SaveGame();
+        SaveAndLoadManager.singleton.SaveGame();
     }
 
     public void FastMoveToLocation(string locationName)
     {
         ActivateLocation(locationName, "fromStairs"); // Для кнопок лестницы
-        _scripts.interactions.floorChangeMenu.gameObject.SetActive(false);
+        Interactions.singleton.floorChangeMenu.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -114,7 +118,7 @@ public class ManageLocation : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            _scripts.player.canMove = false;
+            Player.singleton.canMove = false;
             foreach (KeyValuePair<GameObject, IInteractable> interactableObject in totalLocation
                          .LocationInteractableObjects)
             {
@@ -128,7 +132,7 @@ public class ManageLocation : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            _scripts.player.canMove = true;
+            Player.singleton.canMove = true;
             foreach (Transform labels in containerOfLabels.transform)
                 Destroy(labels.gameObject);
         }

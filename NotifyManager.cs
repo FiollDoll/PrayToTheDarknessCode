@@ -1,11 +1,18 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using TMPro;
 
 public class NotifyManager : MonoBehaviour
 {
+    public static NotifyManager singleton { get; private set; }
     [SerializeField] private GameObject notifyContainer;
     [SerializeField] private GameObject notifyPrefab;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     public void StartNewItemNotify(string itemName) =>
         StartCoroutine(ActivateNotify(new LanguageSetting($"Новый предмет: {itemName}", $"New item: {itemName}")));

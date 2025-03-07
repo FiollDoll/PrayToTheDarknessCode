@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using Cinemachine;
 
 public class CutsceneManager : MonoBehaviour
 {
+    public static CutsceneManager singleton { get; private set; }
     public Cutscene totalCutscene = new Cutscene();
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private Cutscene[] allCutscene = new Cutscene[0];
@@ -16,11 +18,14 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] private GameObject startViewMenu;
     [SerializeField] private bool svBlock; // dev only
     [SerializeField] private Image noViewPanel;
-    private AllScripts _scripts;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         foreach (Cutscene cutscene in allCutscene)
             _allCutsceneDict.Add(cutscene.name, cutscene);
 
@@ -51,15 +56,15 @@ public class CutsceneManager : MonoBehaviour
             StartViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
 
         if (totalCutsceneStep.closeDialogMenu)
-            _scripts.dialogsManager.DialogCLose();
+            DialogsManager.singleton.DialogCLose();
 
-        totalCutsceneStep.fastChanges.ActivateChanges(_scripts);
+        totalCutsceneStep.fastChanges.ActivateChanges();
 
         if (totalCutsceneStep.newVolumeProfile)
-            _scripts.postProcessingController.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
+            PostProcessingController.singleton.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
 
         if (totalCutsceneStep.editCameraSize != 0)
-            _scripts.main.CameraZoom(totalCutsceneStep.editCameraSize, true);
+            Main.singleton.CameraZoom(totalCutsceneStep.editCameraSize, true);
 
         foreach (Cutscene.ObjectState objState in totalCutsceneStep.objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
@@ -71,8 +76,8 @@ public class CutsceneManager : MonoBehaviour
             animations.animator.SetBool(animations.boolName, animations.boolStatus);
 
         foreach (Cutscene.LocationsLock locationsLock in totalCutsceneStep.locksLocations)
-            _scripts.manageLocation.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
-        _scripts.main.lockAnyMenu = totalCutsceneStep.lockAllMenu;
+            ManageLocation.singleton.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
+        Main.singleton.lockAnyMenu = totalCutsceneStep.lockAllMenu;
 
         foreach (Cutscene.NpcMoveToPlayer npcMoveToPlayer in totalCutsceneStep.npcMoveToPlayer)
             npcMoveToPlayer.npc.moveToPlayer = npcMoveToPlayer.move;

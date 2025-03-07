@@ -1,10 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Newtonsoft.Json;
 
 public class SaveAndLoadManager : MonoBehaviour
 {
+    public static SaveAndLoadManager singleton { get; private set; }
     [SerializeField] private GameSave gameSave;
-    [SerializeField] private AllScripts scripts;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {
@@ -14,15 +20,15 @@ public class SaveAndLoadManager : MonoBehaviour
     public void SaveGame()
     {
         gameSave = new GameSave();
-        gameSave.playerStyle = scripts.player.selectedStyle;
-        gameSave.x = scripts.player.transform.position.x;
-        gameSave.y = scripts.player.transform.position.y;
-        gameSave.z = scripts.player.transform.position.z;
-        gameSave.playerLocationName = scripts.manageLocation.totalLocation.gameName;
-        gameSave.playerNotes = scripts.notebook.playerNotes;
-        gameSave.playerItems = scripts.inventoryManager.inventory.playerItems;
-        gameSave.familiarNpc = scripts.player.familiarNpc;
-        gameSave.playerQuests = scripts.questsSystem.activeQuests;
+        gameSave.playerStyle = Player.singleton.selectedStyle;
+        gameSave.x = Player.singleton.transform.position.x;
+        gameSave.y = Player.singleton.transform.position.y;
+        gameSave.z = Player.singleton.transform.position.z;
+        gameSave.playerLocationName = ManageLocation.singleton.totalLocation.gameName;
+        gameSave.playerNotes = Notebook.singleton.playerNotes;
+        gameSave.playerItems = InventoryManager.singleton.inventory.playerItems;
+        gameSave.familiarNpc = Player.singleton.familiarNpc;
+        gameSave.playerQuests = QuestsSystem.singleton.activeQuests;
         string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
         Debug.Log(json);
         // TODO: Сохранение
@@ -33,12 +39,12 @@ public class SaveAndLoadManager : MonoBehaviour
         // TODO: Загрузка
         string json = "";
         gameSave = JsonConvert.DeserializeObject<GameSave>(json);
-        scripts.player.ChangeStyle(gameSave.playerStyle);
-        scripts.player.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
-        scripts.manageLocation.totalLocation = scripts.manageLocation.GetLocation(gameSave.playerLocationName);
-        scripts.notebook.playerNotes = gameSave.playerNotes;
-        scripts.inventoryManager.inventory.playerItems = gameSave.playerItems;
-        scripts.player.familiarNpc = gameSave.familiarNpc;
-        scripts.questsSystem.activeQuests = gameSave.playerQuests;
+        Player.singleton.ChangeStyle(gameSave.playerStyle);
+        Player.singleton.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
+        ManageLocation.singleton.totalLocation = ManageLocation.singleton.GetLocation(gameSave.playerLocationName);
+        Notebook.singleton.playerNotes = gameSave.playerNotes;
+        InventoryManager.singleton.inventory.playerItems = gameSave.playerItems;
+        Player.singleton.familiarNpc = gameSave.familiarNpc;
+        QuestsSystem.singleton.activeQuests = gameSave.playerQuests;
     }
 }

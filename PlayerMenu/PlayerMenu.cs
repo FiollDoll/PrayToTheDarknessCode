@@ -32,11 +32,9 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
     private AdaptiveScrollView _inventoryAdaptiveScrollView;
 
-    private AllScripts _scripts;
 
     private void Start()
     {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
         _notesAdaptiveScrollView = pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
         _questsAdaptiveScrollView = pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
         _npcAdaptiveScrollView = pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
@@ -46,7 +44,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     {
         if (!playerMenu.activeSelf)
         {
-            if (_scripts.main.CheckAnyMenuOpen())
+            if (Main.singleton.CheckAnyMenuOpen())
             {
                 playerMenu.gameObject.SetActive(true);
                 // TODO: сделать выбор по клавишам(какую стр открыть)
@@ -56,7 +54,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         else
             playerMenu.gameObject.SetActive(false);
 
-        _scripts.player.canMove = !playerMenu.activeSelf;
+        Player.singleton.canMove = !playerMenu.activeSelf;
     }
 
     public void ChoicePagePlayerMenu(int page)
@@ -65,7 +63,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         pageNote.gameObject.SetActive(false);
         pageQuest.gameObject.SetActive(false);
         pageNpc.gameObject.SetActive(false);
-        _scripts.inventoryManager.ManageInventoryPanel(false);
+        InventoryManager.singleton.ManageInventoryPanel(false);
         foreach (RectTransform rt in buttonsPlayerMenuTransform)
             rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 50f);
 
@@ -78,22 +76,22 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         switch (page)
         {
             case 0: // Инвентарь
-                _scripts.inventoryManager.ManageInventoryPanel(true);
+                InventoryManager.singleton.ManageInventoryPanel(true);
                 break;
             case 1: // Квесты
                 pageQuest.gameObject.SetActive(true);
                 foreach (Transform child in questsContainer.transform)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < _scripts.questsSystem.activeQuests.Count; i++)
+                for (int i = 0; i < QuestsSystem.singleton.activeQuests.Count; i++)
                 {
                     var obj = Instantiate(buttonNotePrefab, questsContainer.transform).GetComponent<PrefabInfo>();
-                    if (_scripts.questsSystem.activeQuests[i] == _scripts.questsSystem.totalQuest)
-                        obj.prefabNameTextMeshProUGUI.text = "-> " + _scripts.questsSystem.activeQuests[i].name.text;
+                    if (QuestsSystem.singleton.activeQuests[i] == QuestsSystem.singleton.totalQuest)
+                        obj.prefabNameTextMeshProUGUI.text = "-> " + QuestsSystem.singleton.activeQuests[i].name.text;
                     else
-                        obj.prefabNameTextMeshProUGUI.text = _scripts.questsSystem.activeQuests[i].name.text;
+                        obj.prefabNameTextMeshProUGUI.text = QuestsSystem.singleton.activeQuests[i].name.text;
                     int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { _scripts.notebook.ReadNote(number, 1); });
+                    obj.prefabButton.onClick.AddListener(delegate { Notebook.singleton.ReadNote(number, 1); });
                 }
 
                 _questsAdaptiveScrollView.UpdateContentSize();
@@ -103,15 +101,15 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                 foreach (Transform child in notesContainer.transform)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < _scripts.notebook.playerNotes.Count; i++)
+                for (int i = 0; i < Notebook.singleton.playerNotes.Count; i++)
                 {
                     var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
-                    if (_scripts.notebook.playerNotes[i].read)
-                        obj.prefabNameTextMeshProUGUI.text = _scripts.notebook.playerNotes[i].name.text;
+                    if (Notebook.singleton.playerNotes[i].read)
+                        obj.prefabNameTextMeshProUGUI.text = Notebook.singleton.playerNotes[i].name.text;
                     else
-                        obj.prefabNameTextMeshProUGUI.text = "(*)" + _scripts.notebook.playerNotes[i].name;
+                        obj.prefabNameTextMeshProUGUI.text = "(*)" + Notebook.singleton.playerNotes[i].name;
                     int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { _scripts.notebook.ReadNote(number); });
+                    obj.prefabButton.onClick.AddListener(delegate { Notebook.singleton.ReadNote(number); });
                 }
 
                 _notesAdaptiveScrollView.UpdateContentSize();
@@ -121,14 +119,14 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                 foreach (Transform child in npcContainer.transform)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < _scripts.player.familiarNpc.Count; i++)
+                for (int i = 0; i < Player.singleton.familiarNpc.Count; i++)
                 {
                     var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
-                    Npc selectedNpc = _scripts.player.familiarNpc[i];
+                    Npc selectedNpc = Player.singleton.familiarNpc[i];
                     obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
                     obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
                     int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { _scripts.notebook.ReadNote(number, 2); });
+                    obj.prefabButton.onClick.AddListener(delegate { Notebook.singleton.ReadNote(number, 2); });
                 }
 
                 _npcAdaptiveScrollView.UpdateContentSize();

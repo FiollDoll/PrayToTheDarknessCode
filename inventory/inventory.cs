@@ -8,7 +8,6 @@ public class Inventory
     [SerializeField] private Item[] gameItems = new Item[0];
     private Dictionary<string, Item> _gameItemsDict = new Dictionary<string, Item>();
 
-    public AllScripts scripts;
 
     /// <summary>
     /// Инициализация словаря доступных предметов. Вызывается один раз!
@@ -67,11 +66,11 @@ public class Inventory
     public void UseItem(int slot)
     {
         if (playerItems[slot].activateNameDialog != "")
-            scripts.dialogsManager.ActivateDialog(playerItems[slot].activateNameDialog);
+            DialogsManager.singleton.ActivateDialog(playerItems[slot].activateNameDialog);
         if (playerItems[slot].questName != "" && playerItems[slot].questNextStep)
         {
-            if (scripts.questsSystem.GetQuest(playerItems[slot].questName) == scripts.questsSystem.totalQuest)
-                scripts.questsSystem.NextStep();
+            if (QuestsSystem.singleton.GetQuest(playerItems[slot].questName) == QuestsSystem.singleton.totalQuest)
+                QuestsSystem.singleton.NextStep();
         }
 
         if (playerItems[slot].removeAfterUse)

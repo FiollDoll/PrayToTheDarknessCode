@@ -4,23 +4,22 @@ using AtomicConsole.debug;
 
 public class ConsoleCommands : MonoBehaviour
 {
-    [SerializeField] private AllScripts scripts;
 
     [AtomicCommand(name: "ActivateLocation")]
-    public void ActivateLocation(string location) => scripts.manageLocation.ActivateLocation(location);
+    public void ActivateLocation(string location) => ManageLocation.singleton.ActivateLocation(location);
 
     [AtomicCommand(name: "ListLocations")]
     public void GetListLocations()
     {
-        foreach (Location location in scripts.manageLocation.locations)
+        foreach (Location location in ManageLocation.singleton.locations)
             AtomicDebug.Command(location.gameName);
     }
 
     [AtomicCommand(name: "ChangePlayerStyle")]
-    public void ChangePlayerStyle(string style) => scripts.player.ChangeStyle(style);
+    public void ChangePlayerStyle(string style) => Player.singleton.ChangeStyle(style);
     
     [AtomicCommand(name: "NewQuest")]
-    public void ActivateQuest(string questName) => scripts.questsSystem.ActivateQuest(questName);
+    public void ActivateQuest(string questName) => QuestsSystem.singleton.ActivateQuest(questName);
     
     [AtomicCommand(name: "NewQuest")]
     public void ActivateStepQuest(int step)
@@ -29,5 +28,5 @@ public class ConsoleCommands : MonoBehaviour
     }
     
     [AtomicCommand(name: "AddItem")]
-    public void AddItem(string item) => scripts.inventoryManager.AddItem(item);
+    public void AddItem(string item) => InventoryManager.singleton.AddItem(item);
 }

@@ -16,21 +16,15 @@ public class ItemInteraction : MonoBehaviour, IInteractable
     public bool nextQuestStep { get; set; }
     public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
-    private AllScripts _scripts;
-
-    private void Awake()
-    {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-    }
 
     public void DoInteraction()
     {
         if (darkAfterUse)
-            _scripts.main.ActivateNoVision(1f);
+            Main.singleton.ActivateNoVision(1f);
         if (nextQuestStep)
-            _scripts.questsSystem.NextStep();
+            QuestsSystem.singleton.NextStep();
 
-        _scripts.inventoryManager.AddItem(gameObject.name);
+        InventoryManager.singleton.AddItem(gameObject.name);
         Destroy(gameObject);
     }
 }

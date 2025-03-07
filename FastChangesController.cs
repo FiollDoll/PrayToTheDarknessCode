@@ -27,32 +27,32 @@ public class FastChangesController
     public string[] addNote;
     public ChangeRelationship[] changeRelationships;
 
-    public void ActivateChanges(AllScripts scripts)
+    public void ActivateChanges()
     {
-        scripts.player.changeSpeed = editSpeed;
+        Player.singleton.changeSpeed = editSpeed;
         if (changeVisualPlayer != "")
-            scripts.player.ChangeStyle(changeVisualPlayer);
+            Player.singleton.ChangeStyle(changeVisualPlayer);
         if (moveToLocation != "")
-            scripts.manageLocation.ActivateLocation(moveToLocation,
+            ManageLocation.singleton.ActivateLocation(moveToLocation,
                 moveToLocationSpawn, toLocationWithFade);
 
         if (activateDialog != "")
-            scripts.dialogsManager.ActivateDialog(activateDialog);
+            DialogsManager.singleton.ActivateDialog(activateDialog);
 
         if (questStepNext)
-            scripts.questsSystem.NextStep();
+            QuestsSystem.singleton.NextStep();
 
         foreach (string quest in addQuests)
-            scripts.questsSystem.ActivateQuest(quest, true);
+            QuestsSystem.singleton.ActivateQuest(quest, true);
         foreach (string item in addItem)
-            scripts.inventoryManager.AddItem(item);
+            InventoryManager.singleton.AddItem(item);
         foreach (string note in addNote)
-            scripts.notebook.AddNote(note);
+            Notebook.singleton.AddNote(note);
         foreach (ChangeRelationship changer in changeRelationships)
         {
             changer.npc.relationshipWithPlayer += changer.valueChange;
             if (changer.valueChange != 0)
-                scripts.notifyManager.StartNewRelationshipNotify(changer.npc.nameOfNpc.text,
+                NotifyManager.singleton.StartNewRelationshipNotify(changer.npc.nameOfNpc.text,
                     changer.valueChange);
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -5,6 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class PostProcessingController : MonoBehaviour
 {
+    public static PostProcessingController singleton { get; private set; }
     [SerializeField] private GameObject playerCamera;
     private Vignette _vignette;
     private ChromaticAberration _chromaticAberration;
@@ -12,6 +14,11 @@ public class PostProcessingController : MonoBehaviour
     private Bloom _bloom;
     private ColorAdjustments _colorAdjustments;
     private Volume _volume;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
 
     private void Start()
     {

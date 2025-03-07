@@ -3,6 +3,7 @@ using TMPro;
 
 public class Interactions : MonoBehaviour
 {
+    public static Interactions singleton { get; private set; }
     public IInteractable EnteredInteraction, SelectedInteraction;
     [Header("Настройки")] [SerializeField] private LayerMask layerMaskInteract;
 
@@ -11,27 +12,26 @@ public class Interactions : MonoBehaviour
     public GameObject floorChangeMenu;
 
     private RaycastHit _selectedCollider;
-    private AllScripts _scripts;
 
-    private void Start()    
+    private void Awake()
     {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
+        singleton = this;
     }
 
     public bool CheckActiveInteraction(IInteractable interactable)
     {
         // Общая для всех проверка: можно ли использовать?
-        if (_scripts.questsSystem.totalQuest != null)
+        if (QuestsSystem.singleton.totalQuest != null)
         {
             // Проверка: пора по квесту?
-            if (interactable.nameQuestRequired != _scripts.questsSystem.totalQuest.nameInGame)
+            if (interactable.nameQuestRequired != QuestsSystem.singleton.totalQuest.nameInGame)
             {
                 if (interactable.nameQuestRequired != "")
                     return false;
             }
 
             // Проверка: пора по стадии квеста?
-            if (interactable.stageInter != _scripts.questsSystem.totalQuest.totalStep &&
+            if (interactable.stageInter != QuestsSystem.singleton.totalQuest.totalStep &&
                 interactable.nameQuestRequired != "")
                 return false;
         }
@@ -45,7 +45,7 @@ public class Interactions : MonoBehaviour
         SelectedInteraction = null;
         MeshRenderer selectedColliderRenderer = _selectedCollider.collider?.GetComponent<MeshRenderer>();
         if (selectedColliderRenderer && selectedColliderRenderer.materials.Length > 1)
-            _scripts.main.RemoveMaterial(selectedColliderRenderer);
+            Main.singleton.RemoveMaterial(selectedColliderRenderer);
 
         // Взаимодействия по мыши
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f,
@@ -55,7 +55,7 @@ public class Interactions : MonoBehaviour
             {
                 SelectedInteraction = interactable;
                 if (CheckActiveInteraction(interactable) && selectedColliderRenderer)
-                    _scripts.main.AddMaterial(selectedColliderRenderer);
+                    Main.singleton.AddMaterial(selectedColliderRenderer);
             }
         }
     }

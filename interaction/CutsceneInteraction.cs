@@ -15,16 +15,9 @@ public class CutsceneInteraction : MonoBehaviour, IInteractable
     [Header("Preferences")] public bool nextQuestStep { get; set; }
     public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
-    
-    private AllScripts _scripts;
-
-    private void Awake()
-    {
-        _scripts = GameObject.Find("scripts").GetComponent<AllScripts>();
-    }
 
     public void DoInteraction()
     {
-        _scripts.cutsceneManager.ActivateCutscene(gameObject.name);
+        CutsceneManager.singleton.ActivateCutscene(gameObject.name);
     }
 }
