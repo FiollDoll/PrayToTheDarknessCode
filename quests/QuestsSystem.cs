@@ -10,12 +10,19 @@ using Random = UnityEngine.Random;
 public class QuestsSystem : MonoBehaviour
 {
     public static QuestsSystem singleton { get; private set; }
-    public Quest totalQuest;
+
+    [Header("Player quests")] public Quest totalQuest;
     public List<Quest> activeQuests = new List<Quest>();
-    public Quest[] gameQuests = new Quest[0];
+
+    [Header("Game quests")] public Quest[] gameQuests = new Quest[0];
     private Dictionary<string, Quest> _gameQuestDict = new Dictionary<string, Quest>();
+
+    [Header("UI objects")] [SerializeField]
+    private GameObject questMenu;
+
     [SerializeField] private TextMeshProUGUI textQuest, textNameQuest;
-    private RectTransform _textQuestTransform;
+
+    private float _timer;
 
     private void Awake()
     {
@@ -26,8 +33,7 @@ public class QuestsSystem : MonoBehaviour
     {
         foreach (Quest quest in gameQuests)
             _gameQuestDict.Add(quest.nameInGame, quest);
-        
-        _textQuestTransform = textQuest.GetComponent<RectTransform>();
+
         ActivateQuest("Good morning");
     }
 
@@ -40,7 +46,7 @@ public class QuestsSystem : MonoBehaviour
     {
         return _gameQuestDict.GetValueOrDefault(questName);
     }
-    
+
     /// <summary>
     /// Активирует новый квест
     /// </summary>
@@ -50,7 +56,7 @@ public class QuestsSystem : MonoBehaviour
     {
         Quest newQuest = GetQuest(questName);
         if (newQuest == null) return;
-        
+
         if (totalQuest != null || extraActivate)
             totalQuest = newQuest;
         activeQuests.Add(newQuest);
@@ -81,14 +87,8 @@ public class QuestsSystem : MonoBehaviour
             activeQuests.Remove(totalQuest);
             totalQuest = activeQuests.Count != 0 ? activeQuests[^1] : null;
         }
-        
-        Sequence sequence = DOTween.Sequence();
-        Tween textMoveAnimation = _textQuestTransform.DOAnchorPosX(-600, 0.5f)
-            .SetEase(Ease.InQuart);
-        textMoveAnimation.OnComplete(UpdateQuestUI);
-        sequence.Append(textMoveAnimation);
-        sequence.Append(_textQuestTransform.DOAnchorPosX(0f, 0.5f).SetEase(Ease.OutQuart));
-        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+
+        UpdateQuestUI();
 
         if (totalQuest == null) // Если новый квест не назначен
             return;
@@ -101,26 +101,34 @@ public class QuestsSystem : MonoBehaviour
 
     private void UpdateQuestUI()
     {
-        if (totalQuest != null)
+        questMenu.SetActive(totalQuest != null);
+        if (!questMenu.activeSelf) return;
+
+        if (totalQuest.cursedText)
         {
-            if (totalQuest.cursedText)
-            {
-                TextManager.SetCursedText(textNameQuest, Random.Range(5, 15));
-                TextManager.SetCursedText(textQuest, Random.Range(5, 15));
-            }
-            else
-            {
-                TextManager.EndCursedText(textNameQuest);
-                TextManager.EndCursedText(textQuest);
-                textNameQuest.text = totalQuest.name.text;
-                textQuest.text = totalQuest.steps[totalQuest.totalStep].name.text;
-            }
+            TextManager.SetCursedText(textNameQuest, Random.Range(5, 15));
+            TextManager.SetCursedText(textQuest, Random.Range(5, 15));
         }
         else
         {
-            textNameQuest.text = "";
-            textQuest.text = "";
+            TextManager.EndCursedText(textNameQuest);
+            TextManager.EndCursedText(textQuest);
+            textNameQuest.text = totalQuest.name.text;
+            textQuest.text = totalQuest.steps[totalQuest.totalStep].name.text;
         }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            _timer = 0;
+            UpdateQuestUI();
+        }
+
+        _timer += 0.005f;
+        if (_timer >= 1)
+            questMenu.SetActive(false);
     }
 
     private IEnumerator StartStepDelay(float delay)

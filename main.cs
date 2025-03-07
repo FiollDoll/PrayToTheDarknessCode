@@ -115,7 +115,7 @@ public class Main : MonoBehaviour
     /// Проверка на возможость открытия любого меню
     /// </summary>
     /// <returns>true - открытие возможно, false - не возможно</returns>
-    public bool CheckAnyMenuOpen()
+    public bool CanMenuOpen()
     {
         foreach (IMenuable menuable in _allGameMenu)
         {

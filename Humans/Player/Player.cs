@@ -31,7 +31,6 @@ public class Player : MonoBehaviour, IHumanable
 
     private void Start()
     {
-        
         _rb = GetComponent<Rigidbody>();
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
@@ -52,20 +51,6 @@ public class Player : MonoBehaviour, IHumanable
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
 
-        var newColliders = Physics.OverlapSphere(rayStart.position, 0.5f,
-            layerMaskInteractAuto);
-
-        if (newColliders.Length > 0)
-        {
-            _enteredCollider = newColliders[0];
-            if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
-            {
-                Interactions.singleton.EnteredInteraction = interactable;
-                if (Interactions.singleton.CheckActiveInteraction(interactable) && interactable.autoUse)
-                    interactable.DoInteraction();
-            }
-        }
-
         if (canMove)
         {
             _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
@@ -79,6 +64,20 @@ public class Player : MonoBehaviour, IHumanable
         {
             _rb.linearVelocity = Vector3.zero;
             _animator.SetBool("walk", false);
+        }
+
+        var newColliders = Physics.OverlapSphere(rayStart.position, 0.5f,
+            layerMaskInteractAuto);
+
+        if (newColliders.Length > 0)
+        {
+            _enteredCollider = newColliders[0];
+            if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
+            {
+                Interactions.singleton.EnteredInteraction = interactable;
+                if (Interactions.singleton.CanActivateInteraction(interactable) && interactable.autoUse)
+                    interactable.DoInteraction();
+            }
         }
     }
 }

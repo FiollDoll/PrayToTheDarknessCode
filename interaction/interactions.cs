@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 using TMPro;
 
@@ -18,8 +19,24 @@ public class Interactions : MonoBehaviour
         singleton = this;
     }
 
-    public bool CheckActiveInteraction(IInteractable interactable)
+    /// <summary>
+    /// Можно ли активировать взаимодействие?
+    /// </summary>
+    /// <param name="interactable">Взаимодействие</param>
+    /// <param name="mouseInteraction">Взаимодействие через мышь?</param>
+    /// <returns></returns>
+    public bool CanActivateInteraction(IInteractable interactable, bool mouseInteraction = false)
     {
+        if (mouseInteraction)
+        {
+            // Ограничение по области
+            float pos = Player.singleton.gameObject.transform.position.x -
+                        _selectedCollider.collider.transform.position.x;
+
+            if (pos is > 6f or < -6f)
+                return false;
+        }
+
         // Общая для всех проверка: можно ли использовать?
         if (QuestsSystem.singleton.totalQuest != null)
         {
@@ -43,6 +60,8 @@ public class Interactions : MonoBehaviour
     {
         EnteredInteraction = null;
         SelectedInteraction = null;
+        if (!Main.singleton.CanMenuOpen()) // Т.е открыто какое-либо меню
+            return;
         MeshRenderer selectedColliderRenderer = _selectedCollider.collider?.GetComponent<MeshRenderer>();
         if (selectedColliderRenderer && selectedColliderRenderer.materials.Length > 1)
             Main.singleton.RemoveMaterial(selectedColliderRenderer);
@@ -53,19 +72,24 @@ public class Interactions : MonoBehaviour
         {
             if (_selectedCollider.collider.TryGetComponent(out IInteractable interactable))
             {
-                SelectedInteraction = interactable;
-                if (CheckActiveInteraction(interactable) && selectedColliderRenderer)
-                    Main.singleton.AddMaterial(selectedColliderRenderer);
+                if (CanActivateInteraction(interactable, true))
+                {
+                    SelectedInteraction = interactable;
+                    if (selectedColliderRenderer) // Если 3D объект
+                        Main.singleton.AddMaterial(selectedColliderRenderer);
+                }
             }
         }
     }
 
     private void Update()
     {
-        Debug.DrawLine(transform.position, _selectedCollider.point, Color.green);
+        if (!Main.singleton.CanMenuOpen()) // Т.е открыто какое-либо меню
+            return;
+        Debug.DrawLine(Input.mousePosition, _selectedCollider.point, Color.green);
 
         // Перебор по коллайдерам, в которые вошёл игрок, и в которых !autoUse
-        if(!lockInter)
+        if (!lockInter)
         {
             if (Input.GetKeyDown(KeyCode.E))
                 EnteredInteraction?.DoInteraction();
