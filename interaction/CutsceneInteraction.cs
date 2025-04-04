@@ -18,6 +18,6 @@ public class CutsceneInteraction : MonoBehaviour, IInteractable
 
     public void DoInteraction()
     {
-        CutsceneManager.singleton.ActivateCutscene(gameObject.name);
+        CutsceneManager.Instance.ActivateCutscene(gameObject.name);
     }
 }

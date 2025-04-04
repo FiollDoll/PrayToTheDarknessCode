@@ -6,7 +6,7 @@ using MyBox;
 
 public class InventoryManager : MonoBehaviour
 {
-    public static InventoryManager singleton { get; private set; }
+    public static InventoryManager Instance { get; private set; }
     [Header("Inventory")] public Inventory inventory;
 
     [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
@@ -21,7 +21,7 @@ public class InventoryManager : MonoBehaviour
 
     private void Awake()
     {
-        singleton = this;
+        Instance = this;
     }
 
     private void Start()
@@ -48,7 +48,7 @@ public class InventoryManager : MonoBehaviour
     public void AddItem(string nameItem)
     {
         Item newItem = inventory.AddItem(nameItem);
-        NotifyManager.singleton.StartNewItemNotify(newItem.name.text);
+        NotifyManager.Instance.StartNewItemNotify(newItem.name.text);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class InventoryManager : MonoBehaviour
     {
         itemInfoMenu.gameObject.SetActive(false);
         UpdateInvUI();
-        //Player.singleton.playerMenu.gameObject.SetActive(false);
+        //Player.Instance.playerMenu.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -94,17 +94,17 @@ public class InventoryManager : MonoBehaviour
             {
                 if (selectedItem.questName != "")
                 {
-                    if (selectedItem.questName != QuestsSystem.singleton.totalQuest.nameInGame
-                        || (QuestsSystem.singleton.totalQuest.totalStep != selectedItem.questStage &&
+                    if (selectedItem.questName != QuestsSystem.Instance.totalQuest.nameInGame
+                        || (QuestsSystem.Instance.totalQuest.totalStep != selectedItem.questStage &&
                             selectedItem.questStage > 0))
                         buttonItemActivate.gameObject.SetActive(false);
                 }
             }
             else if (selectedItem.useInCollider) // Только для enteredColliders
             {
-                if (Interactions.singleton.EnteredInteraction == null ||
-                    (Interactions.singleton.EnteredInteraction != null &&
-                     Interactions.singleton.EnteredInteraction.itemNameUse != selectedItem.nameInGame))
+                if (Interactions.Instance.EnteredInteraction == null ||
+                    (Interactions.Instance.EnteredInteraction != null &&
+                     Interactions.Instance.EnteredInteraction.itemNameUse != selectedItem.nameInGame))
                     buttonItemActivate.gameObject.SetActive(false);
             }
         }

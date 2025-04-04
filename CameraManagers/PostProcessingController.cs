@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class PostProcessingController : MonoBehaviour
 {
-    public static PostProcessingController singleton { get; private set; }
+    public static PostProcessingController Instance { get; private set; }
     [SerializeField] private GameObject playerCamera;
     private Vignette _vignette;
     private ChromaticAberration _chromaticAberration;
@@ -17,7 +17,7 @@ public class PostProcessingController : MonoBehaviour
 
     private void Awake()
     {
-        singleton = this;
+        Instance = this;
     }
 
     private void Start()

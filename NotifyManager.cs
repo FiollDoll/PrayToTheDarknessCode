@@ -5,13 +5,13 @@ using TMPro;
 
 public class NotifyManager : MonoBehaviour
 {
-    public static NotifyManager singleton { get; private set; }
+    public static NotifyManager Instance { get; private set; }
     [SerializeField] private GameObject notifyContainer;
     [SerializeField] private GameObject notifyPrefab;
 
     private void Awake()
     {
-        singleton = this;
+        Instance = this;
     }
 
     public void StartNewItemNotify(string itemName) =>

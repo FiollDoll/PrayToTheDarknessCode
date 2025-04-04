@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 public class QuestsSystem : MonoBehaviour
 {
-    public static QuestsSystem singleton { get; private set; }
+    public static QuestsSystem Instance { get; private set; }
 
     [Header("Player quests")] public Quest totalQuest;
     public List<Quest> activeQuests = new List<Quest>();
@@ -26,7 +26,7 @@ public class QuestsSystem : MonoBehaviour
 
     private void Awake()
     {
-        singleton = this;
+        Instance = this;
     }
 
     private void Start()
@@ -71,7 +71,7 @@ public class QuestsSystem : MonoBehaviour
     {
         totalQuest = GetQuest(questName);
         UpdateQuestUI();
-        //Notebook.singleton.ChoicePage(1);
+        //Notebook.Instance.ChoicePage(1);
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public class QuestsSystem : MonoBehaviour
         if (totalQuest.steps[totalQuest.totalStep].delayNextStep != 0)
             StartCoroutine(StartStepDelay(totalQuest.steps[totalQuest.totalStep].delayNextStep));
         if (totalQuest.steps[totalQuest.totalStep].startDialog != "")
-            DialogsManager.singleton.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
+            DialogsManager.Instance.ActivateDialog(totalQuest.steps[totalQuest.totalStep].startDialog);
     }
 
     private void UpdateQuestUI()

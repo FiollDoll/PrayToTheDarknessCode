@@ -10,7 +10,7 @@ using Cinemachine;
 
 public class CutsceneManager : MonoBehaviour
 {
-    public static CutsceneManager singleton { get; private set; }
+    public static CutsceneManager Instance { get; private set; }
     public Cutscene totalCutscene = new Cutscene();
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private Cutscene[] allCutscene = new Cutscene[0];
@@ -21,7 +21,7 @@ public class CutsceneManager : MonoBehaviour
 
     private void Awake()
     {
-        singleton = this;
+        Instance = this;
     }
 
     private void Start()
@@ -56,15 +56,15 @@ public class CutsceneManager : MonoBehaviour
             StartViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
 
         if (totalCutsceneStep.closeDialogMenu)
-            DialogsManager.singleton.DialogCLose();
+            DialogsManager.Instance.DialogCLose();
 
         totalCutsceneStep.fastChanges.ActivateChanges();
 
         if (totalCutsceneStep.newVolumeProfile)
-            PostProcessingController.singleton.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
+            PostProcessingController.Instance.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
 
         if (totalCutsceneStep.editCameraSize != 0)
-            Main.singleton.CameraZoom(totalCutsceneStep.editCameraSize, true);
+            Main.Instance.CameraZoom(totalCutsceneStep.editCameraSize, true);
 
         foreach (Cutscene.ObjectState objState in totalCutsceneStep.objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
@@ -76,8 +76,8 @@ public class CutsceneManager : MonoBehaviour
             animations.animator.SetBool(animations.boolName, animations.boolStatus);
 
         foreach (Cutscene.LocationsLock locationsLock in totalCutsceneStep.locksLocations)
-            ManageLocation.singleton.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
-        Main.singleton.lockAnyMenu = totalCutsceneStep.lockAllMenu;
+            ManageLocation.Instance.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
+        Main.Instance.lockAnyMenu = totalCutsceneStep.lockAllMenu;
 
         foreach (Cutscene.NpcMoveToPlayer npcMoveToPlayer in totalCutsceneStep.npcMoveToPlayer)
             npcMoveToPlayer.npc.moveToPlayer = npcMoveToPlayer.move;

@@ -5,7 +5,7 @@ using Cinemachine;
 
 public class Player : MonoBehaviour, IHumanable
 {
-    public static Player singleton { get; private set; }
+    public static Player Instance { get; private set; }
     private static readonly int s_Walk = Animator.StringToHash("walk");
     public Npc npcEntity { get; set; }
     public string selectedStyle { get; set; } = "standard";
@@ -26,7 +26,7 @@ public class Player : MonoBehaviour, IHumanable
 
     private void Awake()
     {
-        singleton = this;
+        Instance = this;
     }
 
     private void Start()
@@ -44,7 +44,7 @@ public class Player : MonoBehaviour, IHumanable
     }
 
     public void MoveTo(Transform target) =>
-        Main.singleton.MoveTo(target, moveSpeed, transform, _sr, _animator);
+        Main.Instance.MoveTo(target, moveSpeed, transform, _sr, _animator);
 
     private void FixedUpdate()
     {
@@ -74,8 +74,8 @@ public class Player : MonoBehaviour, IHumanable
             _enteredCollider = newColliders[0];
             if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
             {
-                Interactions.singleton.EnteredInteraction = interactable;
-                if (Interactions.singleton.CanActivateInteraction(interactable) && interactable.autoUse)
+                Interactions.Instance.EnteredInteraction = interactable;
+                if (Interactions.Instance.CanActivateInteraction(interactable) && interactable.autoUse)
                     interactable.DoInteraction();
             }
         }

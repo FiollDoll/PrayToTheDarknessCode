@@ -12,7 +12,7 @@ public class Paralax : MonoBehaviour
 
     private void Update()
     {
-        if (ManageLocation.singleton.totalLocation.gameName != locationName && locationName != "") return;
+        if (ManageLocation.Instance.totalLocation.gameName != locationName && locationName != "") return;
         float distX = (cam.transform.position.x - _startPosX) * (1 - parallax);
         transform.localPosition = new Vector3(_startPosX + distX, transform.localPosition.y, transform.localPosition.z);
     }

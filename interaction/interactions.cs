@@ -4,7 +4,7 @@ using TMPro;
 
 public class Interactions : MonoBehaviour
 {
-    public static Interactions singleton { get; private set; }
+    public static Interactions Instance { get; private set; }
     public IInteractable EnteredInteraction, SelectedInteraction;
     [Header("Настройки")] [SerializeField] private LayerMask layerMaskInteract;
 
@@ -16,7 +16,7 @@ public class Interactions : MonoBehaviour
 
     private void Awake()
     {
-        singleton = this;
+        Instance = this;
     }
 
     /// <summary>
@@ -30,7 +30,7 @@ public class Interactions : MonoBehaviour
         if (mouseInteraction)
         {
             // Ограничение по области
-            float pos = Player.singleton.gameObject.transform.position.x -
+            float pos = Player.Instance.gameObject.transform.position.x -
                         _selectedCollider.collider.transform.position.x;
 
             if (pos is > 6f or < -6f)
@@ -38,17 +38,17 @@ public class Interactions : MonoBehaviour
         }
 
         // Общая для всех проверка: можно ли использовать?
-        if (QuestsSystem.singleton.totalQuest != null)
+        if (QuestsSystem.Instance.totalQuest != null)
         {
             // Проверка: пора по квесту?
-            if (interactable.nameQuestRequired != QuestsSystem.singleton.totalQuest.nameInGame)
+            if (interactable.nameQuestRequired != QuestsSystem.Instance.totalQuest.nameInGame)
             {
                 if (interactable.nameQuestRequired != "")
                     return false;
             }
 
             // Проверка: пора по стадии квеста?
-            if (interactable.stageInter != QuestsSystem.singleton.totalQuest.totalStep &&
+            if (interactable.stageInter != QuestsSystem.Instance.totalQuest.totalStep &&
                 interactable.nameQuestRequired != "")
                 return false;
         }
@@ -60,11 +60,11 @@ public class Interactions : MonoBehaviour
     {
         EnteredInteraction = null;
         SelectedInteraction = null;
-        if (!Main.singleton.CanMenuOpen()) // Т.е открыто какое-либо меню
+        if (!Main.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
             return;
         MeshRenderer selectedColliderRenderer = _selectedCollider.collider?.GetComponent<MeshRenderer>();
         if (selectedColliderRenderer && selectedColliderRenderer.materials.Length > 1)
-            Main.singleton.RemoveMaterial(selectedColliderRenderer);
+            Main.Instance.RemoveMaterial(selectedColliderRenderer);
 
         // Взаимодействия по мыши
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f,
@@ -76,7 +76,7 @@ public class Interactions : MonoBehaviour
                 {
                     SelectedInteraction = interactable;
                     if (selectedColliderRenderer) // Если 3D объект
-                        Main.singleton.AddMaterial(selectedColliderRenderer);
+                        Main.Instance.AddMaterial(selectedColliderRenderer);
                 }
             }
         }
@@ -84,7 +84,7 @@ public class Interactions : MonoBehaviour
 
     private void Update()
     {
-        if (!Main.singleton.CanMenuOpen()) // Т.е открыто какое-либо меню
+        if (!Main.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
             return;
         Debug.DrawLine(Input.mousePosition, _selectedCollider.point, Color.green);
 

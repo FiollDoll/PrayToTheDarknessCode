@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
 public class Dialog
 {
     [Header("Main")] public string nameDialog;
@@ -51,7 +50,6 @@ public class Dialog
     }
 }
 
-[System.Serializable]
 public class StepBranch
 {
     public string branchName;
@@ -68,7 +66,6 @@ public class StepBranch
     }
 }
 
-[System.Serializable]
 public class DialogStep
 {
     [Header("Main")] public Npc totalNpc;

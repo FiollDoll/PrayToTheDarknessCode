@@ -23,10 +23,10 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
     public void DoInteraction()
     {
         if (dialogStart != "")
-            DialogsManager.singleton.ActivateDialog(dialogStart);
+            DialogsManager.Instance.ActivateDialog(dialogStart);
 
         if (playerVisual != "")
-            Player.singleton.ChangeStyle(playerVisual);
+            Player.Instance.ChangeStyle(playerVisual);
 
         if (destroyAfterInter)
             Destroy(gameObject);

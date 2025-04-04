@@ -44,7 +44,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     {
         if (!playerMenu.activeSelf)
         {
-            if (Main.singleton.CanMenuOpen())
+            if (Main.Instance.CanMenuOpen())
             {
                 playerMenu.gameObject.SetActive(true);
                 // TODO: сделать выбор по клавишам(какую стр открыть)
@@ -54,7 +54,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         else
             playerMenu.gameObject.SetActive(false);
 
-        Player.singleton.canMove = !playerMenu.activeSelf;
+        Player.Instance.canMove = !playerMenu.activeSelf;
     }
 
     public void ChoicePagePlayerMenu(int page)
@@ -63,7 +63,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         pageNote.gameObject.SetActive(false);
         pageQuest.gameObject.SetActive(false);
         pageNpc.gameObject.SetActive(false);
-        InventoryManager.singleton.ManageInventoryPanel(false);
+        InventoryManager.Instance.ManageInventoryPanel(false);
         foreach (RectTransform rt in buttonsPlayerMenuTransform)
             rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 50f);
 
@@ -76,22 +76,22 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         switch (page)
         {
             case 0: // Инвентарь
-                InventoryManager.singleton.ManageInventoryPanel(true);
+                InventoryManager.Instance.ManageInventoryPanel(true);
                 break;
             case 1: // Квесты
                 pageQuest.gameObject.SetActive(true);
                 foreach (Transform child in questsContainer.transform)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < QuestsSystem.singleton.activeQuests.Count; i++)
+                for (int i = 0; i < QuestsSystem.Instance.activeQuests.Count; i++)
                 {
                     var obj = Instantiate(buttonNotePrefab, questsContainer.transform).GetComponent<PrefabInfo>();
-                    if (QuestsSystem.singleton.activeQuests[i] == QuestsSystem.singleton.totalQuest)
-                        obj.prefabNameTextMeshProUGUI.text = "-> " + QuestsSystem.singleton.activeQuests[i].name.text;
+                    if (QuestsSystem.Instance.activeQuests[i] == QuestsSystem.Instance.totalQuest)
+                        obj.prefabNameTextMeshProUGUI.text = "-> " + QuestsSystem.Instance.activeQuests[i].name.text;
                     else
-                        obj.prefabNameTextMeshProUGUI.text = QuestsSystem.singleton.activeQuests[i].name.text;
+                        obj.prefabNameTextMeshProUGUI.text = QuestsSystem.Instance.activeQuests[i].name.text;
                     int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { Notebook.singleton.ReadNote(number, 1); });
+                    obj.prefabButton.onClick.AddListener(delegate { Notebook.Instance.ReadNote(number, 1); });
                 }
 
                 _questsAdaptiveScrollView.UpdateContentSize();
@@ -101,15 +101,15 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                 foreach (Transform child in notesContainer.transform)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < Notebook.singleton.playerNotes.Count; i++)
+                for (int i = 0; i < Notebook.Instance.playerNotes.Count; i++)
                 {
                     var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
-                    if (Notebook.singleton.playerNotes[i].read)
-                        obj.prefabNameTextMeshProUGUI.text = Notebook.singleton.playerNotes[i].name.text;
+                    if (Notebook.Instance.playerNotes[i].read)
+                        obj.prefabNameTextMeshProUGUI.text = Notebook.Instance.playerNotes[i].name.text;
                     else
-                        obj.prefabNameTextMeshProUGUI.text = "(*)" + Notebook.singleton.playerNotes[i].name;
+                        obj.prefabNameTextMeshProUGUI.text = "(*)" + Notebook.Instance.playerNotes[i].name;
                     int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { Notebook.singleton.ReadNote(number); });
+                    obj.prefabButton.onClick.AddListener(delegate { Notebook.Instance.ReadNote(number); });
                 }
 
                 _notesAdaptiveScrollView.UpdateContentSize();
@@ -119,14 +119,14 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                 foreach (Transform child in npcContainer.transform)
                     Destroy(child.gameObject);
 
-                for (int i = 0; i < Player.singleton.familiarNpc.Count; i++)
+                for (int i = 0; i < Player.Instance.familiarNpc.Count; i++)
                 {
                     var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
-                    Npc selectedNpc = Player.singleton.familiarNpc[i];
+                    Npc selectedNpc = Player.Instance.familiarNpc[i];
                     obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
                     obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
                     int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { Notebook.singleton.ReadNote(number, 2); });
+                    obj.prefabButton.onClick.AddListener(delegate { Notebook.Instance.ReadNote(number, 2); });
                 }
 
                 _npcAdaptiveScrollView.UpdateContentSize();

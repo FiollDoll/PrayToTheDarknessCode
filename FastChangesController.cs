@@ -29,30 +29,30 @@ public class FastChangesController
 
     public void ActivateChanges()
     {
-        Player.singleton.changeSpeed = editSpeed;
+        Player.Instance.changeSpeed = editSpeed;
         if (changeVisualPlayer != "")
-            Player.singleton.ChangeStyle(changeVisualPlayer);
+            Player.Instance.ChangeStyle(changeVisualPlayer);
         if (moveToLocation != "")
-            ManageLocation.singleton.ActivateLocation(moveToLocation,
+            ManageLocation.Instance.ActivateLocation(moveToLocation,
                 moveToLocationSpawn, toLocationWithFade);
 
         if (activateDialog != "")
-            DialogsManager.singleton.ActivateDialog(activateDialog);
+            DialogsManager.Instance.ActivateDialog(activateDialog);
 
         if (questStepNext)
-            QuestsSystem.singleton.NextStep();
+            QuestsSystem.Instance.NextStep();
 
         foreach (string quest in addQuests)
-            QuestsSystem.singleton.ActivateQuest(quest, true);
+            QuestsSystem.Instance.ActivateQuest(quest, true);
         foreach (string item in addItem)
-            InventoryManager.singleton.AddItem(item);
+            InventoryManager.Instance.AddItem(item);
         foreach (string note in addNote)
-            Notebook.singleton.AddNote(note);
+            Notebook.Instance.AddNote(note);
         foreach (ChangeRelationship changer in changeRelationships)
         {
             changer.npc.relationshipWithPlayer += changer.valueChange;
             if (changer.valueChange != 0)
-                NotifyManager.singleton.StartNewRelationshipNotify(changer.npc.nameOfNpc.text,
+                NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.text,
                     changer.valueChange);
         }
     }

@@ -20,11 +20,11 @@ public class ItemInteraction : MonoBehaviour, IInteractable
     public void DoInteraction()
     {
         if (darkAfterUse)
-            Main.singleton.ActivateNoVision(1f);
+            Main.Instance.ActivateNoVision(1f);
         if (nextQuestStep)
-            QuestsSystem.singleton.NextStep();
+            QuestsSystem.Instance.NextStep();
 
-        InventoryManager.singleton.AddItem(gameObject.name);
+        InventoryManager.Instance.AddItem(gameObject.name);
         Destroy(gameObject);
     }
 }

@@ -18,6 +18,6 @@ public class DialogInteraction : MonoBehaviour, IInteractable
 
     public void DoInteraction()
     {
-        DialogsManager.singleton.ActivateDialog(gameObject.name);
+        DialogsManager.Instance.ActivateDialog(gameObject.name);
     }
 }

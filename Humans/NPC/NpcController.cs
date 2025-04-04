@@ -34,14 +34,14 @@ public class NpcController : MonoBehaviour, IHumanable
         _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
 
-    public void MoveTo(Transform target) => Main.singleton.MoveTo(target, speed, transform, _sr, _animator);
+    public void MoveTo(Transform target) => Main.Instance.MoveTo(target, speed, transform, _sr, _animator);
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         switch (other.gameObject.name)
         {
             case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
-                transform.position = ManageLocation.singleton.GetLocation(locationOfPointName).spawns[0].spawn.position;
+                transform.position = ManageLocation.Instance.GetLocation(locationOfPointName).spawns[0].spawn.position;
                 totalLocation = locationOfPointName;
                 break;
             case "Player":
@@ -72,7 +72,7 @@ public class NpcController : MonoBehaviour, IHumanable
             {
                 MoveTo(locationOfPointName == totalLocation
                     ? point
-                    : ManageLocation.singleton.GetLocation(totalLocation).transformOfStairs);
+                    : ManageLocation.Instance.GetLocation(totalLocation).transformOfStairs);
             }
             else
                 _animator?.SetBool("walk", false);

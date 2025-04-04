@@ -66,11 +66,11 @@ public class Inventory
     public void UseItem(int slot)
     {
         if (playerItems[slot].activateNameDialog != "")
-            DialogsManager.singleton.ActivateDialog(playerItems[slot].activateNameDialog);
+            DialogsManager.Instance.ActivateDialog(playerItems[slot].activateNameDialog);
         if (playerItems[slot].questName != "" && playerItems[slot].questNextStep)
         {
-            if (QuestsSystem.singleton.GetQuest(playerItems[slot].questName) == QuestsSystem.singleton.totalQuest)
-                QuestsSystem.singleton.NextStep();
+            if (QuestsSystem.Instance.GetQuest(playerItems[slot].questName) == QuestsSystem.Instance.totalQuest)
+                QuestsSystem.Instance.NextStep();
         }
 
         if (playerItems[slot].removeAfterUse)
