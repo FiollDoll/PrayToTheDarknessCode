@@ -1,14 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using System.IO;
 
 public class DialogsLoader : MonoBehaviour
 {
     public static DialogsLoader Instance { get; private set; }
-    
 
     private void Awake() => Instance = this;
 
-    public Dialog[] LoadDialogs()
+    public List<Dialog> LoadDialogs()
     {
         TextAsset json =  Resources.Load<TextAsset>("dialogues");
         Dialog dialog = new Dialog();
@@ -18,6 +18,6 @@ public class DialogsLoader : MonoBehaviour
     [System.Serializable]
     private class DialogCollection
     {
-        public Dialog[] dialogs;
+        public List<Dialog> dialogs;
     }
 }

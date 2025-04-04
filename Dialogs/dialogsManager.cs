@@ -11,7 +11,8 @@ using Random = UnityEngine.Random;
 public class DialogsManager : MonoBehaviour, IMenuable
 {
     public static DialogsManager Instance { get; private set; }
-    [Header("All dialogs")] public Dialog[] _dialogs = new Dialog[0];
+
+    // Все диалоги
     private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
     [Header("Current dialog")] public int totalStep;
@@ -46,8 +47,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     private void Start()
     {
-        _dialogs = DialogsLoader.Instance.LoadDialogs();
-        foreach (Dialog dialog in _dialogs)
+        foreach (Dialog dialog in DialogsLoader.Instance.LoadDialogs())
         {
             _dialogsDict.TryAdd(dialog.nameDialog, dialog);
             dialog.UpdateDialogDicts();
@@ -142,7 +142,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         Main.Instance.CameraZoom(-10f, true);
         TextManager.EndCursedText(textDialogMain);
 
-        _activatedDialog.fastChanges.ActivateChanges();
+        //_activatedDialog.fastChanges.ActivateChanges();
         StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog.mainPanelStartDelay));
 
         if (!CanChoice())
@@ -334,7 +334,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         Player.Instance.virtualCamera.Follow =
             _selectedStep.cameraTarget ? _selectedStep.cameraTarget : Player.Instance.transform;
 
-        _selectedStep.fastChanges.ActivateChanges();
+        //_selectedStep.fastChanges.ActivateChanges();
 
         CutsceneManager.Instance.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
     }

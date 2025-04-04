@@ -49,6 +49,17 @@ public class Main : MonoBehaviour
         _allGameMenu = FindObjectsOfType<MonoBehaviour>().OfType<IMenuable>().ToList();
     }
 
+    public Npc GetNpcByName(string name)
+    {
+        foreach (Npc npc in allNpc)
+        {
+            if (npc.nameOfNpc.text == name)
+                return npc;
+        }
+
+        return null;
+    }
+    
     /// <summary>
     /// Насильное пермещение кого-либо или чего-либо
     /// </summary>

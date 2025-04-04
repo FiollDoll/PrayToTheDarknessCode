@@ -25,7 +25,7 @@ public class Dialog
     public bool canMove, canInter;
     public float mainPanelStartDelay; // Задержка перед появлением
 
-    [Header("Actions after end")] public FastChangesController fastChanges;
+    [Header("Actions after end")] public string fastChangesName;
     public bool darkAfterEnd;
     public Transform posAfterEnd;
     public int activateCutsceneStepAfterEnd = -1;
@@ -68,7 +68,7 @@ public class StepBranch
 
 public class DialogStep
 {
-    [Header("Main")] public Npc totalNpc;
+    [Header("Main")] public static string totalNpcName;
 
     public LanguageSetting dialogText;
     public NpcIcon.IconMood iconMoodSelected;
@@ -78,9 +78,10 @@ public class DialogStep
     public bool cursedText;
     public float delayAfterNext;
     public int activateCutsceneStep = -1;
-    public FastChangesController fastChanges;
+    public string fastChangesName;
 
-    public Sprite icon => totalNpc.GetStyleIcon(iconMoodSelected);
+    public Npc totalNpc = Main.Instance.GetNpcByName(totalNpcName);
+    public Sprite icon => totalNpc?.GetStyleIcon(iconMoodSelected);
 }
 
 [System.Serializable]
