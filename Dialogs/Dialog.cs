@@ -1,41 +1,46 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Dialog
 {
-    [Header("Main")] public string nameDialog;
-    public bool read;
-
-    public DialogStyle styleOfDialog;
+    [Header("Main")] public string NameDialog;
+    public bool Read;
+    public DialogStyle StyleOfDialog;
 
     public enum DialogStyle
     {
         Main,
         SubMain,
         BigPicture
-    };
+    }
 
-    [Header("Branches")] public List<StepBranch> stepBranches = new List<StepBranch>();
+    public List<StepBranch> StepBranches = new List<StepBranch>();
 
     private Dictionary<string, StepBranch> _stepBranchesDict = new Dictionary<string, StepBranch>();
 
-    [Header("Preference")] public BigPicture[] bigPicturesPresets = new BigPicture[0];
+    [Header("Preference")] public BigPicture[] BigPicturesPresets = new BigPicture[0];
     private Dictionary<string, BigPicture> _bigPicturePresetsDict = new Dictionary<string, BigPicture>();
-    public bool moreRead;
-    public bool canMove, canInter;
-    public float mainPanelStartDelay; // Задержка перед появлением
+    public bool MoreRead;
+    public bool CanMove;
+    public bool CanInter;
+    public float MainPanelStartDelay;
 
-    [Header("Actions after end")] public string fastChangesName;
-    public bool darkAfterEnd;
-    public Transform posAfterEnd;
-    public int activateCutsceneStepAfterEnd = -1;
+    [Header("Actions after end")] public string FastChangesName;
+    public bool DarkAfterEnd;
+    public int ActivateCutsceneStepAfterEnd = -1;
+    public Transform PosAfterEnd;
 
+    public Dialog()
+    {
+    }
+    
     public void UpdateDialogDicts()
     {
-        foreach (StepBranch stepBranch in stepBranches)
-            _stepBranchesDict.TryAdd(stepBranch.branchName, stepBranch);
+        foreach (StepBranch stepBranch in StepBranches)
+            _stepBranchesDict.TryAdd(stepBranch.BranchName, stepBranch);
 
-        foreach (BigPicture bigPicture in bigPicturesPresets)
+        foreach (BigPicture bigPicture in BigPicturesPresets)
             _bigPicturePresetsDict.Add(bigPicture.bigPictureName, bigPicture);
     }
 
@@ -50,11 +55,12 @@ public class Dialog
     }
 }
 
+[System.Serializable]
 public class StepBranch
 {
-    public string branchName;
-    [Header("Main branch")] public DialogStep[] dialogSteps = new DialogStep[0];
-    [Header("After end of branch")] public DialogChoice[] choices = new DialogChoice[0];
+    public string BranchName;
+    public List<DialogStep> DialogSteps  = new List<DialogStep>();
+    public List<DialogChoice> Choices = new List<DialogChoice>();
 
     public StepBranch()
     {
@@ -62,26 +68,31 @@ public class StepBranch
 
     public StepBranch(string name)
     {
-        branchName = name;
+        BranchName = name;
     }
 }
 
+[System.Serializable]
 public class DialogStep
 {
-    [Header("Main")] public static string totalNpcName;
+    public string StepName;
+    public string TotalNpcName;
+    public LanguageSetting DialogText;
+    public string BigPictureName;
+    public bool CursedText;
+    public float DelayAfterNext;
+    public int ActivateCutsceneStep = -1;
+    public string FastChangesName;
+    public NpcIcon.IconMood IconMoodSelected;
+    public Transform CameraTarget;
+    public Npc totalNpc;
+    public Sprite icon;
 
-    public LanguageSetting dialogText;
-    public NpcIcon.IconMood iconMoodSelected;
-    public string bigPictureName;
-
-    [Header("Preference")] public Transform cameraTarget;
-    public bool cursedText;
-    public float delayAfterNext;
-    public int activateCutsceneStep = -1;
-    public string fastChangesName;
-
-    public Npc totalNpc = Main.Instance.GetNpcByName(totalNpcName);
-    public Sprite icon => totalNpc?.GetStyleIcon(iconMoodSelected);
+    public void UpdateStep()
+    {
+        totalNpc = Main.Instance.GetNpcByName(TotalNpcName);
+        icon = totalNpc?.GetStyleIcon(IconMoodSelected);
+    }
 }
 
 [System.Serializable]

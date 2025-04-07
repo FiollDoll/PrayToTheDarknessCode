@@ -30,7 +30,6 @@ public class Main : MonoBehaviour
 
     private void Start()
     {
-
         startCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
 
@@ -53,7 +52,7 @@ public class Main : MonoBehaviour
     {
         foreach (Npc npc in allNpc)
         {
-            if (npc.nameOfNpc.text == name)
+            if (npc.nameInWorld == name)
                 return npc;
         }
 

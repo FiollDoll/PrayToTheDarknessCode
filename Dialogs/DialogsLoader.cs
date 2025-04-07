@@ -10,14 +10,27 @@ public class DialogsLoader : MonoBehaviour
 
     public List<Dialog> LoadDialogs()
     {
-        TextAsset json =  Resources.Load<TextAsset>("dialogues");
-        Dialog dialog = new Dialog();
-        return JsonUtility.FromJson<DialogCollection>(json.text).dialogs;
+        TextAsset json = Resources.Load<TextAsset>("dialogues");
+        if (json == null)
+        {
+            Debug.LogError("JSON file not found!");
+            return new List<Dialog>();
+        }
+
+        DialogCollection dialogs = JsonUtility.FromJson<DialogCollection>(json.text);
+
+        if (dialogs == null || dialogs.Dialogs == null)
+        {
+            Debug.LogError("Failed to parse JSON!");
+            return new List<Dialog>();
+        }
+
+        return dialogs.Dialogs;
     }
-       
+
     [System.Serializable]
-    private class DialogCollection
+    public class DialogCollection
     {
-        public List<Dialog> dialogs;
+        public List<Dialog> Dialogs;
     }
 }

@@ -12,7 +12,7 @@ public class Eyes : MonoBehaviour
 
     private void Start()
     {
-        Target = GameObject.Find("Player").transform;
+        Target = GameObject.Find("Mark").transform;
         _initPos = transform.localPosition;
     }
 
