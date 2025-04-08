@@ -22,6 +22,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private BigPicture _selectedBigPicture;
 
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
+    [SerializeField] private Npc nothingNpc; // Костыль. Вырезать
 
     [Foldout("Scene Objects", true)] [SerializeField]
     private GameObject dialogMenu;
@@ -278,7 +279,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
             return false;
         }
 
-        _selectedStep.totalNpc.animator?.SetBool("talk", false);
+        if (_selectedStep.totalNpc.animator)
+            _selectedStep.totalNpc.animator?.SetBool("talk", false);
+        
         // Окончание обычного диалога
         if (!AddStep())
         {
@@ -326,7 +329,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
             break;
         }
 
-        _selectedStep.totalNpc.animator?.SetBool("talk", true);
+        if (_selectedStep.totalNpc.animator)
+            _selectedStep.totalNpc.animator.SetBool("talk", true);
 
         if (_selectedStep.CursedText)
             TextManager.SetCursedText(textDialogMain, Random.Range(5, 40));

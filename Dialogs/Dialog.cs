@@ -78,13 +78,13 @@ public class DialogStep
     public string StepName;
     public string TotalNpcName;
     public LanguageSetting DialogText;
-    public string BigPictureName;
+    public string BigPictureName; // Сделать
     public bool CursedText;
     public float DelayAfterNext;
-    public int ActivateCutsceneStep = -1;
-    public string FastChangesName;
+    public int ActivateCutsceneStep = -1; // Переделать
+    public string FastChangesName; // Сделать
     public NpcIcon.IconMood IconMoodSelected;
-    public Transform CameraTarget;
+    public Transform CameraTarget; // Сделать
     public Npc totalNpc;
     public Sprite icon;
 
