@@ -57,7 +57,7 @@ public class ManageLocation : MonoBehaviour
         _cinemachineConfiner.m_BoundingVolume = location.wallsForCamera;
         Player.Instance.canMove = false;
         Player.Instance.virtualCamera.m_Lens.OrthographicSize =
-            Main.Instance.startCameraSize + location.modifCamera;
+            CameraManager.Instance.startCameraSize + location.modifCamera;
 
 
         foreach (NpcController totalNpc in _npсs)
@@ -78,7 +78,7 @@ public class ManageLocation : MonoBehaviour
         totalLocation = GetLocation(locationName);
         if (withFade)
         {
-            Main.Instance.ActivateNoVision(1f, () => LocationSetup(totalLocation, spawn),
+            GameMenuManager.Instance.ActivateNoVision(1f, () => LocationSetup(totalLocation, spawn),
                 () => { Player.Instance.canMove = true; });
         }
         else

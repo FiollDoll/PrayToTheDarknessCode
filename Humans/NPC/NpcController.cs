@@ -34,7 +34,7 @@ public class NpcController : MonoBehaviour, IHumanable
         _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
 
-    public void MoveTo(Transform target) => Main.Instance.MoveTo(target, speed, transform, _sr, _animator);
+    public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, _sr, _animator);
 
     private void OnTriggerEnter2D(Collider2D other)
     {

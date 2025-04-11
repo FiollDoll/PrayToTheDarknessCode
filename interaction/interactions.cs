@@ -7,10 +7,11 @@ public class Interactions : MonoBehaviour
     public static Interactions Instance { get; private set; }
     public IInteractable EnteredInteraction, SelectedInteraction;
     [Header("Настройки")] [SerializeField] private LayerMask layerMaskInteract;
-
     public bool lockInter;
     [SerializeField] private TextMeshProUGUI interLabelText;
     public GameObject floorChangeMenu;
+    [SerializeField] private Material materialOfSelected;
+
 
     private RaycastHit _selectedCollider;
 
@@ -56,15 +57,53 @@ public class Interactions : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Добавление ДОП материала на объект
+    /// </summary>
+    /// <param name="objRenderer"></param>
+    /// <returns></returns>
+    public void AddMaterial(MeshRenderer objRenderer)
+    {
+        Material[] newMaterials = new Material[objRenderer.materials.Length + 1];
+
+        for (int i = 0; i < objRenderer.materials.Length; i++)
+            newMaterials[i] = objRenderer.materials[i];
+
+        newMaterials[^1] = materialOfSelected;
+
+        objRenderer.materials = newMaterials;
+    }
+
+    /// <summary>
+    /// Удаление последнего материала
+    /// </summary>
+    /// <param name="objRenderer"></param>
+    public void RemoveMaterial(MeshRenderer objRenderer)
+    {
+        Material[] newMaterials = new Material[objRenderer.materials.Length - 1];
+
+        int index = 0;
+        for (int i = 0; i < objRenderer.materials.Length; i++)
+        {
+            if (objRenderer.materials[i] != materialOfSelected)
+            {
+                newMaterials[index] = objRenderer.materials[i];
+                index++;
+            }
+
+            objRenderer.materials = newMaterials;
+        }
+    }
+
     private void FixedUpdate()
     {
         EnteredInteraction = null;
         SelectedInteraction = null;
-        if (!Main.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
+        if (!GameMenuManager.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
             return;
         MeshRenderer selectedColliderRenderer = _selectedCollider.collider?.GetComponent<MeshRenderer>();
         if (selectedColliderRenderer && selectedColliderRenderer.materials.Length > 1)
-            Main.Instance.RemoveMaterial(selectedColliderRenderer);
+            RemoveMaterial(selectedColliderRenderer);
 
         // Взаимодействия по мыши
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _selectedCollider, 30f,
@@ -76,7 +115,7 @@ public class Interactions : MonoBehaviour
                 {
                     SelectedInteraction = interactable;
                     if (selectedColliderRenderer) // Если 3D объект
-                        Main.Instance.AddMaterial(selectedColliderRenderer);
+                        AddMaterial(selectedColliderRenderer);
                 }
             }
         }
@@ -84,7 +123,7 @@ public class Interactions : MonoBehaviour
 
     private void Update()
     {
-        if (!Main.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
+        if (!GameMenuManager.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
             return;
         Debug.DrawLine(Input.mousePosition, _selectedCollider.point, Color.green);
 

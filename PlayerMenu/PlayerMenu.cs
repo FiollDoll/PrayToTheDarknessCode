@@ -44,7 +44,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     {
         if (!playerMenu.activeSelf)
         {
-            if (Main.Instance.CanMenuOpen())
+            if (GameMenuManager.Instance.CanMenuOpen())
             {
                 playerMenu.gameObject.SetActive(true);
                 // TODO: сделать выбор по клавишам(какую стр открыть)

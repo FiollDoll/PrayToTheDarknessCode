@@ -99,7 +99,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
                     mainDialogMenu.gameObject.SetActive(true);
                     break;
                 case Dialog.DialogStyle.BigPicture:
-                    Main.Instance.ActivateNoVision(1.2f, () =>
+                    GameMenuManager.Instance.ActivateNoVision(1.2f, () =>
                     {
                         bigPicture.gameObject.SetActive(true);
                         mainDialogMenu.gameObject.SetActive(true);
@@ -141,7 +141,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         dialogMenu.gameObject.SetActive(true);
         ActivateDialogWindow();
-        Main.Instance.CameraZoom(-10f, true);
+        CameraManager.Instance.CameraZoom(-10f, true);
         TextManager.EndCursedText(textDialogMain);
 
         //_activatedDialog.fastChanges.ActivateChanges();
@@ -164,9 +164,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
             CutsceneManager.Instance.ActivateCutsceneStep(_activatedDialog.ActivateCutsceneStepAfterEnd);
 
         if (_activatedDialog.StyleOfDialog == Dialog.DialogStyle.BigPicture)
-            Main.Instance.ActivateNoVision(1.5f, DoActionToClose);
+            GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionToClose);
         else if (_activatedDialog.DarkAfterEnd)
-            Main.Instance.ActivateNoVision(1.2f, DoActionToClose);
+            GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionToClose);
         else
             DoActionToClose();
     }
@@ -180,7 +180,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
         {
-            Main.Instance.CameraZoom(0, true);
+            CameraManager.Instance.CameraZoom(0, true);
             dialogMenu.gameObject.SetActive(false);
             bigPicture.gameObject.SetActive(false);
             mainDialogMenu.gameObject.SetActive(false);
@@ -320,7 +320,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
             }
         }
 
-        foreach (Npc totalNpc in Main.Instance.allNpc)
+        foreach (Npc totalNpc in NpcManager.Instance.allNpc)
         {
             if (!totalNpc.canMeet) continue;
             if (totalNpc.nameOfNpc != _selectedStep.totalNpc.nameOfNpc) continue;

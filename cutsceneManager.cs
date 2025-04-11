@@ -64,7 +64,7 @@ public class CutsceneManager : MonoBehaviour
             PostProcessingController.Instance.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
 
         if (totalCutsceneStep.editCameraSize != 0)
-            Main.Instance.CameraZoom(totalCutsceneStep.editCameraSize, true);
+            CameraManager.Instance.CameraZoom(totalCutsceneStep.editCameraSize, true);
 
         foreach (Cutscene.ObjectState objState in totalCutsceneStep.objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
@@ -77,7 +77,7 @@ public class CutsceneManager : MonoBehaviour
 
         foreach (Cutscene.LocationsLock locationsLock in totalCutsceneStep.locksLocations)
             ManageLocation.Instance.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
-        Main.Instance.lockAnyMenu = totalCutsceneStep.lockAllMenu;
+        GameMenuManager.Instance.lockAnyMenu = totalCutsceneStep.lockAllMenu;
 
         foreach (Cutscene.NpcMoveToPlayer npcMoveToPlayer in totalCutsceneStep.npcMoveToPlayer)
             npcMoveToPlayer.npc.moveToPlayer = npcMoveToPlayer.move;

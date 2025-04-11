@@ -90,7 +90,7 @@ public class DialogStep
 
     public void UpdateStep()
     {
-        totalNpc = Main.Instance.GetNpcByName(TotalNpcName);
+        totalNpc = NpcManager.Instance.GetNpcByName(TotalNpcName);
         icon = totalNpc?.GetStyleIcon(IconMoodSelected);
     }
 }

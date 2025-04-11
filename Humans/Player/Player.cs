@@ -24,10 +24,8 @@ public class Player : MonoBehaviour, IHumanable
     private SpriteRenderer _sr;
     private Animator _animator;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private void Awake() => Instance = this;
+
 
     private void Start()
     {
@@ -44,7 +42,7 @@ public class Player : MonoBehaviour, IHumanable
     }
 
     public void MoveTo(Transform target) =>
-        Main.Instance.MoveTo(target, moveSpeed, transform, _sr, _animator);
+        NpcManager.Instance.MoveTo(target, moveSpeed, transform, _sr, _animator);
 
     private void FixedUpdate()
     {

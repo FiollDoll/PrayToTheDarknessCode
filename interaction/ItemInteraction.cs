@@ -20,7 +20,7 @@ public class ItemInteraction : MonoBehaviour, IInteractable
     public void DoInteraction()
     {
         if (darkAfterUse)
-            Main.Instance.ActivateNoVision(1f);
+            GameMenuManager.Instance.ActivateNoVision(1f);
         if (nextQuestStep)
             QuestsSystem.Instance.NextStep();
 
