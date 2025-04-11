@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 [System.Serializable]
 public class FastChangesController
@@ -32,8 +33,10 @@ public class FastChangesController
 
     [Header("-Locks")] public bool lockAllMenu;
 
-    [Header("-DoInScripts")] public bool questStepNext;
-    public float editSpeed;
+    [Header("-Player")] public float editPlayerSpeed;
+    public bool blockPlayerMove;
+    public bool blockPlayerMoveZ;
+    public VolumeProfile newVolumeProfile;
 
     [Header("-ChangeAnything")] public string[] addItem;
     public string[] addQuests;
@@ -44,13 +47,18 @@ public class FastChangesController
 
     public void ActivateChanges()
     {
-        Player.Instance.changeSpeed = editSpeed;
+        Player.Instance.changeSpeed = editPlayerSpeed;
+        Player.Instance.canMove = !blockPlayerMove;
+        Player.Instance.blockMoveZ = blockPlayerMoveZ;
         if (moveToLocation != "")
             ManageLocation.Instance.ActivateLocation(moveToLocation,
                 moveToLocationSpawn, toLocationWithFade);
 
         if (activateDialog != "")
             DialogsManager.Instance.ActivateDialog(activateDialog);
+        
+        if (newVolumeProfile != null)
+            CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);

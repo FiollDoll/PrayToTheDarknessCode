@@ -5,24 +5,26 @@ using UnityEngine.Rendering.Universal;
 
 public class PostProcessingController
 {
-    public GameObject playerCamera;
+    public Volume Volume;
+    public GameObject PlayerCamera;
     private Vignette _vignette;
     private ChromaticAberration _chromaticAberration;
     private FilmGrain _filmGrain;
     private Bloom _bloom;
     private ColorAdjustments _colorAdjustments;
-    private Volume _volume;
-
-    private void Start() => _volume = playerCamera.GetComponent<Volume>();
 
 
-    public void SetVolumeProfile(VolumeProfile volumeProfile) => _volume.profile = volumeProfile;
+    public PostProcessingController()
+    {
+    }
+
+    public void SetVolumeProfile(VolumeProfile volumeProfile) => Volume.profile = volumeProfile;
 
     // Методы для изменения параметров в активновном времени
 
     public IEnumerator SetVignetteSmoothness(float newValue, float speed)
     {
-        _volume.profile.TryGet(out _vignette);
+        Volume.profile.TryGet(out _vignette);
         float startValue = _vignette.smoothness.value;
 
         // Если меньше
@@ -48,7 +50,7 @@ public class PostProcessingController
 
     public IEnumerator SetChromaticAberration(float newValue, float speed)
     {
-        _volume.profile.TryGet(out _chromaticAberration);
+        Volume.profile.TryGet(out _chromaticAberration);
         float startValue = _chromaticAberration.intensity.value;
 
         // Если меньше
@@ -74,7 +76,7 @@ public class PostProcessingController
 
     public IEnumerator SetFilmGrain(float newValue, float speed, FilmGrainLookupParameter newType)
     {
-        _volume.profile.TryGet(out _filmGrain);
+        Volume.profile.TryGet(out _filmGrain);
         if (newType != null)
             _filmGrain.type = newType;
         float startValue = _filmGrain.intensity.value;
@@ -102,7 +104,7 @@ public class PostProcessingController
 
     public IEnumerator SetBloom(float newValue, float speed, Color newColor = default)
     {
-        _volume.profile.TryGet(out _bloom);
+        Volume.profile.TryGet(out _bloom);
         if (newColor != default)
             _bloom.tint.value = newColor;
         float startValue = _bloom.intensity.value;
@@ -130,7 +132,7 @@ public class PostProcessingController
 
     public IEnumerator SetContrastColorAdjusments(float newContrast, Color newColor, float speed)
     {
-        _volume.profile.TryGet(out _colorAdjustments);
+        Volume.profile.TryGet(out _colorAdjustments);
         if (newColor != default)
             _colorAdjustments.colorFilter.value = newColor;
 
@@ -159,7 +161,7 @@ public class PostProcessingController
 
     public IEnumerator SetSaturationColorAdjusments(float newSaturation, Color newColor, float speed)
     {
-        _volume.profile.TryGet(out _colorAdjustments);
+        Volume.profile.TryGet(out _colorAdjustments);
         if (newColor != default)
             _colorAdjustments.colorFilter.value = newColor;
 

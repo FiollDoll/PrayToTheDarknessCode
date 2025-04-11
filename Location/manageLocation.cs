@@ -33,9 +33,8 @@ public class ManageLocation : MonoBehaviour
             location.UpdateSpawnsDict();
         }
 
-        _player = GameObject.Find("Player");
+        _player = GameObject.Find("Mark");
         _cinemachineConfiner = Player.Instance.virtualCamera.GetComponent<CinemachineConfiner>();
-        totalLocation = GetLocation("mainMark");
         _npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
 
         LocationInteraction[] locationInteractions = FindObjectsByType<LocationInteraction>(FindObjectsSortMode.None);

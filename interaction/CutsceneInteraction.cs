@@ -7,6 +7,7 @@ public class CutsceneInteraction : MonoBehaviour, IInteractable
 
     [Header("Requires")] public bool AutoUse;
     public bool autoUse => AutoUse;
+    
 
     [Header("Preferences")]
     public string ItemNameToUse;

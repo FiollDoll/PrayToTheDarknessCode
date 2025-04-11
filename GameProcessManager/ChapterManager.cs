@@ -7,4 +7,21 @@ public class ChapterManager : MonoBehaviour
     private Chapter _selectedChapter;
     
     private void Awake() => Instance = this;
+
+    public Chapter GetChapterByName(string name)
+    {
+        foreach (Chapter chapter in allChapters)
+        {
+            if (chapter.gameName == name)
+                return chapter;
+        }
+
+        return null;
+    }
+    
+    public void LoadChapter(Chapter chapter)
+    {
+        _selectedChapter = chapter;
+        _selectedChapter.changesController.ActivateChanges();
+    }
 }

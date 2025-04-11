@@ -7,6 +7,7 @@ using UnityEngine.Rendering.Universal;
 public class CameraManager : MonoBehaviour
 {
     public static CameraManager Instance { get; private set; }
+    public Camera playerCamera;
     private PostProcessingController _postProcessingController;
     [HideInInspector] public float startCameraSize;
 
@@ -16,6 +17,9 @@ public class CameraManager : MonoBehaviour
     {
         startCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
+        _postProcessingController = new PostProcessingController();
+        _postProcessingController.PlayerCamera = playerCamera.gameObject;
+        _postProcessingController.Volume = playerCamera.GetComponent<Volume>();
     }
 
 

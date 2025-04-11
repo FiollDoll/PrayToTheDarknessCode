@@ -7,7 +7,7 @@ public class DayProcess : MonoBehaviour
     public int hour, minute;
     public bool stopTime;
 
-    private void Start() => MoveTime();
+    private void Start() => StartCoroutine(MoveTime());
 
     private IEnumerator MoveTime()
     {
@@ -19,5 +19,8 @@ public class DayProcess : MonoBehaviour
             hour++;
             minute = 0;
         }
+
+        // Пока так
+        ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
     }
 }

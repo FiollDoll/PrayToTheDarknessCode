@@ -11,6 +11,7 @@ public class Player : MonoBehaviour, IHumanable
     public string selectedStyle { get; set; } = "standard";
 
     [Header("Характеристики")] public bool canMove;
+    public bool blockMoveZ;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     [HideInInspector] public List<Npc> familiarNpc = new List<Npc>();
@@ -47,7 +48,9 @@ public class Player : MonoBehaviour, IHumanable
     private void FixedUpdate()
     {
         float horiz = Input.GetAxis("Horizontal");
-        float vert = Input.GetAxis("Vertical");
+        float vert = 0f;
+        if (!blockMoveZ)
+            vert = Input.GetAxis("Vertical");
 
         if (canMove)
         {

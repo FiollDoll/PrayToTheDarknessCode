@@ -14,7 +14,7 @@ public class SaveAndLoadManager : MonoBehaviour
 
     private void Start()
     {
-        SaveGame();
+        //LoadGame();
     }
 
     public void SaveGame()
