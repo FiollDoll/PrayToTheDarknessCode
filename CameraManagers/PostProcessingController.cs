@@ -1,13 +1,11 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class PostProcessingController : MonoBehaviour
+public class PostProcessingController
 {
-    public static PostProcessingController Instance { get; private set; }
-    [SerializeField] private GameObject playerCamera;
+    public GameObject playerCamera;
     private Vignette _vignette;
     private ChromaticAberration _chromaticAberration;
     private FilmGrain _filmGrain;
@@ -15,39 +13,14 @@ public class PostProcessingController : MonoBehaviour
     private ColorAdjustments _colorAdjustments;
     private Volume _volume;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private void Start() => _volume = playerCamera.GetComponent<Volume>();
 
-    private void Start()
-    {
-        _volume = playerCamera.GetComponent<Volume>();
-    }
 
     public void SetVolumeProfile(VolumeProfile volumeProfile) => _volume.profile = volumeProfile;
 
     // Методы для изменения параметров в активновном времени
 
-    public void SetNewVignetteSmoothness(float newValue, float speed = 1f) =>
-        StartCoroutine(SetVignetteSmoothness(newValue, speed));
-
-    public void SetNewChromaticAberration(float newIntensity, float speed = 1f) =>
-        StartCoroutine(SetChromaticAberration(newIntensity, speed));
-
-    public void SetNewFilmGrain(float newIntensity, float speed = 1f, FilmGrainLookupParameter newType = null) =>
-        StartCoroutine(SetFilmGrain(newIntensity, speed, newType));
-
-    public void SetNewBloom(float newIntensity, float speed = 1f, Color newColor = default) =>
-        StartCoroutine(SetBloom(newIntensity, speed, newColor));
-
-    public void SetNewContrastColorAdjusments(float speed = 1f, float newContrast = 0f, Color newColor = default) =>
-        StartCoroutine(SetContrastColorAdjusments(newContrast, newColor, speed));
-    
-    public void SetNewSaturationColorAdjusments(float speed = 1f, float newSaturation = 0f, Color newColor = default) =>
-        StartCoroutine(SetSaturationColorAdjusments(newSaturation, newColor, speed));
-    
-    private IEnumerator SetVignetteSmoothness(float newValue, float speed)
+    public IEnumerator SetVignetteSmoothness(float newValue, float speed)
     {
         _volume.profile.TryGet(out _vignette);
         float startValue = _vignette.smoothness.value;
@@ -72,8 +45,8 @@ public class PostProcessingController : MonoBehaviour
             }
         }
     }
-    
-    private IEnumerator SetChromaticAberration(float newValue, float speed)
+
+    public IEnumerator SetChromaticAberration(float newValue, float speed)
     {
         _volume.profile.TryGet(out _chromaticAberration);
         float startValue = _chromaticAberration.intensity.value;
@@ -98,8 +71,8 @@ public class PostProcessingController : MonoBehaviour
             }
         }
     }
-    
-    private IEnumerator SetFilmGrain(float newValue, float speed, FilmGrainLookupParameter newType)
+
+    public IEnumerator SetFilmGrain(float newValue, float speed, FilmGrainLookupParameter newType)
     {
         _volume.profile.TryGet(out _filmGrain);
         if (newType != null)
@@ -126,8 +99,8 @@ public class PostProcessingController : MonoBehaviour
             }
         }
     }
-    
-    private IEnumerator SetBloom(float newValue, float speed, Color newColor = default)
+
+    public IEnumerator SetBloom(float newValue, float speed, Color newColor = default)
     {
         _volume.profile.TryGet(out _bloom);
         if (newColor != default)
@@ -154,15 +127,15 @@ public class PostProcessingController : MonoBehaviour
             }
         }
     }
-    
-    private IEnumerator SetContrastColorAdjusments(float newContrast, Color newColor, float speed)
+
+    public IEnumerator SetContrastColorAdjusments(float newContrast, Color newColor, float speed)
     {
         _volume.profile.TryGet(out _colorAdjustments);
         if (newColor != default)
             _colorAdjustments.colorFilter.value = newColor;
-        
+
         float startContrast = _colorAdjustments.contrast.value;
-        
+
         // Если меньше
         if (newContrast < startContrast)
         {
@@ -183,15 +156,15 @@ public class PostProcessingController : MonoBehaviour
             }
         }
     }
-    
-    private IEnumerator SetSaturationColorAdjusments(float newSaturation, Color newColor, float speed)
+
+    public IEnumerator SetSaturationColorAdjusments(float newSaturation, Color newColor, float speed)
     {
         _volume.profile.TryGet(out _colorAdjustments);
         if (newColor != default)
             _colorAdjustments.colorFilter.value = newColor;
-        
+
         float startContrast = _colorAdjustments.saturation.value;
-        
+
         // Если меньше
         if (newSaturation < startContrast)
         {

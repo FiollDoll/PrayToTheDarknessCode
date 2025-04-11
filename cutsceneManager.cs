@@ -61,7 +61,7 @@ public class CutsceneManager : MonoBehaviour
         totalCutsceneStep.fastChanges.ActivateChanges();
 
         if (totalCutsceneStep.newVolumeProfile)
-            PostProcessingController.Instance.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
+            CameraManager.Instance.SetVolumeProfile(totalCutsceneStep.newVolumeProfile);
 
         if (totalCutsceneStep.editCameraSize != 0)
             CameraManager.Instance.CameraZoom(totalCutsceneStep.editCameraSize, true);

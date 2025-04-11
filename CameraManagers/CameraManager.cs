@@ -1,26 +1,30 @@
 ﻿using UnityEngine;
 using Cinemachine;
 using System.Collections;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
-public class CameraManager: MonoBehaviour
+public class CameraManager : MonoBehaviour
 {
     public static CameraManager Instance { get; private set; }
+    private PostProcessingController _postProcessingController;
     [HideInInspector] public float startCameraSize;
 
     private void Awake() => Instance = this;
-    
+
     private void Start()
     {
         startCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
     }
 
+
     public void CameraZoom(float changeSize, bool smoothly = false)
     {
         if (smoothly)
             StartCoroutine(SmoothlyZoom(changeSize));
         else
-            Player.Instance.virtualCamera.m_Lens.FieldOfView = CameraManager.Instance.startCameraSize + changeSize;
+            Player.Instance.virtualCamera.m_Lens.FieldOfView = startCameraSize + changeSize;
     }
 
     private IEnumerator SmoothlyZoom(float changeSize)
@@ -44,4 +48,24 @@ public class CameraManager: MonoBehaviour
         else
             StartCoroutine(SmoothlyZoom(startCameraSize - Player.Instance.virtualCamera.m_Lens.FieldOfView));
     }
+
+    public void SetVolumeProfile(VolumeProfile volume) => _postProcessingController.SetVolumeProfile(volume);
+
+    public void SetNewVignetteSmoothness(float newValue, float speed = 1f) =>
+        StartCoroutine(_postProcessingController.SetVignetteSmoothness(newValue, speed));
+
+    public void SetNewChromaticAberration(float newIntensity, float speed = 1f) =>
+        StartCoroutine(_postProcessingController.SetChromaticAberration(newIntensity, speed));
+
+    public void SetNewFilmGrain(float newIntensity, float speed = 1f, FilmGrainLookupParameter newType = null) =>
+        StartCoroutine(_postProcessingController.SetFilmGrain(newIntensity, speed, newType));
+
+    public void SetNewBloom(float newIntensity, float speed = 1f, Color newColor = default) =>
+        StartCoroutine(_postProcessingController.SetBloom(newIntensity, speed, newColor));
+
+    public void SetNewContrastColorAdjusments(float speed = 1f, float newContrast = 0f, Color newColor = default) =>
+        StartCoroutine(_postProcessingController.SetContrastColorAdjusments(newContrast, newColor, speed));
+
+    public void SetNewSaturationColorAdjusments(float speed = 1f, float newSaturation = 0f, Color newColor = default) =>
+        StartCoroutine(_postProcessingController.SetSaturationColorAdjusments(newSaturation, newColor, speed));
 }
