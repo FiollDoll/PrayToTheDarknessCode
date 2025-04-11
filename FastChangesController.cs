@@ -51,12 +51,7 @@ public class FastChangesController
 
         if (activateDialog != "")
             DialogsManager.Instance.ActivateDialog(activateDialog);
-
-        if (questStepNext)
-            QuestsSystem.Instance.NextStep();
-
-        foreach (string quest in addQuests)
-            QuestsSystem.Instance.ActivateQuest(quest, true);
+        
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);
         foreach (string note in addNote)

@@ -11,7 +11,6 @@ public class GameSave
     public float x, y, z;
     public string playerLocationName;
     public List<Note> playerNotes;
-    public List<Quest> playerQuests;
     public List<Item> playerItems;
     public List<Npc> familiarNpc;
 }

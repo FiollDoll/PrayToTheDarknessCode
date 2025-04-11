@@ -38,22 +38,6 @@ public class Interactions : MonoBehaviour
                 return false;
         }
 
-        // Общая для всех проверка: можно ли использовать?
-        if (QuestsSystem.Instance.totalQuest != null)
-        {
-            // Проверка: пора по квесту?
-            if (interactable.nameQuestRequired != QuestsSystem.Instance.totalQuest.nameInGame)
-            {
-                if (interactable.nameQuestRequired != "")
-                    return false;
-            }
-
-            // Проверка: пора по стадии квеста?
-            if (interactable.stageInter != QuestsSystem.Instance.totalQuest.totalStep &&
-                interactable.nameQuestRequired != "")
-                return false;
-        }
-
         return true;
     }
 

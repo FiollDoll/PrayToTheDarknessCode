@@ -67,11 +67,6 @@ public class Inventory
     {
         if (playerItems[slot].activateNameDialog != "")
             DialogsManager.Instance.ActivateDialog(playerItems[slot].activateNameDialog);
-        if (playerItems[slot].questName != "" && playerItems[slot].questNextStep)
-        {
-            if (QuestsSystem.Instance.GetQuest(playerItems[slot].questName) == QuestsSystem.Instance.totalQuest)
-                QuestsSystem.Instance.NextStep();
-        }
 
         if (playerItems[slot].removeAfterUse)
             playerItems.RemoveAt(slot);

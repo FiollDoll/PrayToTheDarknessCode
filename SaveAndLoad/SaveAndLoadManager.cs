@@ -28,7 +28,6 @@ public class SaveAndLoadManager : MonoBehaviour
         gameSave.playerNotes = Notebook.Instance.playerNotes;
         gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
         gameSave.familiarNpc = Player.Instance.familiarNpc;
-        gameSave.playerQuests = QuestsSystem.Instance.activeQuests;
         string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
         Debug.Log(json);
         // TODO: Сохранение
@@ -45,6 +44,5 @@ public class SaveAndLoadManager : MonoBehaviour
         Notebook.Instance.playerNotes = gameSave.playerNotes;
         InventoryManager.Instance.inventory.playerItems = gameSave.playerItems;
         Player.Instance.familiarNpc = gameSave.familiarNpc;
-        QuestsSystem.Instance.activeQuests = gameSave.playerQuests;
     }
 }

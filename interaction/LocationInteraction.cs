@@ -8,16 +8,11 @@ public class LocationInteraction : MonoBehaviour, IInteractable
 
     [Header("Requires")] public bool AutoUse;
     public bool autoUse => AutoUse;
-    public string NameQuestRequired;
-    public string nameQuestRequired => NameQuestRequired;
-    public int StageInter;
-    public int stageInter => StageInter;
 
     [Header("Preferences")] 
     public string locationName;
     public string spawnName;
     public bool destroyAfterInter;
-    public bool nextQuestStep;
     public string itemNameToUse;
     public string itemNameUse => itemNameToUse;
 

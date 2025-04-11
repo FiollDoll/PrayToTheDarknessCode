@@ -20,7 +20,7 @@ public class Notebook : MonoBehaviour
     private GameObject buttonNpc;
 
     [SerializeField] private GameObject notebookMenu;
-    [SerializeField] private GameObject pageReadMenu, pageReadNoteOrQuest, pageReadHuman;
+    [SerializeField] private GameObject pageReadMenu, pageReadNote, pageReadHuman;
     [SerializeField] private TextMeshProUGUI headerMain, noteMain;
     [SerializeField] private TextMeshProUGUI headerHuman, noteHuman, relationshipTextHuman;
     [SerializeField] private Slider sliderHuman;
@@ -64,7 +64,7 @@ public class Notebook : MonoBehaviour
         {
             case 0:
             {
-                pageReadNoteOrQuest.gameObject.SetActive(true);
+                pageReadNote.gameObject.SetActive(true);
                 headerMain.text = playerNotes[num].name.text;
                 noteMain.text = playerNotes[num].description.text;
                 if (!playerNotes[num].read)
@@ -72,26 +72,6 @@ public class Notebook : MonoBehaviour
                 break;
             }
             case 1:
-            {
-                pageReadNoteOrQuest.gameObject.SetActive(true);
-                Quest selectedQuest = QuestsSystem.Instance.activeQuests[num];
-                headerMain.text = selectedQuest.name.text;
-                noteMain.text = selectedQuest.description.text;
-                if (selectedQuest.steps[selectedQuest.totalStep].name.text != "")
-                    noteMain.text += "\n\n -<b>" + selectedQuest.steps[selectedQuest.totalStep].name + "</b>\n" +
-                                     selectedQuest.steps[selectedQuest.totalStep].description;
-                if (selectedQuest != QuestsSystem.Instance.totalQuest)
-                {
-                    //buttonChoiceActiveQuest.gameObject.SetActive(true);
-                    //buttonChoiceActiveQuest.GetComponent<Button>().onClick.AddListener(delegate
-                    //{
-                    //QuestsSystem.Instance.ChoiceActiveQuest(selectedQuest.nameInGame);
-                    //});
-                }
-
-                break;
-            }
-            case 2:
                 Npc selectedNpc = Player.Instance.familiarNpc[num];
                 pageReadHuman.gameObject.SetActive(true);
                 headerHuman.text = selectedNpc.nameOfNpc.text;
@@ -108,8 +88,8 @@ public class Notebook : MonoBehaviour
     public void CloseReadMenu()
     {
         pageReadHuman.gameObject.SetActive(false);
-        pageReadNoteOrQuest.gameObject.SetActive(false);
-        pageReadNoteOrQuest.gameObject.SetActive(false);
+        pageReadNote.gameObject.SetActive(false);
+        pageReadNote.gameObject.SetActive(false);
         pageReadMenu.gameObject.SetActive(false);
     }
 }

@@ -90,17 +90,7 @@ public class InventoryManager : MonoBehaviour
         buttonItemActivate.gameObject.SetActive(true);
         if (selectedItem.canUse && (selectedItem.useInInventory || selectedItem.useInCollider))
         {
-            if (selectedItem.useInInventory)
-            {
-                if (selectedItem.questName != "")
-                {
-                    if (selectedItem.questName != QuestsSystem.Instance.totalQuest.nameInGame
-                        || (QuestsSystem.Instance.totalQuest.totalStep != selectedItem.questStage &&
-                            selectedItem.questStage > 0))
-                        buttonItemActivate.gameObject.SetActive(false);
-                }
-            }
-            else if (selectedItem.useInCollider) // Только для enteredColliders
+            if (selectedItem.useInCollider) // Только для enteredColliders
             {
                 if (Interactions.Instance.EnteredInteraction == null ||
                     (Interactions.Instance.EnteredInteraction != null &&

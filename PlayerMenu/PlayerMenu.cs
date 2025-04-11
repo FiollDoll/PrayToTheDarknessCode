@@ -78,25 +78,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
             case 0: // Инвентарь
                 InventoryManager.Instance.ManageInventoryPanel(true);
                 break;
-            case 1: // Квесты
-                pageQuest.gameObject.SetActive(true);
-                foreach (Transform child in questsContainer.transform)
-                    Destroy(child.gameObject);
-
-                for (int i = 0; i < QuestsSystem.Instance.activeQuests.Count; i++)
-                {
-                    var obj = Instantiate(buttonNotePrefab, questsContainer.transform).GetComponent<PrefabInfo>();
-                    if (QuestsSystem.Instance.activeQuests[i] == QuestsSystem.Instance.totalQuest)
-                        obj.prefabNameTextMeshProUGUI.text = "-> " + QuestsSystem.Instance.activeQuests[i].name.text;
-                    else
-                        obj.prefabNameTextMeshProUGUI.text = QuestsSystem.Instance.activeQuests[i].name.text;
-                    int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { Notebook.Instance.ReadNote(number, 1); });
-                }
-
-                _questsAdaptiveScrollView.UpdateContentSize();
-                break;
-            case 2: // Записки
+            case 1: // Записки
                 pageNote.gameObject.SetActive(true);
                 foreach (Transform child in notesContainer.transform)
                     Destroy(child.gameObject);
@@ -114,7 +96,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
                 _notesAdaptiveScrollView.UpdateContentSize();
                 break;
-            case 3: // НПС
+            case 2: // НПС
                 pageNpc.gameObject.SetActive(true);
                 foreach (Transform child in npcContainer.transform)
                     Destroy(child.gameObject);

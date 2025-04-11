@@ -7,13 +7,8 @@ public class ItemInteraction : MonoBehaviour, IInteractable
 
     [Header("Requires")] public bool AutoUse;
     public bool autoUse => AutoUse;
-    public string NameQuestRequired;
-    public string nameQuestRequired => NameQuestRequired;
-    public int StageInter;
-    public int stageInter => StageInter;
 
     [Header("Preferences")] public bool darkAfterUse { get; set; }
-    public bool nextQuestStep { get; set; }
     public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
 
@@ -21,8 +16,6 @@ public class ItemInteraction : MonoBehaviour, IInteractable
     {
         if (darkAfterUse)
             GameMenuManager.Instance.ActivateNoVision(1f);
-        if (nextQuestStep)
-            QuestsSystem.Instance.NextStep();
 
         InventoryManager.Instance.AddItem(gameObject.name);
         Destroy(gameObject);
