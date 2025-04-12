@@ -21,6 +21,6 @@ public class DayProcess : MonoBehaviour
         }
 
         // Пока так
-        ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
+        //ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
     }
 }

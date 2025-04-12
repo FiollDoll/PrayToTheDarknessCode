@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 [System.Serializable]
@@ -8,6 +9,7 @@ public class FastChangesController
     public class ChangeRelationship
     {
         public Npc npc;
+        [HideInInspector] public string npcName; // Для json
         public float valueChange;
     }
 
@@ -38,12 +40,11 @@ public class FastChangesController
     public bool blockPlayerMoveZ;
     public VolumeProfile newVolumeProfile;
 
-    [Header("-ChangeAnything")] public string[] addItem;
-    public string[] addQuests;
-    public string[] addNote;
-    public ChangeRelationship[] changeRelationships;
-    public ChangeVisual[] changeVisuals;
-    public ChangeTransform[] changeTransforms;
+    [Header("-ChangeAnything")] public List<string> addItem;
+    public List<string> addNote;
+    public List<ChangeRelationship> changeRelationships;
+    public List<ChangeVisual> changeVisuals;
+    public List<ChangeTransform> changeTransforms;
 
     public void ActivateChanges()
     {
@@ -56,16 +57,18 @@ public class FastChangesController
 
         if (activateDialog != "")
             DialogsManager.Instance.ActivateDialog(activateDialog);
-        
-        if (newVolumeProfile != null)
+
+        if (newVolumeProfile)
             CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
-        
+
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);
         foreach (string note in addNote)
             Notebook.Instance.AddNote(note);
         foreach (ChangeRelationship changer in changeRelationships)
         {
+            if (!changer.npc)
+                changer.npc = NpcManager.Instance.GetNpcByName(changer.npcName);
             changer.npc.relationshipWithPlayer += changer.valueChange;
             if (changer.valueChange != 0)
                 NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.text,
