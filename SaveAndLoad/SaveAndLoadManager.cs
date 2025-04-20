@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Newtonsoft.Json;
 
 public class SaveAndLoadManager : MonoBehaviour
@@ -7,15 +6,11 @@ public class SaveAndLoadManager : MonoBehaviour
     public static SaveAndLoadManager Instance { get; private set; }
     [SerializeField] private GameSave gameSave;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private void Awake() => Instance = this;
+    
 
-    private void Start()
-    {
-        //LoadGame();
-    }
+    private void Start() => LoadGame();
+    
 
     public void SaveGame()
     {
@@ -38,11 +33,24 @@ public class SaveAndLoadManager : MonoBehaviour
         // TODO: Загрузка
         string json = "";
         gameSave = JsonConvert.DeserializeObject<GameSave>(json);
-        Player.Instance.ChangeStyle(gameSave.playerStyle);
-        Player.Instance.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
-        ManageLocation.Instance.totalLocation = ManageLocation.Instance.GetLocation(gameSave.playerLocationName);
-        Notebook.Instance.playerNotes = gameSave.playerNotes;
-        InventoryManager.Instance.inventory.playerItems = gameSave.playerItems;
-        Player.Instance.familiarNpc = gameSave.familiarNpc;
+        
+        // Точка инициализции скриптов(start)
+        Player.Instance.Initialize();
+        ManageLocation.Instance.Initialize();
+        Notebook.Instance.Initialize();
+        InventoryManager.Instance.Initialize();
+        CameraManager.Instance.Initialize();
+        NpcManager.Instance.Initialize();
+        
+        if (gameSave != null)
+        {
+            ManageLocation.Instance.totalLocation = ManageLocation.Instance.GetLocation(gameSave.playerLocationName);
+            Notebook.Instance.playerNotes = gameSave.playerNotes;
+            InventoryManager.Instance.inventory.playerItems = gameSave.playerItems;
+            Player.Instance.ChangeStyle(gameSave.playerStyle);
+            Player.Instance.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
+            Player.Instance.familiarNpc = gameSave.familiarNpc;
+        }
+        ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
     }
 }

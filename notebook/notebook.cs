@@ -32,7 +32,7 @@ public class Notebook : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public void Initialize()
     {
         foreach (Note note in gameNotes)
             _gameNotesDict.TryAdd(note.gameName, note);

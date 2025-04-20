@@ -8,22 +8,14 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
     [Header("Requires")] public bool AutoUse;
     public bool autoUse => AutoUse;
 
-    [Header("Preferences")] public string dialogStart;
-    public bool destroyAfterInter;
+    [Header("Preferences")]     
+    public FastChangesController changesController;
 
-    public string playerVisual = "";
     public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
 
     public void DoInteraction()
     {
-        if (dialogStart != "")
-            DialogsManager.Instance.ActivateDialog(dialogStart);
-
-        if (playerVisual != "")
-            Player.Instance.ChangeStyle(playerVisual);
-
-        if (destroyAfterInter)
-            Destroy(gameObject);
+        changesController.ActivateChanges();
     }
 }

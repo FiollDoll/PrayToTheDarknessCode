@@ -27,13 +27,11 @@ public class Player : MonoBehaviour, IHumanable
 
     private void Awake() => Instance = this;
 
-
-    private void Start()
+    public void Initialize()
     {
         _rb = GetComponent<Rigidbody>();
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
-        ChangeStyle("sleepy");
     }
 
     public void ChangeStyle(string newStyle)
@@ -75,10 +73,15 @@ public class Player : MonoBehaviour, IHumanable
             _enteredCollider = newColliders[0];
             if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
             {
-                Interactions.Instance.EnteredInteraction = interactable;
-                if (Interactions.Instance.CanActivateInteraction(interactable) && interactable.autoUse)
-                    interactable.DoInteraction();
+                if (Interactions.Instance.EnteredInteraction == null)
+                {
+                    Interactions.Instance.EnteredInteraction = interactable;
+                    if (Interactions.Instance.CanActivateInteraction(interactable) && interactable.autoUse)
+                        interactable.DoInteraction();
+                }
             }
         }
+        else
+            Interactions.Instance.EnteredInteraction = null;
     }
 }

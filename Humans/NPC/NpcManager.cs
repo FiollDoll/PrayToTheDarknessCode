@@ -7,14 +7,14 @@ public class NpcManager : MonoBehaviour
 
     private void Awake() => Instance = this;
     
-    private void Start()
+    public void Initialize()
     {
         // Инициализация информации об НПС
         foreach (Npc npc in allNpc)
         {
             npc.UpdateNpcStyleDict();
             GameObject npcObj = GameObject.Find(npc.nameInWorld);
-            npc.NpcController = npcObj.GetComponent<IHumanable>();
+            npc.NpcController = npcObj?.GetComponent<IHumanable>();
             if (npc.NpcController != null) // Если существо
                 npc.NpcController.npcEntity = npc;
 

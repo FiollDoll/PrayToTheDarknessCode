@@ -30,8 +30,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     [SerializeField] private GameObject choicesContainer;
 
-    [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub;
-    [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu;
+    [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub, textDialogBigPicture;
+    [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu, bigPictureMenu;
     [SerializeField] private Image iconImageMain, iconImageChoice;
     [SerializeField] private Image bigPicture;
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
@@ -98,11 +98,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
                     mainDialogMenu.gameObject.SetActive(true);
                     break;
                 case Dialog.DialogStyle.BigPicture:
-                    GameMenuManager.Instance.ActivateNoVision(1.2f, () =>
-                    {
-                        bigPicture.gameObject.SetActive(true);
-                        mainDialogMenu.gameObject.SetActive(true);
-                    });
+                    GameMenuManager.Instance.ActivateNoVision(1.2f,
+                        () => { bigPictureMenu.gameObject.SetActive(true); });
                     break;
                 case Dialog.DialogStyle.SubMain:
                     subDialogMenu.gameObject.SetActive(true);
@@ -140,10 +137,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         dialogMenu.gameObject.SetActive(true);
         ActivateDialogWindow();
-        CameraManager.Instance.CameraZoom(-10f, true);
+        CameraManager.Instance.CameraZoom(-5f, true);
         TextManager.EndCursedText(textDialogMain);
 
-        //_activatedDialog.fastChanges.ActivateChanges();
         StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog.mainPanelStartDelay));
 
         if (!CanChoice())
@@ -181,11 +177,11 @@ public class DialogsManager : MonoBehaviour, IMenuable
         {
             CameraManager.Instance.CameraZoom(0, true);
             dialogMenu.gameObject.SetActive(false);
-            bigPicture.gameObject.SetActive(false);
             mainDialogMenu.gameObject.SetActive(false);
             subDialogMenu.gameObject.SetActive(false);
-            if (_activatedDialog.posAfterEnd)
-                Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
+            bigPictureMenu.gameObject.SetActive(false);
+            //if (_activatedDialog.posAfterEnd)
+                //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
             Player.Instance.canMove = true;
             CutsceneManager.Instance.totalCutscene = new Cutscene();
@@ -297,18 +293,20 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// </summary>
     private void DialogUpdateAction()
     {
-        if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main or Dialog.DialogStyle.BigPicture)
+        _selectedStep.UpdateStep();
+
+        if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main)
         {
-            _selectedStep.UpdateStep();
             textNameMain.text = _selectedStep.totalNpc.nameOfNpc.text;
             iconImageMain.sprite = _selectedStep.icon;
             iconImageMain.SetNativeSize();
             _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
-            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
-            {
-                if (_selectedStep.bigPictureName != "") // Меняем
-                    bigPicture.sprite = _selectedStep.GetBigPicture();
-            }
+        }
+        else if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.BigPicture)
+        {
+            textDialogBigPicture.text = _selectedStep.totalNpc.nameOfNpc.text;
+            if (_selectedStep.bigPictureName != "") // Меняем
+                bigPicture.sprite = _selectedStep.GetBigPicture();
         }
 
         foreach (Npc totalNpc in NpcManager.Instance.allNpc)
@@ -363,6 +361,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
                     StopAllCoroutines();
                     if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                         textDialogMain.text = _selectedStep.dialogText.text;
+                    else if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+                        textDialogBigPicture.text = _selectedStep.dialogText.text;
                     else
                         textDialogSub.text = _selectedStep.dialogText.text;
                 }
@@ -379,14 +379,17 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private IEnumerator SetText()
     {
         textDialogMain.text = "";
+        textDialogBigPicture.text = "";
         textDialogSub.text = "";
         _animatingText = true;
         char[] textChar = _selectedStep.dialogText.text.ToCharArray();
         foreach (char tChar in textChar)
         {
             if (!_animatingText) continue;
-            if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main or Dialog.DialogStyle.BigPicture)
+            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
                 textDialogMain.text += tChar;
+            else if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+                textDialogBigPicture.text += tChar;
             else
                 textDialogSub.text += tChar;
             yield return new WaitForSeconds(0.05f);

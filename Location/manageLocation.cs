@@ -24,7 +24,7 @@ public class ManageLocation : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public void Initialize()
     {
         foreach (Location location in locations)
         {

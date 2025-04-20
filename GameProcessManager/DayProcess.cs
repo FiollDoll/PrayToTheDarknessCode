@@ -19,8 +19,5 @@ public class DayProcess : MonoBehaviour
             hour++;
             minute = 0;
         }
-
-        // Пока так
-        //ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
     }
 }

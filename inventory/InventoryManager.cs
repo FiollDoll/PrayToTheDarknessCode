@@ -24,7 +24,7 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public void Initialize()
     {
         inventory.UpdateGameItemsDict();
     }

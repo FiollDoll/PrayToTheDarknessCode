@@ -13,7 +13,7 @@ public class CameraManager : MonoBehaviour
 
     private void Awake() => Instance = this;
 
-    private void Start()
+    public void Initialize()
     {
         startCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
@@ -33,6 +33,9 @@ public class CameraManager : MonoBehaviour
 
     private IEnumerator SmoothlyZoom(float changeSize)
     {
+        if (changeSize == 0)
+            changeSize = startCameraSize - Player.Instance.virtualCamera.m_Lens.FieldOfView;
+
         if (changeSize < 0) // Если отрицательное
         {
             for (float i = 0; i > changeSize; i--)
@@ -49,8 +52,6 @@ public class CameraManager : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
             }
         }
-        else
-            StartCoroutine(SmoothlyZoom(startCameraSize - Player.Instance.virtualCamera.m_Lens.FieldOfView));
     }
 
     public void SetVolumeProfile(VolumeProfile volume) => _postProcessingController.SetVolumeProfile(volume);
