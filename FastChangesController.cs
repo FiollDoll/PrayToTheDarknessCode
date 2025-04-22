@@ -28,6 +28,7 @@ public class FastChangesController
     }
 
     public string activateDialog;
+    public string activateCutscene;
 
     [Header("-Locations")] public string moveToLocation;
     public string moveToLocationSpawn;
@@ -57,6 +58,9 @@ public class FastChangesController
             ManageLocation.Instance.ActivateLocation(moveToLocation,
                 moveToLocationSpawn, toLocationWithFade);
 
+        if (activateCutscene != "")
+            CutsceneManager.Instance.ActivateCutscene(activateCutscene);
+        
         if (activateDialog != "")
             DialogsManager.Instance.ActivateDialog(activateDialog);
 

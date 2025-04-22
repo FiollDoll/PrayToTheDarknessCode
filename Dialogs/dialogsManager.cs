@@ -155,8 +155,6 @@ public class DialogsManager : MonoBehaviour, IMenuable
     {
         _canStepNext = false;
         Interactions.Instance.lockInter = false;
-        if (_activatedDialog.activateCutsceneStepAfterEnd != -1)
-            CutsceneManager.Instance.ActivateCutsceneStep(_activatedDialog.activateCutsceneStepAfterEnd);
 
         if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
             GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionToClose);
@@ -184,7 +182,6 @@ public class DialogsManager : MonoBehaviour, IMenuable
             //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
             Player.Instance.canMove = true;
-            CutsceneManager.Instance.totalCutscene = new Cutscene();
             TextManager.EndCursedText(textDialogMain);
             Player.Instance.virtualCamera.Follow = Player.Instance.transform;
             _activatedDialog = null;
@@ -330,7 +327,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
             Player.Instance.virtualCamera.Follow = _selectedStep.totalNpc.animator.transform;
 
         _selectedStep.fastChanges.ActivateChanges();
-
+        
         CutsceneManager.Instance.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
     }
 

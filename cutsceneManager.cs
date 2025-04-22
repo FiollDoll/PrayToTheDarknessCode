@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using Cinemachine;
 public class CutsceneManager : MonoBehaviour
 {
     public static CutsceneManager Instance { get; private set; }
-    public Cutscene totalCutscene = new Cutscene();
+    public Cutscene totalCutscene;
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
     [SerializeField] private Cutscene[] allCutscene = new Cutscene[0];
     private readonly Dictionary<string, Cutscene> _allCutsceneDict = new Dictionary<string, Cutscene>();
@@ -44,6 +43,8 @@ public class CutsceneManager : MonoBehaviour
 
     public void ActivateCutscene(string cutsceneName)
     {
+        if (string.IsNullOrEmpty(cutsceneName)) return;
+        totalCutscene = new Cutscene();
         totalCutscene = _allCutsceneDict.GetValueOrDefault(cutsceneName);
         if (totalCutscene != null)
             ActivateCutsceneStep(0);
@@ -98,7 +99,7 @@ public class CutsceneManager : MonoBehaviour
 
     public void ActivateCutsceneStep(int step)
     {
-        if (totalCutscene.name == "" || step == -1)
+        if (totalCutscene == null || step == -1)
             return;
 
         if (totalCutscene.steps[step].delayAndNext != 0)

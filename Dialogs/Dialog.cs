@@ -27,7 +27,6 @@ public class Dialog
 
     [Header("Actions after end")]
     public bool darkAfterEnd;
-    public int activateCutsceneStepAfterEnd = -1;
     public Transform posAfterEnd;
 
     public Dialog()
