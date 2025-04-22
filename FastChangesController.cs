@@ -49,8 +49,10 @@ public class FastChangesController
     public void ActivateChanges()
     {
         Player.Instance.changeSpeed = editPlayerSpeed;
-        Player.Instance.canMove = !blockPlayerMove;
-        Player.Instance.blockMoveZ = blockPlayerMoveZ;
+        if (blockPlayerMove)
+            Player.Instance.canMove = !Player.Instance.canMove;
+        if (blockPlayerMoveZ)
+            Player.Instance.blockMoveZ = !Player.Instance.blockMoveZ;
         if (moveToLocation != "")
             ManageLocation.Instance.ActivateLocation(moveToLocation,
                 moveToLocationSpawn, toLocationWithFade);

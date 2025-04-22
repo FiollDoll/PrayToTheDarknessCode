@@ -24,6 +24,7 @@ public class Player : MonoBehaviour, IHumanable
     private Rigidbody _rb;
     private SpriteRenderer _sr;
     private Animator _animator;
+    private bool hasInteracted = false;
 
     private void Awake() => Instance = this;
 
@@ -65,23 +66,23 @@ public class Player : MonoBehaviour, IHumanable
             _animator.SetBool("walk", false);
         }
 
-        var newColliders = Physics.OverlapSphere(rayStart.position, 0.5f,
-            layerMaskInteractAuto);
+        var newColliders = Physics.OverlapSphere(rayStart.position, 0.5f, layerMaskInteractAuto);
 
         if (newColliders.Length > 0)
         {
             _enteredCollider = newColliders[0];
             if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
             {
-                if (Interactions.Instance.EnteredInteraction == null)
+                Interactions.Instance.EnteredInteraction = interactable;
+                if (Interactions.Instance.CanActivateInteraction(interactable) && interactable.autoUse &&
+                    !hasInteracted)
                 {
-                    Interactions.Instance.EnteredInteraction = interactable;
-                    if (Interactions.Instance.CanActivateInteraction(interactable) && interactable.autoUse)
-                        interactable.DoInteraction();
+                    interactable.DoInteraction();
+                    hasInteracted = true;
                 }
             }
         }
         else
-            Interactions.Instance.EnteredInteraction = null;
+            hasInteracted = false;
     }
 }
