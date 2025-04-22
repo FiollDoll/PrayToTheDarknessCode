@@ -52,7 +52,7 @@ public class CutsceneManager : MonoBehaviour
 
     private void StepDo(int step) // Выполнить шаг катсцены.
     {
-        Cutscene.CutsceneStep totalCutsceneStep = totalCutscene.steps[step];
+        CutsceneStep totalCutsceneStep = totalCutscene.steps[step];
         if (totalCutsceneStep.startViewMenuActivate != "")
             StartViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
 
@@ -67,23 +67,23 @@ public class CutsceneManager : MonoBehaviour
         if (totalCutsceneStep.editCameraSize != 0)
             CameraManager.Instance.CameraZoom(totalCutsceneStep.editCameraSize, true);
 
-        foreach (Cutscene.ObjectState objState in totalCutsceneStep.objectsChangeState)
+        foreach (ObjectState objState in totalCutsceneStep.objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
-        foreach (Cutscene.ObjectSprite objectSprite in totalCutsceneStep.objectsChangeSprite)
+        foreach (ObjectSprite objectSprite in totalCutsceneStep.objectsChangeSprite)
             objectSprite.spriteRenderer.sprite = objectSprite.newSprite;
-        foreach (Cutscene.ObjectTransform objectTransform in totalCutsceneStep.objectsChangeTransform)
+        foreach (ObjectTransform objectTransform in totalCutsceneStep.objectsChangeTransform)
             objectTransform.obj.transform.position = objectTransform.newTransform.position;
-        foreach (Cutscene.Animations animations in totalCutsceneStep.animatorsChanges)
+        foreach (Animations animations in totalCutsceneStep.animatorsChanges)
             animations.animator.SetBool(animations.boolName, animations.boolStatus);
 
-        foreach (Cutscene.LocationsLock locationsLock in totalCutsceneStep.locksLocations)
+        foreach (LocationsLock locationsLock in totalCutsceneStep.locksLocations)
             ManageLocation.Instance.SetLockToLocation(locationsLock.location, locationsLock.lockLocation);
         GameMenuManager.Instance.lockAnyMenu = totalCutsceneStep.lockAllMenu;
 
-        foreach (Cutscene.NpcMoveToPlayer npcMoveToPlayer in totalCutsceneStep.npcMoveToPlayer)
+        foreach (NpcMoveToPlayer npcMoveToPlayer in totalCutsceneStep.npcMoveToPlayer)
             npcMoveToPlayer.npc.moveToPlayer = npcMoveToPlayer.move;
 
-        foreach (Cutscene.HumanMove humanMove in totalCutsceneStep.humansMove)
+        foreach (HumanMove humanMove in totalCutsceneStep.humansMove)
         {
             NpcController npcController = humanMove.human.GetComponent<NpcController>();
             if (npcController)
@@ -127,88 +127,4 @@ public class CutsceneManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         ActivateCutsceneStep(newStep);
     }
-}
-
-[System.Serializable]
-public class Cutscene
-{
-    [System.Serializable]
-    public class LocationsLock
-    {
-        public string location;
-        public bool lockLocation;
-    }
-
-    [System.Serializable]
-    public class NpcMoveToPlayer
-    {
-        public NpcController npc;
-        public bool move;
-    }
-
-    [System.Serializable]
-    public class ObjectState
-    {
-        public GameObject obj;
-        public bool newState;
-    }
-
-    [System.Serializable]
-    public class ObjectTransform
-    {
-        public GameObject obj;
-        public Transform newTransform;
-    }
-
-    [System.Serializable]
-    public class ObjectSprite
-    {
-        public SpriteRenderer spriteRenderer;
-        public Sprite newSprite;
-    }
-
-    [System.Serializable]
-    public class Animations
-    {
-        public Animator animator;
-        public string boolName;
-        public bool boolStatus;
-    }
-
-    [System.Serializable]
-    public class HumanMove
-    {
-        public GameObject human;
-        public Transform pointMove;
-    }
-
-    [System.Serializable]
-    public class CutsceneStep
-    {
-        public string name;
-
-        public bool closeDialogMenu;
-
-        [Header("MainChanges")] public FastChangesController fastChanges;
-
-        [Header("Locks")] public bool lockAllMenu;
-        public LocationsLock[] locksLocations = new LocationsLock[0];
-
-        [Header("UltraChanges")] public ObjectState[] objectsChangeState = new ObjectState[0];
-        public ObjectTransform[] objectsChangeTransform = new ObjectTransform[0];
-        public ObjectSprite[] objectsChangeSprite = new ObjectSprite[0];
-        public Animations[] animatorsChanges = new Animations[0];
-
-        [Header("Other")] public string startViewMenuActivate;
-        public float editCameraSize;
-        public NpcMoveToPlayer[] npcMoveToPlayer = new NpcMoveToPlayer[0];
-        public HumanMove[] humansMove = new HumanMove[0];
-        public VolumeProfile newVolumeProfile;
-        public float timeDarkStart;
-        public float timeDarkEnd = 1f;
-        public float delayAndNext;
-    }
-
-    public string name;
-    public CutsceneStep[] steps = new CutsceneStep[0];
 }
