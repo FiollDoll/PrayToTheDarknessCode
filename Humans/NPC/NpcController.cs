@@ -36,9 +36,9 @@ public class NpcController : MonoBehaviour, IHumanable
 
     public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, _sr, _animator);
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter(Collider other)
     {
-        switch (other.gameObject.name)
+        switch (other.gameObject.tag)
         {
             case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
                 transform.position = ManageLocation.Instance.GetLocation(locationOfPointName).spawns[0].spawn.position;
@@ -56,9 +56,9 @@ public class NpcController : MonoBehaviour, IHumanable
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.name == "Player")
+        if (other.gameObject.tag == "Player")
             _playerInCollider = false;
     }
 

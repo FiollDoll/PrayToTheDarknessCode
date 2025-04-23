@@ -9,12 +9,13 @@ public class LocationInteraction : MonoBehaviour, IInteractable
     [Header("Requires")] public bool AutoUse;
     public bool autoUse => AutoUse;
 
-    [Header("Preferences")] 
-    public string locationName;
+    [Header("Preferences")] public string locationName;
     public string spawnName;
     public bool destroyAfterInter;
     public string itemNameToUse;
     public string itemNameUse => itemNameToUse;
+    public string questName { get; set; }
+    public string QuestName => questName;
 
     private Location _location;
 
@@ -25,6 +26,13 @@ public class LocationInteraction : MonoBehaviour, IInteractable
             label = _location.name;
     }
 
+    public bool CanInteractByQuest()
+    {
+        return QuestsManager.Instance.GetTotalQuestStep() != null &&
+               QuestsManager.Instance.GetTotalQuestStep().actionToDo == QuestStep.ActionToDo.Move &&
+               QuestsManager.Instance.GetTotalQuestStep().target == locationName;
+    }
+
     public void DoInteraction()
     {
         if (_location.locked) return;
@@ -33,5 +41,8 @@ public class LocationInteraction : MonoBehaviour, IInteractable
         //if (ManageLocation.Instance.GetLocation(gameObject.name).autoEnter &&
         //ManageLocation.Instance.totalLocation.autoEnter)
         ManageLocation.Instance.ActivateLocation(locationName, spawnName);
+
+        if (CanInteractByQuest())
+            QuestsManager.Instance.NextStep();
     }
 }

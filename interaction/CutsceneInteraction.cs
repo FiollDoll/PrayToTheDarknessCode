@@ -7,11 +7,16 @@ public class CutsceneInteraction : MonoBehaviour, IInteractable
 
     [Header("Requires")] public bool AutoUse;
     public bool autoUse => AutoUse;
-    
 
-    [Header("Preferences")]
-    public string ItemNameToUse;
+    [Header("Preferences")] public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
+    public string questName { get; set; }
+    public string QuestName => questName;
+
+    public bool CanInteractByQuest()
+    {
+        return true;
+    }
 
     public void DoInteraction()
     {

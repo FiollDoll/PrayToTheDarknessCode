@@ -36,6 +36,9 @@ public class Interactions : MonoBehaviour
 
             if (pos is > 6f or < -6f)
                 return false;
+
+            if (!interactable.CanInteractByQuest())
+                return false;
         }
 
         return true;

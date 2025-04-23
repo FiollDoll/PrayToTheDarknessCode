@@ -389,7 +389,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
                 textDialogBigPicture.text += tChar;
             else
                 textDialogSub.text += tChar;
-            yield return new WaitForSeconds(0.0025f * textChar.Length);
+            yield return new WaitForSeconds(1f / textChar.Length);
         }
 
         _animatingText = false;

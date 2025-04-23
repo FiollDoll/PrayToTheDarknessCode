@@ -38,8 +38,9 @@ public class NpcManager : MonoBehaviour
     /// </summary>
     public void MoveTo(Transform target, float speed, Transform pos, SpriteRenderer spriteRenderer, Animator animator)
     {
-        pos.position = Vector3.MoveTowards(pos.position, target.position, speed * Time.deltaTime);
+        Vector3 changeTarget = new Vector3(target.position.x, pos.position.y, pos.position.z);
+        pos.position = Vector3.MoveTowards(pos.position, changeTarget, speed * Time.deltaTime);
         animator.SetBool("walk", true);
-        spriteRenderer.flipX = !(target.position.x > pos.position.x);
+        spriteRenderer.flipX = (target.position.x > pos.position.x);
     }
 }

@@ -29,6 +29,7 @@ public class FastChangesController
 
     public string activateDialog;
     public string activateCutscene;
+    public string activateQuest;
 
     [Header("-Locations")] public string moveToLocation;
     public string moveToLocationSpawn;
@@ -63,6 +64,9 @@ public class FastChangesController
         
         if (activateDialog != "")
             DialogsManager.Instance.ActivateDialog(activateDialog);
+        
+        if (activateQuest != "")
+            QuestsManager.Instance.ActivateQuest(activateQuest);
 
         if (newVolumeProfile)
             CameraManager.Instance.SetVolumeProfile(newVolumeProfile);

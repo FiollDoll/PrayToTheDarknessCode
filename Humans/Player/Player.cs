@@ -24,7 +24,7 @@ public class Player : MonoBehaviour, IHumanable
     private Rigidbody _rb;
     private SpriteRenderer _sr;
     private Animator _animator;
-    private bool hasInteracted = false;
+    private bool _hasInteracted;
 
     private void Awake() => Instance = this;
 
@@ -75,14 +75,14 @@ public class Player : MonoBehaviour, IHumanable
             {
                 Interactions.Instance.EnteredInteraction = interactable;
                 if (Interactions.Instance.CanActivateInteraction(interactable) && interactable.autoUse &&
-                    !hasInteracted)
+                    !_hasInteracted)
                 {
                     interactable.DoInteraction();
-                    hasInteracted = true;
+                    _hasInteracted = true;
                 }
             }
         }
         else
-            hasInteracted = false;
+            _hasInteracted = false;
     }
 }
