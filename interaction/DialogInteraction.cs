@@ -10,11 +10,13 @@ public class DialogInteraction : MonoBehaviour, IInteractable
 
     [Header("Preferences")] public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
-    public string questName { get; set; }
-    public string QuestName => questName;
+    public string QuestName;
+    public string questName => QuestName;
 
     public bool CanInteractByQuest()
     {
+        if (questName == "")
+            return true;
         return QuestsManager.Instance.GetTotalQuestStep() != null &&
                QuestsManager.Instance.GetTotalQuestStep().actionToDo == QuestStep.ActionToDo.Talk &&
                QuestsManager.Instance.GetTotalQuestStep().target == gameObject.name;
@@ -23,7 +25,7 @@ public class DialogInteraction : MonoBehaviour, IInteractable
     public void DoInteraction()
     {
         DialogsManager.Instance.ActivateDialog(gameObject.name);
-        if (CanInteractByQuest())
+        if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();
     }
 }

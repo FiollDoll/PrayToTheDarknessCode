@@ -10,8 +10,8 @@ public class CutsceneInteraction : MonoBehaviour, IInteractable
 
     [Header("Preferences")] public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
-    public string questName { get; set; }
-    public string QuestName => questName;
+    public string QuestName;
+    public string questName => QuestName;
 
     public bool CanInteractByQuest()
     {

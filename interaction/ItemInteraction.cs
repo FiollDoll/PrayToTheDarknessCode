@@ -11,11 +11,13 @@ public class ItemInteraction : MonoBehaviour, IInteractable
     [Header("Preferences")] public bool darkAfterUse { get; set; }
     public string ItemNameToUse;
     public string itemNameUse => ItemNameToUse;
-    public string questName { get; set; }
-    public string QuestName => questName;
+    public string QuestName;
+    public string questName => QuestName;
 
     public bool CanInteractByQuest()
     {
+        if (questName == "")
+            return true;
         return QuestsManager.Instance.GetTotalQuestStep() != null &&
                QuestsManager.Instance.GetTotalQuestStep().actionToDo == QuestStep.ActionToDo.Take &&
                QuestsManager.Instance.GetTotalQuestStep().target == gameObject.name;
@@ -29,7 +31,7 @@ public class ItemInteraction : MonoBehaviour, IInteractable
         InventoryManager.Instance.AddItem(gameObject.name);
         Destroy(gameObject);
 
-        if (CanInteractByQuest())
+        if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();
     }
 }
