@@ -65,16 +65,15 @@ public class StepBranch
 [System.Serializable]
 public class DialogStep
 {
-    public string stepName;
     public string totalNpcName;
     public LanguageSetting dialogText;
     public string bigPictureName;
+    public string stepSpeech;
     public bool cursedText;
     public float delayAfterNext;
     public int activateCutsceneStep = -1;
     public FastChangesController fastChanges;
     public NpcIcon.IconMood iconMoodSelected;
-    public Transform cameraTarget; // Сделать
     public Npc totalNpc;
     public Sprite icon;
 
@@ -87,6 +86,11 @@ public class DialogStep
     public Sprite GetBigPicture()
     {
         return Resources.Load<Sprite>("Cutscenes/" + bigPictureName);
+    }
+
+    public AudioClip GetSpeech()
+    {
+        return Resources.Load<AudioClip>("Speech/" + stepSpeech);
     }
 }
 

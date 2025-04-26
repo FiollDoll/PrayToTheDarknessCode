@@ -102,12 +102,6 @@ public class CutsceneManager : MonoBehaviour
         if (totalCutscene == null || step == -1)
             return;
 
-        if (totalCutscene.steps[step].delayAndNext != 0)
-        {
-            StartCoroutine(DelayAndNext(totalCutscene.steps[step].delayAndNext, step++));
-            return;
-        }
-
         if (totalCutscene.steps[step].timeDarkStart != 0)
         {
             Sequence sequence = DOTween.Sequence();
@@ -120,11 +114,15 @@ public class CutsceneManager : MonoBehaviour
         }
         else
             StepDo(step);
+        
+        if (totalCutscene.steps[step].delayAndNext != 0)
+            StartCoroutine(DelayAndNext(totalCutscene.steps[step].delayAndNext, step));
     }
 
-    private IEnumerator DelayAndNext(float delay, int newStep)
+    private IEnumerator DelayAndNext(float delay, int totalStep)
     {
         yield return new WaitForSeconds(delay);
-        ActivateCutsceneStep(newStep);
+        totalStep++;
+        ActivateCutsceneStep(totalStep);
     }
 }

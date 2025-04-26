@@ -323,6 +323,11 @@ public class DialogsManager : MonoBehaviour, IMenuable
         else
             StartCoroutine(SetText());
 
+        if (_selectedStep.stepSpeech != "")
+            AudioManager.Instance.PlaySpeech(_selectedStep.GetSpeech());
+        else
+            AudioManager.Instance.StopSpeech();
+        
         if (_selectedStep.totalNpc.nameInWorld != "nothing")
             Player.Instance.virtualCamera.Follow = _selectedStep.totalNpc.animator.transform;
 
