@@ -23,6 +23,7 @@ public class ChapterManager : MonoBehaviour
     public void LoadChapter(Chapter chapter)
     {
         _selectedChapter = chapter;
+        CutsceneManager.Instance.StartViewMenuActivate(chapter.chapterName);
         _selectedChapter.changesController.ActivateChanges();
     }
 }

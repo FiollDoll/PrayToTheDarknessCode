@@ -30,10 +30,9 @@ public class CutsceneManager : MonoBehaviour
 
         if (!svBlock) // dev only
             startViewMenu.gameObject.SetActive(true);
-        StartViewMenuActivate();
     }
 
-    private void StartViewMenuActivate(string newText = "")
+    public void StartViewMenuActivate(string newText = "")
     {
         if (svBlock) return;
         if (newText != "")
@@ -53,6 +52,8 @@ public class CutsceneManager : MonoBehaviour
     private void StepDo(int step) // Выполнить шаг катсцены.
     {
         CutsceneStep totalCutsceneStep = totalCutscene.steps[step];
+        if (totalCutsceneStep.chapterNext != "")
+            ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName(totalCutsceneStep.chapterNext));
         if (totalCutsceneStep.startViewMenuActivate != "")
             StartViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
 

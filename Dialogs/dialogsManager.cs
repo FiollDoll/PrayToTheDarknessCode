@@ -116,15 +116,15 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// <param name="nameDialog">Название диалога</param>
     public void ActivateDialog(string nameDialog) // Старт диалога
     {
-        if (_activatedDialog != null)
-        {
-            DialogCLose();
-            StopAllCoroutines();
-        }
-
         Dialog newDialog = GetDialog(nameDialog);
         if (newDialog == null) return;
         if (newDialog.read) return;
+        
+        if (_activatedDialog != null)
+        {
+            totalStep = 0;
+            StopAllCoroutines();
+        }
 
         _activatedDialog = newDialog;
         _selectedBranch = _activatedDialog.stepBranches[0];
@@ -170,6 +170,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private void DoActionToClose()
     {
         totalStep = 0;
+        StopAllCoroutines();
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
         {
@@ -323,17 +324,17 @@ public class DialogsManager : MonoBehaviour, IMenuable
         else
             StartCoroutine(SetText());
 
+        _selectedStep.fastChanges.ActivateChanges();
+
+        CutsceneManager.Instance.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
+
         if (_selectedStep.stepSpeech != "")
             AudioManager.Instance.PlaySpeech(_selectedStep.GetSpeech());
         else
             AudioManager.Instance.StopSpeech();
-        
+
         if (_selectedStep.totalNpc.nameInWorld != "nothing")
             Player.Instance.virtualCamera.Follow = _selectedStep.totalNpc.animator.transform;
-
-        _selectedStep.fastChanges.ActivateChanges();
-        
-        CutsceneManager.Instance.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
     }
 
     /// <summary>
@@ -387,10 +388,10 @@ public class DialogsManager : MonoBehaviour, IMenuable
         char[] textChar = _selectedStep.dialogText.text.ToCharArray();
         foreach (char tChar in textChar)
         {
-            if (!_animatingText) continue;
-            if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+            if (!_animatingText && _activatedDialog != null) continue;
+            if (_activatedDialog?.styleOfDialog == Dialog.DialogStyle.Main)
                 textDialogMain.text += tChar;
-            else if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+            else if (_activatedDialog?.styleOfDialog == Dialog.DialogStyle.BigPicture)
                 textDialogBigPicture.text += tChar;
             else
                 textDialogSub.text += tChar;
@@ -401,7 +402,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (_selectedStep.delayAfterNext != 0)
         {
             yield return new WaitForSeconds(_selectedStep.delayAfterNext);
-            if (totalStep + 1 == _activatedDialog.stepBranches.Count) // Завершение
+            if (totalStep + 1 == _activatedDialog?.stepBranches.Count) // Завершение
                 DialogCLose();
             else
             {

@@ -26,6 +26,7 @@ public class CutsceneStep
     public float timeDarkStart;
     public float timeDarkEnd = 1f;
     public float delayAndNext;
+    public string chapterNext;
 }
 
 [System.Serializable]

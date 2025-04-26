@@ -21,7 +21,7 @@ public class NpcController : MonoBehaviour, IHumanable
     [HideInInspector] public Transform point;
     [HideInInspector] public string locationOfPointName;
 
-    private void Start()
+    private void Awake()
     {
         _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
