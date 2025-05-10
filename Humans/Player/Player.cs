@@ -44,7 +44,7 @@ public class Player : MonoBehaviour, IHumanable
     public void MoveTo(Transform target) =>
         NpcManager.Instance.MoveTo(target, moveSpeed, transform, _sr, _animator);
 
-    private void FixedUpdate()
+    private void Update()
     {
         float horiz = Input.GetAxis("Horizontal");
         float vert = 0f;

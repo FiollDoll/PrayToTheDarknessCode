@@ -42,7 +42,8 @@ public class FastChangesController
     public bool blockPlayerMoveZ;
     public VolumeProfile newVolumeProfile;
 
-    [Header("-ChangeAnything")] public List<string> addItem;
+    [Header("-ChangeAnything")] public AudioClip setMusic;
+    public List<string> addItem;
     public List<string> addNote;
     public List<ChangeRelationship> changeRelationships;
     public List<ChangeVisual> changeVisuals;
@@ -61,16 +62,18 @@ public class FastChangesController
 
         if (activateCutscene != "")
             CutsceneManager.Instance.ActivateCutscene(activateCutscene);
-        
+
         if (activateDialog != "")
             DialogsManager.Instance.ActivateDialog(activateDialog);
-        
+
         if (activateQuest != "")
             QuestsManager.Instance.ActivateQuest(activateQuest);
 
         if (newVolumeProfile)
             CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
 
+        if (setMusic != null)
+            AudioManager.Instance.PlayMusic(setMusic);
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);
         foreach (string note in addNote)

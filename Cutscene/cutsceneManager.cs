@@ -67,7 +67,7 @@ public class CutsceneManager : MonoBehaviour
 
         if (totalCutsceneStep.editCameraSize != 0)
             CameraManager.Instance.CameraZoom(totalCutsceneStep.editCameraSize, true);
-
+        
         foreach (ObjectState objState in totalCutsceneStep.objectsChangeState)
             objState.obj.gameObject.SetActive(objState.newState);
         foreach (ObjectSprite objectSprite in totalCutsceneStep.objectsChangeSprite)

@@ -20,8 +20,8 @@ public class SaveAndLoadManager : MonoBehaviour
         gameSave.y = Player.Instance.transform.position.y;
         gameSave.z = Player.Instance.transform.position.z;
         gameSave.playerLocationName = ManageLocation.Instance.totalLocation.gameName;
-        gameSave.playerNotes = Notebook.Instance.playerNotes;
-        gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
+        //gameSave.playerNotes = Notebook.Instance.playerNotes;
+        //gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
         gameSave.familiarNpc = Player.Instance.familiarNpc;
         string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
         Debug.Log(json);
