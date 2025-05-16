@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Rendering;
 using DG.Tweening;
 using Cinemachine;
 
@@ -18,12 +17,9 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] private bool svBlock; // dev only
     [SerializeField] private Image noViewPanel;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private void Awake() => Instance = this;
 
-    private void Start()
+    public void Initialize()
     {
         foreach (Cutscene cutscene in allCutscene)
             _allCutsceneDict.Add(cutscene.name, cutscene);

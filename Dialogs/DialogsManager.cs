@@ -48,7 +48,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         Instance = this;
     }
 
-    private void Start()
+    public void Initialize()
     {
         DialogsLoader dl = new DialogsLoader();
         List<Dialog> dialogs = dl.LoadDialogs();
@@ -314,7 +314,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
                 bigPicture.sprite = _selectedStep.GetBigPicture();
         }
 
-        foreach (Npc totalNpc in NpcManager.Instance.allNpc)
+        foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
             if (!totalNpc.canMeet) continue;
             if (totalNpc.nameOfNpc != _selectedStep.totalNpc.nameOfNpc) continue;

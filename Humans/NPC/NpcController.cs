@@ -27,7 +27,7 @@ public class NpcController : MonoBehaviour, IHumanable
         _animator = GetComponent<Animator>();
         _playerTransform = GameObject.Find("Mark").transform;
     }
-
+    
     public void ChangeStyle(string newStyle)
     {
         selectedStyle = newStyle;

@@ -7,7 +7,7 @@ public class DayProcess : MonoBehaviour
     public int hour, minute;
     public bool stopTime;
 
-    private void Start() => StartCoroutine(MoveTime());
+    private void Initialize() => StartCoroutine(MoveTime());
 
     private IEnumerator MoveTime()
     {

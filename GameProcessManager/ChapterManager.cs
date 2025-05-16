@@ -1,17 +1,20 @@
-using System;
 using UnityEngine;
 
-public class ChapterManager : MonoBehaviour
+public class ChapterManager
 {
     public static ChapterManager Instance { get; private set; }
-    [SerializeField] private Chapter[] allChapters = new Chapter[0];
+    private Chapter[] _allChapters = new Chapter[0];
     private Chapter _selectedChapter;
-    
-    private void Awake() => Instance = this;
+
+    public void Initialize()
+    {
+        Instance = this;
+        _allChapters = Resources.FindObjectsOfTypeAll<Chapter>();
+    }
 
     public Chapter GetChapterByName(string name)
     {
-        foreach (Chapter chapter in allChapters)
+        foreach (Chapter chapter in _allChapters)
         {
             if (chapter.gameName == name)
                 return chapter;
@@ -23,7 +26,12 @@ public class ChapterManager : MonoBehaviour
     public void LoadChapter(Chapter chapter)
     {
         _selectedChapter = chapter;
-        CutsceneManager.Instance.StartViewMenuActivate(chapter.chapterName);
-        _selectedChapter.changesController.ActivateChanges();
+        if (chapter)
+        {
+            CutsceneManager.Instance.StartViewMenuActivate(chapter.chapterName);
+            _selectedChapter.changesController.ActivateChanges();
+        }
+        else
+            Debug.Log("Chapter don`t find");
     }
 }

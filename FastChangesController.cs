@@ -72,7 +72,7 @@ public class FastChangesController
         if (newVolumeProfile)
             CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
 
-        if (setMusic != null)
+        if (setMusic)
             AudioManager.Instance.PlayMusic(setMusic);
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);

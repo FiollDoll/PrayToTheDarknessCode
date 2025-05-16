@@ -14,9 +14,8 @@ public class GameMenuManager: MonoBehaviour
     public Image noViewPanel;
 
     private void Awake() => Instance = this;
-
-
-    private void Start()
+    
+    private void Initialize()
     {
         _allGameMenu = FindObjectsOfType<MonoBehaviour>().OfType<IMenuable>().ToList();
     }

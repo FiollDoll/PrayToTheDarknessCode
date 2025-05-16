@@ -22,7 +22,6 @@ public class CameraManager : MonoBehaviour
         _postProcessingController.Volume = playerCamera.GetComponent<Volume>();
     }
 
-
     public void CameraZoom(float changeSize, bool smoothly = false)
     {
         if (smoothly)

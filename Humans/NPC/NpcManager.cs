@@ -1,30 +1,28 @@
 using UnityEngine;
 
-public class NpcManager : MonoBehaviour
+public class NpcManager
 {
     public static NpcManager Instance { get; private set; }
-    public Npc[] allNpc = new Npc[0];
-
-    private void Awake() => Instance = this;
+    public Npc[] AllNpc;
     
     public void Initialize()
     {
+        Instance = this;
+        AllNpc = Resources.LoadAll<Npc>("NPC");
+        
         // Инициализация информации об НПС
-        foreach (Npc npc in allNpc)
+        foreach (Npc npc in AllNpc)
         {
-            npc.UpdateNpcStyleDict();
-            GameObject npcObj = GameObject.Find(npc.nameInWorld);
-            npc.NpcController = npcObj?.GetComponent<IHumanable>();
-            if (npc.NpcController != null) // Если существо
-                npc.NpcController.npcEntity = npc;
-
-            npc.animator = npcObj?.GetComponent<Animator>();
+            GameObject obj = GameObject.Find(npc.nameInWorld);
+            if (!obj) continue;
+            npc.NpcController = obj.GetComponent<IHumanable>();
+            npc.NpcController.npcEntity = npc;
         }
     }
 
     public Npc GetNpcByName(string name)
     {
-        foreach (Npc npc in allNpc)
+        foreach (Npc npc in AllNpc)
         {
             if (npc.nameInWorld == name)
                 return npc;

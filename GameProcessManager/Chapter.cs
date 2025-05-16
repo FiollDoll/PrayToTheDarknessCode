@@ -1,5 +1,7 @@
-[System.Serializable]
-public class Chapter
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "Chapter")]
+public class Chapter: ScriptableObject
 {
     /// <summary>
     /// Системное название

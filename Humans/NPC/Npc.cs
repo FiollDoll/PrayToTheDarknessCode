@@ -18,17 +18,9 @@ public class Npc : ScriptableObject
     [Header("Preference")] [JsonIgnore] public bool canMeet;
 
     // Назначаются при старте
-    [JsonIgnore] [HideInInspector] public Animator animator;
     [JsonIgnore] [HideInInspector] public IHumanable NpcController;
-
-    private void OnEnable()
-    {
-        // Сброс temp переменных
-        // TODO: сделать подгрузку
-        relationshipWithPlayer = 0;
-    }
-
-    public void UpdateNpcStyleDict()
+    
+    public void OnEnable()
     {
         foreach (NpcStyle style in styles)
             _stylesDict.TryAdd(style.nameOfStyle, style);
