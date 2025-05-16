@@ -2,12 +2,8 @@
 using UnityEngine;
 using System.IO;
 
-public class DialogsLoader : MonoBehaviour
+public class DialogsLoader
 {
-    public static DialogsLoader Instance { get; private set; }
-
-    private void Awake() => Instance = this;
-
     public List<Dialog> LoadDialogs()
     {
         TextAsset json = Resources.Load<TextAsset>("dialogues");

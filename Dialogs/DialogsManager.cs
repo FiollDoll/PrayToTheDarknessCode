@@ -50,7 +50,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     private void Start()
     {
-        List<Dialog> dialogs = DialogsLoader.Instance.LoadDialogs();
+        DialogsLoader dl = new DialogsLoader();
+        List<Dialog> dialogs = dl.LoadDialogs();
         foreach (Dialog dialog in dialogs)
         {
             _dialogsDict.TryAdd(dialog.nameDialog, dialog);
