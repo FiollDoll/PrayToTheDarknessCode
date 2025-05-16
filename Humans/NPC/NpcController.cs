@@ -9,9 +9,10 @@ public class NpcController : MonoBehaviour, IHumanable
     [Header("Preference")] [SerializeField]
     private float speed;
 
+    [SerializeField] private GameObject model;
+
     private bool _playerInCollider;
     private Transform _playerTransform;
-    private SpriteRenderer _sr;
     private Animator _animator;
 
     [Header("Move To Player Preference")] public bool moveToPlayer;
@@ -23,7 +24,6 @@ public class NpcController : MonoBehaviour, IHumanable
 
     private void Awake()
     {
-        _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _playerTransform = GameObject.Find("Mark").transform;
     }
@@ -34,7 +34,7 @@ public class NpcController : MonoBehaviour, IHumanable
         _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
     }
 
-    public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, _sr, _animator);
+    public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, model, _animator);
 
     private void OnTriggerEnter(Collider other)
     {

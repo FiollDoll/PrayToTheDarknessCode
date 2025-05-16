@@ -36,11 +36,17 @@ public class NpcManager : MonoBehaviour
     /// <summary>
     /// Насильное пермещение кого-либо или чего-либо
     /// </summary>
-    public void MoveTo(Transform target, float speed, Transform pos, SpriteRenderer spriteRenderer, Animator animator)
+    public void MoveTo(Transform target, float speed, Transform pos, GameObject model, Animator animator)
     {
         Vector3 changeTarget = new Vector3(target.position.x, pos.position.y, pos.position.z);
         pos.position = Vector3.MoveTowards(pos.position, changeTarget, speed * Time.deltaTime);
         animator.SetBool("walk", true);
-        spriteRenderer.flipX = (target.position.x > pos.position.x);
+        float toTargetPos = target.position.x - pos.position.x;
+        model.transform.localScale = toTargetPos switch
+        {
+            > 0 => new Vector3(-1, 1, 1),
+            < 0 => new Vector3(1, 1, 1),
+            _ => model.transform.localScale
+        };
     }
 }

@@ -6,6 +6,7 @@ using TMPro;
 using DG.Tweening;
 using MyBox;
 using LastFramework;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class DialogsManager : MonoBehaviour, IMenuable
@@ -19,9 +20,12 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private Dialog _activatedDialog;
     private StepBranch _selectedBranch;
     private DialogStep _selectedStep;
-
+    private List<Npc> _npcInTotalDialog = new List<Npc>();
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
     [SerializeField] private Npc nothingNpc; // Костыль. Вырезать
+
+    [Header("Preferences")] [SerializeField]
+    private Color dontSelectedColor;
 
     [Foldout("Scene Objects", true)] [SerializeField]
     private GameObject dialogMenu;
@@ -32,11 +36,10 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub, textDialogBigPicture;
     [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu, bigPictureMenu;
-    [SerializeField] private Image iconImageMain, iconImageChoice;
+    [SerializeField] private Image firstTalkerIcon, secondTalkerIcon, thirdTalkerIcon, iconImageChoice;
     [SerializeField] private Image bigPicture;
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
-    private RectTransform _iconImageTransform;
 
     private bool _animatingText, _canStepNext;
 
@@ -56,7 +59,6 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
-        _iconImageTransform = iconImageMain.GetComponent<RectTransform>();
         _mainDialogMenuTransform.DOPivotY(3f, 0.01f);
         _choiceDialogMenuTransform.DOPivotY(3f, 0.01f);
     }
@@ -119,7 +121,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         Dialog newDialog = GetDialog(nameDialog);
         if (newDialog == null) return;
         if (newDialog.read) return;
-        
+
         if (_activatedDialog != null)
         {
             totalStep = 0;
@@ -179,6 +181,11 @@ public class DialogsManager : MonoBehaviour, IMenuable
             mainDialogMenu.gameObject.SetActive(false);
             subDialogMenu.gameObject.SetActive(false);
             bigPictureMenu.gameObject.SetActive(false);
+            _npcInTotalDialog = new List<Npc>();
+            firstTalkerIcon.sprite = nothingNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
+            secondTalkerIcon.sprite = nothingNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
+            thirdTalkerIcon.sprite = nothingNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
+
             //if (_activatedDialog.posAfterEnd)
             //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
@@ -272,9 +279,6 @@ public class DialogsManager : MonoBehaviour, IMenuable
             return false;
         }
 
-        if (_selectedStep.totalNpc.animator)
-            _selectedStep.totalNpc.animator?.SetBool("talk", false);
-
         // Окончание обычного диалога
         if (!AddStep())
         {
@@ -293,12 +297,14 @@ public class DialogsManager : MonoBehaviour, IMenuable
     {
         _selectedStep.UpdateStep();
 
+        if (_selectedStep.totalNpcName != "nothing" && !_npcInTotalDialog.Contains(_selectedStep.totalNpc))
+            _npcInTotalDialog.Add(_selectedStep.totalNpc);
+
+
         if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main)
         {
             textNameMain.text = _selectedStep.totalNpc.nameOfNpc.text;
-            iconImageMain.sprite = _selectedStep.icon;
-            iconImageMain.SetNativeSize();
-            _iconImageTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+            SetIcon();
         }
         else if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.BigPicture)
         {
@@ -316,9 +322,6 @@ public class DialogsManager : MonoBehaviour, IMenuable
             break;
         }
 
-        if (_selectedStep.totalNpc.animator)
-            _selectedStep.totalNpc.animator.SetBool("talk", true);
-
         if (_selectedStep.cursedText)
             TextManager.SetCursedText(textDialogMain, Random.Range(5, 40));
         else
@@ -332,9 +335,34 @@ public class DialogsManager : MonoBehaviour, IMenuable
             AudioManager.Instance.PlaySpeech(_selectedStep.GetSpeech());
         else
             AudioManager.Instance.StopSpeech();
+    }
 
-        if (_selectedStep.totalNpc.nameInWorld != "nothing")
-            Player.Instance.virtualCamera.Follow = _selectedStep.totalNpc.animator.transform;
+    private void SetIcon()
+    {
+        if (_selectedStep.totalNpc.nameInWorld == "nothing") return;
+
+        firstTalkerIcon.color = dontSelectedColor;
+        secondTalkerIcon.color = dontSelectedColor;
+        thirdTalkerIcon.color = dontSelectedColor;
+
+        switch (_npcInTotalDialog.Count)
+        {
+            case > 0 when _selectedStep.totalNpc == _npcInTotalDialog[0]:
+                firstTalkerIcon.sprite = _selectedStep.icon;
+                firstTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+                firstTalkerIcon.color = Color.white;
+                break;
+            case > 1 when _selectedStep.totalNpc == _npcInTotalDialog[1]:
+                secondTalkerIcon.sprite = _selectedStep.icon;
+                secondTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+                secondTalkerIcon.color = Color.white;
+                break;
+            case > 2 when _selectedStep.totalNpc == _npcInTotalDialog[2]:
+                thirdTalkerIcon.sprite = _selectedStep.icon;
+                thirdTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+                thirdTalkerIcon.color = Color.white;
+                break;
+        }
     }
 
     /// <summary>

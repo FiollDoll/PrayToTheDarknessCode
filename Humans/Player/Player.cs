@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.U2D.Animation;
 
 public class Player : MonoBehaviour, IHumanable
 {
@@ -10,19 +11,19 @@ public class Player : MonoBehaviour, IHumanable
     public Npc npcEntity { get; set; }
     public string selectedStyle { get; set; } = "standard";
 
-    [Header("Характеристики")] public bool canMove;
+    [Header("Stats")] public bool canMove;
     public bool blockMoveZ;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     [HideInInspector] public List<Npc> familiarNpc = new List<Npc>();
 
-    [Header("Настройки")] [SerializeField] private Transform rayStart;
+    [Header("Preferences")] [SerializeField] private Transform rayStart;
+    [SerializeField] private GameObject model;
     [SerializeField] private LayerMask layerMaskInteractAuto;
     public CinemachineVirtualCamera virtualCamera;
 
     private Collider _enteredCollider;
     private Rigidbody _rb;
-    private SpriteRenderer _sr;
     private Animator _animator;
     private bool _hasInteracted;
 
@@ -31,18 +32,22 @@ public class Player : MonoBehaviour, IHumanable
     public void Initialize()
     {
         _rb = GetComponent<Rigidbody>();
-        _sr = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
     }
 
     public void ChangeStyle(string newStyle)
     {
         selectedStyle = newStyle;
-        _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
+        foreach (Transform child in model.transform)
+        {
+            SpriteResolver sr = child.GetComponent<SpriteResolver>();
+            if (sr)
+                sr.SetCategoryAndLabel(selectedStyle, sr.GetLabel());
+        }
     }
 
     public void MoveTo(Transform target) =>
-        NpcManager.Instance.MoveTo(target, moveSpeed, transform, _sr, _animator);
+        NpcManager.Instance.MoveTo(target, moveSpeed, transform, model, _animator);
 
     private void Update()
     {
@@ -55,10 +60,12 @@ public class Player : MonoBehaviour, IHumanable
         {
             _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
             _animator.SetBool(s_Walk, horiz != 0 || vert != 0);
-            if (horiz > 0)
-                _sr.flipX = true;
-            else if (horiz < 0)
-                _sr.flipX = false;
+            model.transform.localScale = horiz switch
+            {
+                > 0 => new Vector3(-1, 1, 1),
+                < 0 => new Vector3(1, 1, 1),
+                _ => model.transform.localScale
+            };
         }
         else
         {

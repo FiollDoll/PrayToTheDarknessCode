@@ -6,9 +6,9 @@ using UnityEngine;
 public class Npc : ScriptableObject
 {
     [Header("Main information")] public string nameInWorld;
-
     [JsonIgnore] public LanguageSetting nameOfNpc;
     [JsonIgnore] public LanguageSetting description;
+    [JsonIgnore] public Color nameColor;
 
     [JsonIgnore] public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
     private readonly Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
