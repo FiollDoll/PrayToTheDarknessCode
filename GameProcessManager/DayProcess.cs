@@ -10,10 +10,10 @@ public class DayProcess
 
     private CoroutineContainer _coroutineContainer;
 
-    public void Initialize(CoroutineContainer coroutineContainer)
+    public void Initialize()
     {
         Instance = this;
-        _coroutineContainer = coroutineContainer;
+        _coroutineContainer = CoroutineContainer.Instance;
         _coroutineContainer.StartCoroutine(MoveTime());
     }
 

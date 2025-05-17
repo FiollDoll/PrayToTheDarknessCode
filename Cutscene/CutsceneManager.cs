@@ -28,14 +28,6 @@ public class CutsceneManager : MonoBehaviour
             startViewMenu.gameObject.SetActive(true);
     }
 
-    public void StartViewMenuActivate(string newText = "")
-    {
-        if (svBlock) return;
-        if (newText != "")
-            startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = newText;
-        startViewMenu.GetComponent<Animator>().Play("startGameInGame");
-    }
-
     public void ActivateCutscene(string cutsceneName)
     {
         if (string.IsNullOrEmpty(cutsceneName)) return;
@@ -49,9 +41,9 @@ public class CutsceneManager : MonoBehaviour
     {
         CutsceneStep totalCutsceneStep = totalCutscene.steps[step];
         if (totalCutsceneStep.chapterNext != "")
-            ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName(totalCutsceneStep.chapterNext));
+            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName(totalCutsceneStep.chapterNext));
         if (totalCutsceneStep.startViewMenuActivate != "")
-            StartViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
+            StartCoroutine(ViewMenuActivate(totalCutsceneStep.startViewMenuActivate));
 
         if (totalCutsceneStep.closeDialogMenu)
             DialogsManager.Instance.DialogCLose();
@@ -116,6 +108,19 @@ public class CutsceneManager : MonoBehaviour
             StartCoroutine(DelayAndNext(totalCutscene.steps[step].delayAndNext, step));
     }
 
+    public IEnumerator ViewMenuActivate(string text)
+    {
+        if (svBlock) yield break;
+        TextMeshProUGUI newText = startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        Image newImage = startViewMenu.transform.Find("Panel").GetComponent<Image>();
+        newText.text = text;
+        newText.color = Color.white;
+        newImage.color = Color.black;
+        yield return new WaitForSeconds(3f);
+        newImage.DOFade(0f, 1f).SetEase(Ease.OutQuart);
+        newText.DOFade(0f, 1f).SetEase(Ease.OutQuart);
+    }
+    
     private IEnumerator DelayAndNext(float delay, int totalStep)
     {
         yield return new WaitForSeconds(delay);

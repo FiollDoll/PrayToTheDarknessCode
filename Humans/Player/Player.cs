@@ -7,11 +7,11 @@ using UnityEngine.U2D.Animation;
 public class Player : MonoBehaviour, IHumanable
 {
     public static Player Instance { get; private set; }
-    private static readonly int s_Walk = Animator.StringToHash("walk");
     public Npc npcEntity { get; set; }
     public string selectedStyle { get; set; } = "standard";
 
     [Header("Stats")] public bool canMove;
+    private bool _run;
     public bool blockMoveZ;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
@@ -56,10 +56,27 @@ public class Player : MonoBehaviour, IHumanable
         if (!blockMoveZ)
             vert = Input.GetAxis("Vertical");
 
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+            _run = true;
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+            _run = false;
+        
         if (canMove)
         {
-            _rb.linearVelocity = new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
-            _animator.SetBool(s_Walk, horiz != 0 || vert != 0);
+            if (!_run)
+            {
+                _rb.linearVelocity =
+                    new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
+                _animator.SetBool("walk", horiz != 0 || vert != 0);
+                _animator.SetBool("run", false);
+            }
+            else
+            {
+                _rb.linearVelocity =
+                    new Vector3(horiz * (moveSpeed + changeSpeed + 2), 0, vert * (moveSpeed + changeSpeed + 2));
+                _animator.SetBool("walk", false);
+                _animator.SetBool("run", (horiz != 0 || vert != 0));
+            }
             model.transform.localScale = horiz switch
             {
                 > 0 => new Vector3(-1, 1, 1),

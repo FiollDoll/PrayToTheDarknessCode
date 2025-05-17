@@ -42,7 +42,7 @@ public class LocationInteraction : MonoBehaviour, IInteractable
         // Пока вырезано
         //if (ManageLocation.Instance.GetLocation(gameObject.name).autoEnter &&
         //ManageLocation.Instance.totalLocation.autoEnter)
-        ManageLocation.Instance.ActivateLocation(locationName, spawnName);
+        StartCoroutine(ManageLocation.Instance.ActivateLocation(locationName, spawnName));
 
         if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();

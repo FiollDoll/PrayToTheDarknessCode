@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,16 +18,21 @@ public class ChapterManager
     }
 
     public Chapter GetChapterByName(string name) => chaptersDict.GetValueOrDefault(name);
-    
-    public void LoadChapter(Chapter chapter)
+
+    public void StartLoadChapter(Chapter chapter)
     {
         _selectedChapter = chapter;
         if (chapter)
-        {
-            CutsceneManager.Instance.StartViewMenuActivate(chapter.chapterName);
-            _selectedChapter.changesController.ActivateChanges();
-        }
+            CoroutineContainer.Instance.StartCoroutine(LoadChapter(chapter));
         else
             Debug.Log("Chapter don`t find");
+    }
+
+    private IEnumerator LoadChapter(Chapter chapter)
+    {
+        Coroutine viewMenuCoroutine =
+            CoroutineContainer.Instance.StartCoroutine(CutsceneManager.Instance.ViewMenuActivate(chapter.chapterName));
+        yield return viewMenuCoroutine;
+        _selectedChapter.changesController.ActivateChanges();
     }
 }

@@ -11,14 +11,14 @@ public class CameraManager
     public float StartCameraSize;
     private CoroutineContainer _coroutineContainer;
     
-    public void Initialize(CoroutineContainer coroutineContainer, Camera playerCamera)
+    public void Initialize(Camera playerCamera)
     {
         Instance = this;
         StartCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
         _postProcessingController = new PostProcessingController();
         _postProcessingController.Volume = playerCamera.GetComponent<Volume>();
-        _coroutineContainer = coroutineContainer;
+        _coroutineContainer = CoroutineContainer.Instance;
     }
 
     public void CameraZoom(float changeSize, bool smoothly = false)

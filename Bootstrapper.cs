@@ -29,7 +29,7 @@ public class Bootstrapper : MonoBehaviour
         yield return null;
         
         CameraManager cameraManager = new CameraManager();
-        cameraManager.Initialize(CoroutineContainer.Instance, Camera.main);
+        cameraManager.Initialize(Camera.main);
         yield return null;
         
         ChapterManager chapterManager = new ChapterManager();
@@ -43,7 +43,7 @@ public class Bootstrapper : MonoBehaviour
         yield return null;
         
         DayProcess dayProcess = new DayProcess();
-        dayProcess.Initialize(CoroutineContainer.Instance);
+        dayProcess.Initialize();
         yield return null;
         
         SaveAndLoadManager saveAndLoad = new SaveAndLoadManager();
@@ -52,6 +52,6 @@ public class Bootstrapper : MonoBehaviour
         
         GameMenuManager.Instance.DisableNoVision();
         yield return null;
-        ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
+        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
     }
 }
