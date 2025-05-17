@@ -1,17 +1,13 @@
 using System.Collections;
-using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Bootstrapper : MonoBehaviour
 {
-    [SerializeField] private Image noViewPanel;
-
     private void Start() => StartCoroutine(InitializeGame());
 
     private IEnumerator InitializeGame()
     {
-        noViewPanel.color = Color.black;
+        GameMenuManager.Instance.noViewPanel.color = Color.black;
         
         Player.Instance.Initialize();
         yield return null;
@@ -54,7 +50,8 @@ public class Bootstrapper : MonoBehaviour
         saveAndLoad.Initialize();
         yield return null;
         
-        noViewPanel.DOFade(0f, 1f).SetEase(Ease.OutQuart);
+        GameMenuManager.Instance.DisableNoVision();
+        yield return null;
         ChapterManager.Instance.LoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
     }
 }

@@ -33,7 +33,6 @@ public class FastChangesController
 
     [Header("-Locations")] public string moveToLocation;
     public string moveToLocationSpawn;
-    public bool toLocationWithFade = true;
 
     [Header("-Locks")] public bool lockAllMenu;
 
@@ -58,7 +57,7 @@ public class FastChangesController
             Player.Instance.blockMoveZ = !Player.Instance.blockMoveZ;
         if (moveToLocation != "")
             ManageLocation.Instance.ActivateLocation(moveToLocation,
-                moveToLocationSpawn, toLocationWithFade);
+                moveToLocationSpawn);
 
         if (activateCutscene != "")
             CutsceneManager.Instance.ActivateCutscene(activateCutscene);
