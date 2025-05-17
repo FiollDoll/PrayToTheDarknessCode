@@ -6,7 +6,6 @@ using UnityEngine.Rendering.Universal;
 public class PostProcessingController
 {
     public Volume Volume;
-    public GameObject PlayerCamera;
     private Vignette _vignette;
     private ChromaticAberration _chromaticAberration;
     private FilmGrain _filmGrain;

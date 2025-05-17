@@ -108,7 +108,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                     obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
                     obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
                     int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { Notebook.Instance.ReadNote(number, 2); });
+                    obj.prefabButton.onClick.AddListener(delegate { pageNpc.gameObject.SetActive(false); Notebook.Instance.ReadNote(number, 1); });
                 }
 
                 _npcAdaptiveScrollView.UpdateContentSize();

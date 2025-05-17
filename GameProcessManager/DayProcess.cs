@@ -1,23 +1,31 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class DayProcess : MonoBehaviour
+public class DayProcess
 {
-    [Header("Игровые переменные")] public int day;
-    public int hour, minute;
-    public bool stopTime;
+    public static DayProcess Instance { get; private set; }
+    public int Day;
+    public int Hour, Minute;
+    public bool StopTime;
 
-    private void Initialize() => StartCoroutine(MoveTime());
+    private CoroutineContainer _coroutineContainer;
+
+    public void Initialize(CoroutineContainer coroutineContainer)
+    {
+        Instance = this;
+        _coroutineContainer = coroutineContainer;
+        _coroutineContainer.StartCoroutine(MoveTime());
+    }
 
     private IEnumerator MoveTime()
     {
         yield return new WaitForSeconds(4);
-        if (stopTime) yield break;
-        minute++;
-        if (minute == 30)
+        if (StopTime) yield break;
+        Minute++;
+        if (Minute == 30)
         {
-            hour++;
-            minute = 0;
+            Hour++;
+            Minute = 0;
         }
     }
 }

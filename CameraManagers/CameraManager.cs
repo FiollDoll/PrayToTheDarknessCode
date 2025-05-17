@@ -4,36 +4,35 @@ using System.Collections;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class CameraManager : MonoBehaviour
+public class CameraManager
 {
     public static CameraManager Instance { get; private set; }
-    public Camera playerCamera;
     private PostProcessingController _postProcessingController;
-    [HideInInspector] public float startCameraSize;
-
-    private void Awake() => Instance = this;
-
-    public void Initialize()
+    public float StartCameraSize;
+    private CoroutineContainer _coroutineContainer;
+    
+    public void Initialize(CoroutineContainer coroutineContainer, Camera playerCamera)
     {
-        startCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
+        Instance = this;
+        StartCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
         _postProcessingController = new PostProcessingController();
-        _postProcessingController.PlayerCamera = playerCamera.gameObject;
         _postProcessingController.Volume = playerCamera.GetComponent<Volume>();
+        _coroutineContainer = coroutineContainer;
     }
 
     public void CameraZoom(float changeSize, bool smoothly = false)
     {
         if (smoothly)
-            StartCoroutine(SmoothlyZoom(changeSize));
+            _coroutineContainer.StartCoroutine(SmoothlyZoom(changeSize));
         else
-            Player.Instance.virtualCamera.m_Lens.FieldOfView = startCameraSize + changeSize;
+            Player.Instance.virtualCamera.m_Lens.FieldOfView = StartCameraSize + changeSize;
     }
 
     private IEnumerator SmoothlyZoom(float changeSize)
     {
         if (changeSize == 0)
-            changeSize = startCameraSize - Player.Instance.virtualCamera.m_Lens.FieldOfView;
+            changeSize = StartCameraSize - Player.Instance.virtualCamera.m_Lens.FieldOfView;
 
         if (changeSize < 0) // Если отрицательное
         {
@@ -56,20 +55,20 @@ public class CameraManager : MonoBehaviour
     public void SetVolumeProfile(VolumeProfile volume) => _postProcessingController.SetVolumeProfile(volume);
 
     public void SetNewVignetteSmoothness(float newValue, float speed = 1f) =>
-        StartCoroutine(_postProcessingController.SetVignetteSmoothness(newValue, speed));
+        _coroutineContainer.StartCoroutine(_postProcessingController.SetVignetteSmoothness(newValue, speed));
 
     public void SetNewChromaticAberration(float newIntensity, float speed = 1f) =>
-        StartCoroutine(_postProcessingController.SetChromaticAberration(newIntensity, speed));
+        _coroutineContainer.StartCoroutine(_postProcessingController.SetChromaticAberration(newIntensity, speed));
 
     public void SetNewFilmGrain(float newIntensity, float speed = 1f, FilmGrainLookupParameter newType = null) =>
-        StartCoroutine(_postProcessingController.SetFilmGrain(newIntensity, speed, newType));
+        _coroutineContainer.StartCoroutine(_postProcessingController.SetFilmGrain(newIntensity, speed, newType));
 
     public void SetNewBloom(float newIntensity, float speed = 1f, Color newColor = default) =>
-        StartCoroutine(_postProcessingController.SetBloom(newIntensity, speed, newColor));
+        _coroutineContainer.StartCoroutine(_postProcessingController.SetBloom(newIntensity, speed, newColor));
 
     public void SetNewContrastColorAdjusments(float speed = 1f, float newContrast = 0f, Color newColor = default) =>
-        StartCoroutine(_postProcessingController.SetContrastColorAdjusments(newContrast, newColor, speed));
+        _coroutineContainer.StartCoroutine(_postProcessingController.SetContrastColorAdjusments(newContrast, newColor, speed));
 
     public void SetNewSaturationColorAdjusments(float speed = 1f, float newSaturation = 0f, Color newColor = default) =>
-        StartCoroutine(_postProcessingController.SetSaturationColorAdjusments(newSaturation, newColor, speed));
+        _coroutineContainer.StartCoroutine(_postProcessingController.SetSaturationColorAdjusments(newSaturation, newColor, speed));
 }

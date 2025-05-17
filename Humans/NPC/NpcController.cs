@@ -62,6 +62,7 @@ public class NpcController : MonoBehaviour, IHumanable
             _playerInCollider = false;
     }
 
+    // Переделать под корутины
     private void FixedUpdate()
     {
         if (!_playerInCollider && moveToPlayer)

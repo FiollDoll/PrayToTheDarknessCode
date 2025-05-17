@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +9,11 @@ public class QuestsManager : MonoBehaviour
     [SerializeField] private Quest[] allQuests = new Quest[0];
     private Dictionary<string, Quest> _allQuestsDict = new Dictionary<string, Quest>();
 
-    private void Awake()
+    private void Awake() => Instance = this;
+    
+
+    public void Initialize()
     {
-        Instance = this;
         foreach (Quest quest in allQuests)
             _allQuestsDict.Add(quest.questName, quest);
     }
