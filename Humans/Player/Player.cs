@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
@@ -73,7 +72,7 @@ public class Player : MonoBehaviour, IHumanable
             else
             {
                 _rb.linearVelocity =
-                    new Vector3(horiz * (moveSpeed + changeSpeed + 2), 0, vert * (moveSpeed + changeSpeed + 2));
+                    new Vector3(horiz * (moveSpeed + changeSpeed + 2.5f), 0, vert * (moveSpeed + changeSpeed + 2.5f));
                 _animator.SetBool("walk", false);
                 _animator.SetBool("run", (horiz != 0 || vert != 0));
             }

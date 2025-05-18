@@ -17,9 +17,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
     private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
     [Header("Current dialog")] public int totalStep;
-    private Dialog _activatedDialog;
-    private StepBranch _selectedBranch;
-    private DialogStep _selectedStep;
+    [HideInInspector] public Dialog activatedDialog;
+    [HideInInspector] public StepBranch selectedBranch;
+    [HideInInspector] public DialogStep selectedStep;
     private List<Npc> _npcInTotalDialog = new List<Npc>();
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
     [SerializeField] private Npc nothingNpc; // Костыль. Вырезать
@@ -62,6 +62,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
         _mainDialogMenuTransform.DOPivotY(3f, 0.01f);
         _choiceDialogMenuTransform.DOPivotY(3f, 0.01f);
+        activatedDialog = null;
+        selectedBranch = null;
+        selectedStep = null;
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -81,7 +84,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// <returns></returns>
     private bool CanChoice()
     {
-        return _selectedBranch.choices.Count != 0 && totalStep == _selectedBranch.dialogSteps.Count;
+        return selectedBranch.choices.Count != 0 && totalStep == selectedBranch.dialogSteps.Count;
     }
 
     public void ManageActivationMenu()
@@ -95,7 +98,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     {
         if (!CanChoice()) // Потом уже управление менюшками
         {
-            switch (_activatedDialog.styleOfDialog)
+            switch (activatedDialog.styleOfDialog)
             {
                 case Dialog.DialogStyle.Main:
                     mainDialogMenu.gameObject.SetActive(true);
@@ -123,19 +126,19 @@ public class DialogsManager : MonoBehaviour, IMenuable
         if (newDialog == null) return;
         if (newDialog.read) return;
 
-        if (_activatedDialog != null)
+        if (activatedDialog != null)
         {
             totalStep = 0;
             StopAllCoroutines();
         }
 
-        _activatedDialog = newDialog;
-        _selectedBranch = _activatedDialog.stepBranches[0];
-        _selectedStep = _selectedBranch.dialogSteps[0];
-        Player.Instance.canMove = _activatedDialog.canMove;
-        Interactions.Instance.lockInter = !_activatedDialog.canInter;
-        if (!_activatedDialog.moreRead)
-            _activatedDialog.read = true;
+        activatedDialog = newDialog;
+        selectedBranch = activatedDialog.stepBranches[0];
+        selectedStep = selectedBranch.dialogSteps[0];
+        Player.Instance.canMove = activatedDialog.canMove;
+        Interactions.Instance.lockInter = !activatedDialog.canInter;
+        if (!activatedDialog.moreRead)
+            activatedDialog.read = true;
         _canStepNext = false;
 
         dialogMenu.gameObject.SetActive(true);
@@ -143,7 +146,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
         CameraManager.Instance.CameraZoom(-5f, true);
         TextManager.EndCursedText(textDialogMain);
 
-        StartCoroutine(ActivateUIMainMenuWithDelay(_activatedDialog.mainPanelStartDelay));
+        StartCoroutine(ActivateUIMainMenuWithDelay(activatedDialog.mainPanelStartDelay));
 
         if (!CanChoice())
             DialogUpdateAction();
@@ -159,9 +162,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
         _canStepNext = false;
         Interactions.Instance.lockInter = false;
 
-        if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+        if (activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
             GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionToClose);
-        else if (_activatedDialog.darkAfterEnd)
+        else if (activatedDialog.darkAfterEnd)
             GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionToClose);
         else
             DoActionToClose();
@@ -193,7 +196,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
             Player.Instance.canMove = true;
             TextManager.EndCursedText(textDialogMain);
             Player.Instance.virtualCamera.Follow = Player.Instance.transform;
-            _activatedDialog = null;
+            activatedDialog = null;
             _canStepNext = true;
         });
     }
@@ -214,15 +217,15 @@ public class DialogsManager : MonoBehaviour, IMenuable
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
-        for (int i = 0; i < _selectedBranch.choices.Count; i++)
+        for (int i = 0; i < selectedBranch.choices.Count; i++)
         {
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 choicesContainer.transform);
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                _selectedBranch.choices[i].textQuestion.text;
+                selectedBranch.choices[i].textQuestion.text;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
-            if (_selectedBranch.choices[i].read)
+            if (selectedBranch.choices[i].read)
                 obj.GetComponent<Button>().interactable = false;
         }
 
@@ -235,7 +238,7 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// <param name="id"></param>
     private void ActivateChoiceStep(int id)
     {
-        DialogChoice choice = _selectedBranch.choices[id];
+        DialogChoice choice = selectedBranch.choices[id];
         if (choice.nameNewBranch == "") // Быстрое закрытие диалога
             DialogCLose();
         else
@@ -250,9 +253,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     private void ChangeDialogBranch(string nameOfBranch)
     {
-        StepBranch newBranch = _activatedDialog.FindBranch(nameOfBranch);
-        _selectedBranch = newBranch;
-        _selectedStep = _selectedBranch.dialogSteps[0];
+        StepBranch newBranch = activatedDialog.FindBranch(nameOfBranch);
+        selectedBranch = newBranch;
+        selectedStep = selectedBranch.dialogSteps[0];
         ActivateDialogWindow();
 
         if (!CanChoice())
@@ -269,9 +272,9 @@ public class DialogsManager : MonoBehaviour, IMenuable
         bool AddStep()
         {
             totalStep++;
-            if (totalStep != _selectedBranch.dialogSteps.Count)
+            if (totalStep != selectedBranch.dialogSteps.Count)
             {
-                _selectedStep = _selectedBranch.dialogSteps[totalStep];
+                selectedStep = selectedBranch.dialogSteps[totalStep];
                 DialogUpdateAction();
                 return true;
             }
@@ -296,51 +299,51 @@ public class DialogsManager : MonoBehaviour, IMenuable
     /// </summary>
     private void DialogUpdateAction()
     {
-        _selectedStep.UpdateStep();
+        selectedStep.UpdateStep();
 
-        if (_selectedStep.totalNpcName != "nothing" && !_npcInTotalDialog.Contains(_selectedStep.totalNpc))
-            _npcInTotalDialog.Add(_selectedStep.totalNpc);
+        if (selectedStep.totalNpcName != "nothing" && !_npcInTotalDialog.Contains(selectedStep.totalNpc))
+            _npcInTotalDialog.Add(selectedStep.totalNpc);
 
 
-        if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.Main)
+        if (activatedDialog.styleOfDialog is Dialog.DialogStyle.Main)
         {
-            textNameMain.text = _selectedStep.totalNpc.nameOfNpc.text;
+            textNameMain.text = selectedStep.totalNpc.nameOfNpc.text;
             SetIcon();
         }
-        else if (_activatedDialog.styleOfDialog is Dialog.DialogStyle.BigPicture)
+        else if (activatedDialog.styleOfDialog is Dialog.DialogStyle.BigPicture)
         {
-            textDialogBigPicture.text = _selectedStep.totalNpc.nameOfNpc.text;
-            if (_selectedStep.bigPictureName != "") // Меняем
-                bigPicture.sprite = _selectedStep.GetBigPicture();
+            textDialogBigPicture.text = selectedStep.totalNpc.nameOfNpc.text;
+            if (selectedStep.bigPictureName != "") // Меняем
+                bigPicture.sprite = selectedStep.GetBigPicture();
         }
 
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
             if (!totalNpc.canMeet) continue;
-            if (totalNpc.nameOfNpc != _selectedStep.totalNpc.nameOfNpc) continue;
+            if (totalNpc.nameOfNpc != selectedStep.totalNpc.nameOfNpc) continue;
             if (Player.Instance.familiarNpc.Contains(totalNpc)) continue;
             Player.Instance.familiarNpc.Add(totalNpc);
             break;
         }
 
-        if (_selectedStep.cursedText)
+        if (selectedStep.cursedText)
             TextManager.SetCursedText(textDialogMain, Random.Range(5, 40));
         else
             StartCoroutine(SetText());
 
-        _selectedStep.fastChanges.ActivateChanges();
+        selectedStep.fastChanges.ActivateChanges();
 
-        CutsceneManager.Instance.ActivateCutsceneStep(_selectedStep.activateCutsceneStep);
+        CutsceneManager.Instance.ActivateCutsceneStep(selectedStep.activateCutsceneStep);
 
-        if (_selectedStep.stepSpeech != "")
-            AudioManager.Instance.PlaySpeech(_selectedStep.GetSpeech());
+        if (selectedStep.stepSpeech != "")
+            AudioManager.Instance.PlaySpeech(selectedStep.GetSpeech());
         else
             AudioManager.Instance.StopSpeech();
     }
 
     private void SetIcon()
     {
-        if (_selectedStep.totalNpc.nameInWorld == "nothing") return;
+        if (selectedStep.totalNpc.nameInWorld == "nothing") return;
 
         firstTalkerIcon.color = dontSelectedColor;
         secondTalkerIcon.color = dontSelectedColor;
@@ -348,18 +351,18 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
         switch (_npcInTotalDialog.Count)
         {
-            case > 0 when _selectedStep.totalNpc == _npcInTotalDialog[0]:
-                firstTalkerIcon.sprite = _selectedStep.icon;
+            case > 0 when selectedStep.totalNpc == _npcInTotalDialog[0]:
+                firstTalkerIcon.sprite = selectedStep.icon;
                 firstTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
                 firstTalkerIcon.color = Color.white;
                 break;
-            case > 1 when _selectedStep.totalNpc == _npcInTotalDialog[1]:
-                secondTalkerIcon.sprite = _selectedStep.icon;
+            case > 1 when selectedStep.totalNpc == _npcInTotalDialog[1]:
+                secondTalkerIcon.sprite = selectedStep.icon;
                 secondTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
                 secondTalkerIcon.color = Color.white;
                 break;
-            case > 2 when _selectedStep.totalNpc == _npcInTotalDialog[2]:
-                thirdTalkerIcon.sprite = _selectedStep.icon;
+            case > 2 when selectedStep.totalNpc == _npcInTotalDialog[2]:
+                thirdTalkerIcon.sprite = selectedStep.icon;
                 thirdTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
                 thirdTalkerIcon.color = Color.white;
                 break;
@@ -380,8 +383,8 @@ public class DialogsManager : MonoBehaviour, IMenuable
 
     private void Update()
     {
-        if (_activatedDialog == null) return;
-        if (_selectedStep.delayAfterNext == 0)
+        if (activatedDialog == null) return;
+        if (selectedStep.delayAfterNext == 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -391,12 +394,12 @@ public class DialogsManager : MonoBehaviour, IMenuable
                 {
                     _animatingText = false;
                     StopAllCoroutines();
-                    if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                        textDialogMain.text = _selectedStep.dialogText.text;
-                    else if (_activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
-                        textDialogBigPicture.text = _selectedStep.dialogText.text;
+                    if (activatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
+                        textDialogMain.text = selectedStep.dialogText.text;
+                    else if (activatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+                        textDialogBigPicture.text = selectedStep.dialogText.text;
                     else
-                        textDialogSub.text = _selectedStep.dialogText.text;
+                        textDialogSub.text = selectedStep.dialogText.text;
                 }
                 else
                     DialogMoveNext();
@@ -414,13 +417,13 @@ public class DialogsManager : MonoBehaviour, IMenuable
         textDialogBigPicture.text = "";
         textDialogSub.text = "";
         _animatingText = true;
-        char[] textChar = _selectedStep.dialogText.text.ToCharArray();
+        char[] textChar = selectedStep.dialogText.text.ToCharArray();
         foreach (char tChar in textChar)
         {
-            if (!_animatingText && _activatedDialog != null) continue;
-            if (_activatedDialog?.styleOfDialog == Dialog.DialogStyle.Main)
+            if (!_animatingText && activatedDialog != null) continue;
+            if (activatedDialog?.styleOfDialog == Dialog.DialogStyle.Main)
                 textDialogMain.text += tChar;
-            else if (_activatedDialog?.styleOfDialog == Dialog.DialogStyle.BigPicture)
+            else if (activatedDialog?.styleOfDialog == Dialog.DialogStyle.BigPicture)
                 textDialogBigPicture.text += tChar;
             else
                 textDialogSub.text += tChar;
@@ -428,10 +431,10 @@ public class DialogsManager : MonoBehaviour, IMenuable
         }
 
         _animatingText = false;
-        if (_selectedStep.delayAfterNext != 0)
+        if (selectedStep.delayAfterNext != 0)
         {
-            yield return new WaitForSeconds(_selectedStep.delayAfterNext);
-            if (totalStep + 1 == _activatedDialog?.stepBranches.Count) // Завершение
+            yield return new WaitForSeconds(selectedStep.delayAfterNext);
+            if (totalStep + 1 == activatedDialog?.stepBranches.Count) // Завершение
                 DialogCLose();
             else
             {

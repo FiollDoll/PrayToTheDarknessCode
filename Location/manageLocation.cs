@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using TMPro;
+using UnityEngine.Serialization;
 
 public class ManageLocation : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class ManageLocation : MonoBehaviour
     private readonly Dictionary<string, Location> _locationsDict = new Dictionary<string, Location>();
     private GameObject _player;
     private CinemachineConfiner _cinemachineConfiner;
-    private NpcController[] _npсs;
+    public NpcController[] npсs;
 
     private void Awake()
     {
@@ -35,29 +36,16 @@ public class ManageLocation : MonoBehaviour
 
         _player = Player.Instance.gameObject;
         _cinemachineConfiner = Player.Instance.virtualCamera.GetComponent<CinemachineConfiner>();
-        _npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
+        npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
 
         LocationInteraction[] locationInteractions = FindObjectsByType<LocationInteraction>(FindObjectsSortMode.None);
         foreach (LocationInteraction locationInteraction in locationInteractions)
             locationInteraction.Initialize();
     }
 
-    /// <summary>
-    /// Активировать новую локацию
-    /// </summary>
-    /// <param name="locationName"></param>
-    /// <param name="spawn"></param>
-    public void ActivateLocation(string locationName, string spawn = "")
-    {
-        totalLocation = GetLocation(locationName);
-        StartCoroutine(LocationSetup(totalLocation, spawn));
-
-        SaveAndLoadManager.Instance.SaveGame();
-    }
-
     public void FastMoveToLocation(string locationName)
     {
-        ActivateLocation(locationName, "fromStairs"); // Для кнопок лестницы
+        StartCoroutine(ActivateLocation(locationName, "fromStairs")); // Для кнопок лестницы
         Interactions.Instance.floorChangeMenu.gameObject.SetActive(false);
     }
 
@@ -79,28 +67,32 @@ public class ManageLocation : MonoBehaviour
         return _locationsDict.GetValueOrDefault(locationName);
     }
 
-    private IEnumerator LocationSetup(Location location, string spawn = "")
+    public IEnumerator ActivateLocation(string locationName, string spawn = "")
     {
+        totalLocation = GetLocation(locationName);
         GameMenuManager.Instance.noViewPanel.color = Color.black;
         yield return null;
         
         if (spawn == "")
-            spawn = location.spawns[0].name;
+            spawn = totalLocation.spawns[0].name;
         
-        Vector3 newPosition = location.GetSpawn(spawn).position;
+        Vector3 newPosition = totalLocation.GetSpawn(spawn).position;
         _player.transform.position = newPosition;
-        _cinemachineConfiner.m_BoundingVolume = location.wallsForCamera;
+        _cinemachineConfiner.m_BoundingVolume = totalLocation.wallsForCamera;
         Player.Instance.canMove = false;
         Player.Instance.virtualCamera.m_Lens.OrthographicSize =
-            CameraManager.Instance.StartCameraSize + location.modifCamera;
+            CameraManager.Instance.StartCameraSize + totalLocation.modifCamera;
 
 
-        foreach (NpcController totalNpc in _npсs)
+        foreach (NpcController totalNpc in npсs)
         {
             if (totalNpc.moveToPlayer)
                 totalNpc.gameObject.transform.position = newPosition;
         }
         
+        yield return null;
+        SaveAndLoadManager.Instance.SaveGame();
+
         yield return new WaitForSeconds(1.5f);
         GameMenuManager.Instance.DisableNoVision();
         yield return null;

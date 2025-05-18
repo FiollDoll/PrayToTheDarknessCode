@@ -55,10 +55,12 @@ public class GameMenuManager: MonoBehaviour
         sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
     }
     
-    public void DisableNoVision() => noViewPanel.DOFade(0f, 1f).SetEase(Ease.OutQuart);
+    public void DisableNoVision() => noViewPanel.DOFade(0f, 2f).SetEase(Ease.OutQuart);
     
     private void Update()
     {
         TextManager.UpdateCursedText();
+        if (Input.GetKeyDown(KeyCode.C))
+            DevConsole.Instance.ManageDevMenu();
     }
 }
