@@ -16,6 +16,11 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
     public string QuestName;
     public string questName => QuestName;
 
+    public void Initialize()
+    {
+        
+    }
+    
     public bool CanInteractByQuest()
     {
         if (questName == "")

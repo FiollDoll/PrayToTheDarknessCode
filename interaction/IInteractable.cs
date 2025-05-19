@@ -8,6 +8,7 @@ public interface IInteractable
     public bool autoUse { get; } // Автоматическое использование
     public string itemNameUse { get; } // Возможность использовать определенный предмет
     public string questName { get; }
+    public void Initialize();
     public bool CanInteractByQuest();
     public void DoInteraction();
 }

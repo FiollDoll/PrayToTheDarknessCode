@@ -22,7 +22,7 @@ public class LocationInteraction : MonoBehaviour, IInteractable
     public void Initialize()
     {
         _location = ManageLocation.Instance.GetLocation(locationName);
-        if (useLocationName)
+        if (useLocationName && _location)
             label = _location.name;
     }
 

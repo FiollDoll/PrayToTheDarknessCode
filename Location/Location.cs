@@ -2,34 +2,46 @@
 using MyBox;
 using UnityEngine;
 
-[System.Serializable]
-public class Location
+[CreateAssetMenu(fileName = "Location")]
+public class Location : ScriptableObject
 {
     [Header("Основные настройки")] public string gameName;
     public LanguageSetting name;
 
     public bool locked, autoEnter;
-    public Collider wallsForCamera;
     public float modifCamera;
     public SpawnInLocation[] spawns = new SpawnInLocation[0];
     private Dictionary<string, SpawnInLocation> _spawnsDict = new Dictionary<string, SpawnInLocation>();
     public Transform transformOfStairs; // Если есть лестница
-    private GameObject _locationGameObject;
-    public Dictionary<GameObject, IInteractable> LocationInteractableObjects = new Dictionary<GameObject, IInteractable>();
+    [HideInInspector] public Collider wallsForCamera;
+    [HideInInspector] public GameObject locationGameObject;
+    public Dictionary<GameObject, IInteractable> LocationInteractableObjects;
 
     public void UpdateLocationGameInScene()
     {
-        _locationGameObject = GameObject.Find(gameName);
-        if (_locationGameObject != null)
+        locationGameObject = GameObject.Find(gameName);
+        LocationInteractableObjects = new Dictionary<GameObject, IInteractable>();
+        if (locationGameObject)
         {
-            Transform[] children = _locationGameObject.GetComponentsInChildren<Transform>(true);
+            wallsForCamera = locationGameObject.transform.Find("wallForCam").GetComponent<Collider>();
+            Transform[] children = locationGameObject.GetComponentsInChildren<Transform>(true);
 
             // Перебор всех дочерних элементов
             foreach (Transform child in children)
             {
                 if (child.HasComponent<IInteractable>())
                     LocationInteractableObjects.Add(child.gameObject, child.GetComponent<IInteractable>());
+
+                // Начисляем спавны
+                foreach (SpawnInLocation spawn in spawns)
+                {
+                    if (spawn.name != child.name) continue;
+                    spawn.spawn = child;
+                    break;
+                }
             }
+
+            UpdateSpawnsDict();
         }
         else
             Debug.Log("Location obj dont found");
@@ -38,7 +50,7 @@ public class Location
     /// <summary>
     /// Метод для инициализации словаря спавнов. Только один раз!
     /// </summary>
-    public void UpdateSpawnsDict()
+    private void UpdateSpawnsDict()
     {
         foreach (SpawnInLocation spawn in spawns)
             _spawnsDict.TryAdd(spawn.name, spawn);
@@ -49,15 +61,12 @@ public class Location
     /// </summary>
     /// <param name="spawnName"></param>
     /// <returns></returns>
-    public Transform GetSpawn(string spawnName)
-    {
-        return _spawnsDict.GetValueOrDefault(spawnName).spawn;
-    }
+    public Transform GetSpawn(string spawnName) => _spawnsDict.GetValueOrDefault(spawnName).spawn;
 }
 
 [System.Serializable]
 public class SpawnInLocation
 {
     public string name;
-    public Transform spawn;
+    [HideInInspector] public Transform spawn;
 }

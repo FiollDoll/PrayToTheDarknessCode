@@ -19,7 +19,7 @@ public class SaveAndLoadManager
         gameSave.x = Player.Instance.transform.position.x;
         gameSave.y = Player.Instance.transform.position.y;
         gameSave.z = Player.Instance.transform.position.z;
-        gameSave.playerLocationName = ManageLocation.Instance.totalLocation.gameName;
+        gameSave.playerLocationName = ManageLocation.Instance.TotalLocation.gameName;
         //gameSave.playerNotes = Notebook.Instance.playerNotes;
         //gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
         gameSave.familiarNpc = Player.Instance.familiarNpc;
@@ -36,7 +36,7 @@ public class SaveAndLoadManager
         
         if (gameSave != null)
         {
-            ManageLocation.Instance.totalLocation = ManageLocation.Instance.GetLocation(gameSave.playerLocationName);
+            ManageLocation.Instance.TotalLocation = ManageLocation.Instance.GetLocation(gameSave.playerLocationName);
             Notebook.Instance.playerNotes = gameSave.playerNotes;
             InventoryManager.Instance.inventory.playerItems = gameSave.playerItems;
             Player.Instance.ChangeStyle(gameSave.playerStyle);

@@ -16,7 +16,8 @@ public class Bootstrapper : MonoBehaviour
         npcManager.Initialize();
         yield return null;
         
-        ManageLocation.Instance.Initialize();
+        ManageLocation manageLocation = new ManageLocation();
+        manageLocation.Initialize();
         yield return null;
         
         QuestsManager.Instance.Initialize();
