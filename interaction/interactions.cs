@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using UnityEngine;
 using TMPro;
 
@@ -11,15 +10,14 @@ public class Interactions : MonoBehaviour
     [SerializeField] private TextMeshProUGUI interLabelText;
     public GameObject floorChangeMenu;
     [SerializeField] private Material materialOfSelected;
-
-
+    
     private RaycastHit _selectedCollider;
 
     private void Awake()
     {
         Instance = this;
     }
-
+    
     /// <summary>
     /// Можно ли активировать взаимодействие?
     /// </summary>
@@ -123,7 +121,31 @@ public class Interactions : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
                 SelectedInteraction?.DoInteraction();
         }
+        
+        // Доделать
+        /*
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Player.Instance.canMove = false;
+            foreach (KeyValuePair<GameObject, IInteractable> interactableObject in totalLocation
+                         .LocationInteractableObjects)
+            {
+                var obj = Instantiate(labelTextPrefab,
+                    interactableObject.Key.transform.position - new Vector3(0, 0, 1f),
+                    Quaternion.identity,
+                    containerOfLabels.transform);
+                obj.GetComponent<TextMeshProUGUI>().text = interactableObject.Value.interLabel;
+            }
+        }
 
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            Player.Instance.canMove = true;
+            foreach (Transform labels in containerOfLabels.transform)
+                Destroy(labels.gameObject);
+        }
+        */
+        
         interLabelText.text = "";
         if (SelectedInteraction != null)
             interLabelText.text = SelectedInteraction.interLabel;
