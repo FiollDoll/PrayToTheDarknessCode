@@ -36,8 +36,9 @@ public class Bootstrapper : MonoBehaviour
         ChapterManager chapterManager = new ChapterManager();
         chapterManager.Initialize();
         yield return null;
-        
-        CutsceneManager.Instance.Initialize();
+
+        CutsceneManager cutsceneManager = new CutsceneManager();
+        cutsceneManager.Initialize();
         yield return null;
         
         DialogsManager.Instance.Initialize();

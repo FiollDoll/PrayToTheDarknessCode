@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using LastFramework;
 using DG.Tweening;
+using TMPro;
 
 public class GameMenuManager: MonoBehaviour
 {
     public static GameMenuManager Instance { get; private set; }
     [HideInInspector] public bool lockAnyMenu;
     private List<IMenuable> _allGameMenu = new List<IMenuable>();
+    public GameObject startViewMenu;
     public Image noViewPanel;
 
     private void Awake() => Instance = this;
@@ -62,5 +65,18 @@ public class GameMenuManager: MonoBehaviour
         TextManager.UpdateCursedText();
         if (Input.GetKeyDown(KeyCode.C))
             DevConsole.Instance.ManageDevMenu();
+    }
+    
+    public IEnumerator ViewMenuActivate(string text)
+    {
+        if (DevConsole.Instance.devMode) yield break;
+        TextMeshProUGUI newText = startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        Image newImage = startViewMenu.transform.Find("Panel").GetComponent<Image>();
+        newText.text = text;
+        newText.color = Color.white;
+        newImage.color = Color.black;
+        yield return new WaitForSeconds(3f);
+        newImage.DOFade(0f, 1f).SetEase(Ease.OutQuart);
+        newText.DOFade(0f, 1f).SetEase(Ease.OutQuart);
     }
 }

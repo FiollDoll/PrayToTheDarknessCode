@@ -1,49 +1,45 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using TMPro;
 using DG.Tweening;
 using Cinemachine;
 
-public class CutsceneManager : MonoBehaviour
+public class CutsceneManager
 {
     public static CutsceneManager Instance { get; private set; }
-    public Cutscene totalCutscene;
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
-    [SerializeField] private Cutscene[] allCutscene = new Cutscene[0];
+    public Cutscene TotalCutscene;
+    private CinemachineVirtualCamera _virtualCamera;
     private readonly Dictionary<string, Cutscene> _allCutsceneDict = new Dictionary<string, Cutscene>();
-    [SerializeField] private GameObject startViewMenu;
-    [SerializeField] private bool svBlock; // dev only
-    [SerializeField] private Image noViewPanel;
-
-    private void Awake() => Instance = this;
-
+    
     public void Initialize()
     {
-        foreach (Cutscene cutscene in allCutscene)
+        Instance = this;
+        Cutscene[] allCutscenes = Resources.LoadAll<Cutscene>("Cutscenes/");
+        foreach (Cutscene cutscene in allCutscenes)
             _allCutsceneDict.Add(cutscene.name, cutscene);
-
-        if (!svBlock) // dev only
-            startViewMenu.gameObject.SetActive(true);
+        
+        _virtualCamera = Player.Instance.virtualCamera;
+        
+        if (!DevConsole.Instance.devMode) // dev only
+            GameMenuManager.Instance.startViewMenu.gameObject.SetActive(true);
     }
 
     public void ActivateCutscene(string cutsceneName)
     {
         if (string.IsNullOrEmpty(cutsceneName)) return;
-        totalCutscene = new Cutscene();
-        totalCutscene = _allCutsceneDict.GetValueOrDefault(cutsceneName);
-        if (totalCutscene != null)
+        TotalCutscene = new Cutscene();
+        TotalCutscene = _allCutsceneDict.GetValueOrDefault(cutsceneName);
+        if (TotalCutscene != null)
             ActivateCutsceneStep(0);
     }
 
     private void StepDo(int step) // Выполнить шаг катсцены.
     {
-        CutsceneStep totalCutsceneStep = totalCutscene.steps[step];
+        CutsceneStep totalCutsceneStep = TotalCutscene.steps[step];
         if (totalCutsceneStep.chapterNext != "")
             ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName(totalCutsceneStep.chapterNext));
         if (totalCutsceneStep.startViewMenuActivate != "")
-            StartCoroutine(ViewMenuActivate(totalCutsceneStep.startViewMenuActivate));
+            CoroutineContainer.Instance.StartCoroutine(GameMenuManager.Instance.ViewMenuActivate(totalCutsceneStep.startViewMenuActivate));
 
         if (totalCutsceneStep.closeDialogMenu)
             DialogsManager.Instance.DialogCLose();
@@ -88,37 +84,18 @@ public class CutsceneManager : MonoBehaviour
 
     public void ActivateCutsceneStep(int step)
     {
-        if (totalCutscene == null || step == -1)
+        if (TotalCutscene == null || step == -1)
             return;
 
-        if (totalCutscene.steps[step].timeDarkStart != 0)
+        if (TotalCutscene.steps[step].timeDarkStart != 0)
         {
-            Sequence sequence = DOTween.Sequence();
-            Tween stepSequence =
-                noViewPanel.DOFade(100f, totalCutscene.steps[step].timeDarkStart).SetEase(Ease.InQuart);
-            stepSequence.OnComplete(() => { StepDo(step); });
-            sequence.Append(stepSequence);
-            sequence.Append(noViewPanel.DOFade(0f, totalCutscene.steps[step].timeDarkEnd).SetEase(Ease.OutQuart));
-            sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+            
         }
         else
             StepDo(step);
         
-        if (totalCutscene.steps[step].delayAndNext != 0)
-            StartCoroutine(DelayAndNext(totalCutscene.steps[step].delayAndNext, step));
-    }
-
-    public IEnumerator ViewMenuActivate(string text)
-    {
-        if (svBlock) yield break;
-        TextMeshProUGUI newText = startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-        Image newImage = startViewMenu.transform.Find("Panel").GetComponent<Image>();
-        newText.text = text;
-        newText.color = Color.white;
-        newImage.color = Color.black;
-        yield return new WaitForSeconds(3f);
-        newImage.DOFade(0f, 1f).SetEase(Ease.OutQuart);
-        newText.DOFade(0f, 1f).SetEase(Ease.OutQuart);
+        if (TotalCutscene.steps[step].delayAndNext != 0)
+            CoroutineContainer.Instance.StartCoroutine(DelayAndNext(TotalCutscene.steps[step].delayAndNext, step));
     }
     
     private IEnumerator DelayAndNext(float delay, int totalStep)

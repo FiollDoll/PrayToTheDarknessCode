@@ -31,7 +31,7 @@ public class ChapterManager
     private IEnumerator LoadChapter(Chapter chapter)
     {
         Coroutine viewMenuCoroutine =
-            CoroutineContainer.Instance.StartCoroutine(CutsceneManager.Instance.ViewMenuActivate(chapter.chapterName));
+            CoroutineContainer.Instance.StartCoroutine(GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName));
         yield return viewMenuCoroutine;
         _selectedChapter.changesController.ActivateChanges();
     }
