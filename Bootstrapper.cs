@@ -40,8 +40,10 @@ public class Bootstrapper : MonoBehaviour
         CutsceneManager cutsceneManager = new CutsceneManager();
         cutsceneManager.Initialize();
         yield return null;
-        
-        DialogsManager.Instance.Initialize();
+
+        DialogsManager dialogsManager = new DialogsManager();
+        dialogsManager.Initialize();
+        DialogUI.Instance.Initialize(dialogsManager);
         yield return null;
         
         DayProcess dayProcess = new DayProcess();

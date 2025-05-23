@@ -36,12 +36,12 @@ public class DevConsole : MonoBehaviour
 
     private IEnumerator UpdateInfo()
     {
-        if (DialogsManager.Instance.activatedDialog != null)
-            dialogText.text = "activated dialog: " + DialogsManager.Instance.activatedDialog.nameDialog + "\n" +
-                              "selected branch: " + DialogsManager.Instance.selectedBranch.branchName + "\n" +
-                              "Talker: " + DialogsManager.Instance.selectedStep.totalNpc.nameInWorld + "\n" +
-                              "Mood: " + DialogsManager.Instance.selectedStep.iconMoodSelected + "\n" +
-                              "TotalStep: " + DialogsManager.Instance.totalStep;
+        if (DialogsManager.Instance.ActivatedDialog != null)
+            dialogText.text = "activated dialog: " + DialogsManager.Instance.ActivatedDialog.nameDialog + "\n" +
+                              "selected branch: " + DialogsManager.Instance.SelectedBranch.branchName + "\n" +
+                              "Talker: " + DialogsManager.Instance.SelectedStep.totalNpc.nameInWorld + "\n" +
+                              "Mood: " + DialogsManager.Instance.SelectedStep.iconMoodSelected + "\n" +
+                              "TotalStep: " + DialogsManager.Instance.TotalStep;
         else
             dialogText.text = "";
         if (ManageLocation.Instance.TotalLocation != null)
