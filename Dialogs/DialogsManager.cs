@@ -52,10 +52,7 @@ public class DialogsManager
         if (newDialog.read) return;
 
         if (ActivatedDialog != null)
-        {
             TotalStep = 0;
-            //StopAllCoroutines();
-        }
 
         ActivatedDialog = newDialog;
         SelectedBranch = ActivatedDialog.stepBranches[0];
@@ -144,7 +141,10 @@ public class DialogsManager
         SelectedStep.UpdateStep();
 
         if (SelectedStep.totalNpcName != "nothing" && !NpcInTotalDialog.Contains(SelectedStep.totalNpc))
+        {
             NpcInTotalDialog.Add(SelectedStep.totalNpc);
+            DialogUI.UpdateTalkersDict(SelectedStep.totalNpc);
+        }
 
         DialogUI.UpdateUI();
 

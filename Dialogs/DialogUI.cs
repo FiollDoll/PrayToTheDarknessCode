@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using LastFramework;
 using TMPro;
@@ -9,26 +10,28 @@ public class DialogUI : MonoBehaviour, IMenuable
 {
     public static DialogUI Instance { get; private set; }
     private DialogsManager _dialogsManager;
-    [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
-    [SerializeField] private Npc nothingNpc; // Костыль. Вырезать
-
-    [Header("Preferences")] [SerializeField]
-    private Color dontSelectedColor;
-
+    
+    [Header("GameObjects")]
     [SerializeField] private GameObject dialogMenu;
-
     public GameObject menu => dialogMenu;
 
     [SerializeField] private GameObject choicesContainer;
 
     [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub, textDialogBigPicture;
+    private TextMeshProUGUI _selectedTextDialog;
     [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu, bigPictureMenu;
     [SerializeField] private Image firstTalkerIcon, secondTalkerIcon, thirdTalkerIcon, iconImageChoice;
+    private Dictionary<Npc, Image> _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     [SerializeField] private Image bigPicture;
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
+    
+    [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
 
-    private bool _animatingText;
+    [Header("Preferences")] [SerializeField]
+    private Color dontSelectedColor;
+
+    private Coroutine _textGenerate;
 
     private void Awake() => Instance = this;
 
@@ -61,12 +64,15 @@ public class DialogUI : MonoBehaviour, IMenuable
             {
                 case Dialog.DialogStyle.Main:
                     mainDialogMenu.gameObject.SetActive(true);
+                    _selectedTextDialog = textDialogMain;
                     break;
                 case Dialog.DialogStyle.BigPicture:
+                    _selectedTextDialog = textDialogBigPicture;
                     GameMenuManager.Instance.ActivateNoVision(1.2f,
                         () => { bigPictureMenu.gameObject.SetActive(true); });
                     break;
                 case Dialog.DialogStyle.SubMain:
+                    _selectedTextDialog = textDialogSub;
                     subDialogMenu.gameObject.SetActive(true);
                     break;
             }
@@ -81,16 +87,8 @@ public class DialogUI : MonoBehaviour, IMenuable
     private void OpenPanels()
     {
         // TODO: переделать
-        _mainDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart)
-            .OnComplete(() =>
-            {
-                /*_canStepNext = true;*/
-            });
-        _choiceDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart)
-            .OnComplete(() =>
-            {
-                /*_canStepNext = true;*/
-            });
+        _mainDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart);
+        _choiceDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart);
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -145,49 +143,49 @@ public class DialogUI : MonoBehaviour, IMenuable
 
     public void UpdateUI()
     {
-        if (_dialogsManager.ActivatedDialog.styleOfDialog is Dialog.DialogStyle.Main)
+        switch (_dialogsManager.ActivatedDialog.styleOfDialog)
         {
-            textNameMain.text = _dialogsManager.SelectedStep.totalNpc.nameOfNpc.text;
-            SetIcon();
-        }
-        else if (_dialogsManager.ActivatedDialog.styleOfDialog is Dialog.DialogStyle.BigPicture)
-        {
-            textDialogBigPicture.text = _dialogsManager.SelectedStep.totalNpc.nameOfNpc.text;
-            if (_dialogsManager.SelectedStep.bigPictureName != "") // Меняем
-                bigPicture.sprite = _dialogsManager.SelectedStep.GetBigPicture();
+            case Dialog.DialogStyle.Main:
+                textNameMain.text = _dialogsManager.SelectedStep.totalNpc.nameOfNpc.text;
+                SetIcon();
+                break;
+            case Dialog.DialogStyle.BigPicture:
+            {
+                if (_dialogsManager.SelectedStep.bigPictureName != "") // Меняем
+                    bigPicture.sprite = _dialogsManager.SelectedStep.GetBigPicture();
+                break;
+            }
         }
 
         if (_dialogsManager.SelectedStep.cursedText)
-            TextManager.SetCursedText(textDialogMain, Random.Range(5, 40));
+            TextManager.SetCursedText(_selectedTextDialog, Random.Range(5, 40));
         else
-            StartCoroutine(SetText());
+            _textGenerate = StartCoroutine(SetText());
     }
 
+    public void UpdateTalkersDict(Npc npc)
+    {
+        _npcAndTalkerIcon.Add(npc, _npcAndTalkerIcon.Count switch
+        {
+            0 => firstTalkerIcon,
+            1 => secondTalkerIcon,
+            2 => thirdTalkerIcon
+        });
+    }
+    
     private void SetIcon()
     {
         if (_dialogsManager.SelectedStep.totalNpc.nameInWorld == "nothing") return;
 
-        firstTalkerIcon.color = dontSelectedColor;
-        secondTalkerIcon.color = dontSelectedColor;
-        thirdTalkerIcon.color = dontSelectedColor;
+        foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
+            talker.Value.color = dontSelectedColor;
 
-        switch (_dialogsManager.NpcInTotalDialog.Count)
+        foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {
-            case > 0 when _dialogsManager.SelectedStep.totalNpc == _dialogsManager.NpcInTotalDialog[0]:
-                firstTalkerIcon.sprite = _dialogsManager.SelectedStep.icon;
-                firstTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
-                firstTalkerIcon.color = Color.white;
-                break;
-            case > 1 when _dialogsManager.SelectedStep.totalNpc == _dialogsManager.NpcInTotalDialog[1]:
-                secondTalkerIcon.sprite = _dialogsManager.SelectedStep.icon;
-                secondTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
-                secondTalkerIcon.color = Color.white;
-                break;
-            case > 2 when _dialogsManager.SelectedStep.totalNpc == _dialogsManager.NpcInTotalDialog[2]:
-                thirdTalkerIcon.sprite = _dialogsManager.SelectedStep.icon;
-                thirdTalkerIcon.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
-                thirdTalkerIcon.color = Color.white;
-                break;
+            if (_dialogsManager.SelectedStep.totalNpc != talker.Key) continue;
+            talker.Value.sprite = _dialogsManager.SelectedStep.icon;
+            talker.Value.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+            talker.Value.color = Color.white;
         }
     }
 
@@ -208,7 +206,6 @@ public class DialogUI : MonoBehaviour, IMenuable
 
     private void DoActionToClose()
     {
-        StopAllCoroutines();
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
         {
@@ -218,34 +215,29 @@ public class DialogUI : MonoBehaviour, IMenuable
             mainDialogMenu.gameObject.SetActive(false);
             subDialogMenu.gameObject.SetActive(false);
             bigPictureMenu.gameObject.SetActive(false);
-            firstTalkerIcon.sprite = nothingNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
-            secondTalkerIcon.sprite = nothingNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
-            thirdTalkerIcon.sprite = nothingNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
+            foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
+                talker.Value.sprite = GameMenuManager.Instance.nullSprite;
 
             //if (_activatedDialog.posAfterEnd)
             //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
             _dialogsManager.DoActionToClose();
         });
+        _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     }
 
     private void Update()
     {
-        if (_dialogsManager.ActivatedDialog == null) return;
+        if (_dialogsManager?.ActivatedDialog == null) return;
         if (_dialogsManager.SelectedStep.delayAfterNext == 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (_animatingText)
+                if (_textGenerate != null)
                 {
-                    _animatingText = false;
-                    StopAllCoroutines();
-                    if (_dialogsManager.ActivatedDialog.styleOfDialog == Dialog.DialogStyle.Main)
-                        textDialogMain.text = _dialogsManager.SelectedStep.dialogText.text;
-                    else if (_dialogsManager.ActivatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
-                        textDialogBigPicture.text = _dialogsManager.SelectedStep.dialogText.text;
-                    else
-                        textDialogSub.text = _dialogsManager.SelectedStep.dialogText.text;
+                    StopCoroutine(_textGenerate);
+                    _textGenerate = null;
+                    _selectedTextDialog.text = _dialogsManager.SelectedStep.dialogText.text;
                 }
                 else
                     _dialogsManager.DialogMoveNext();
@@ -265,24 +257,14 @@ public class DialogUI : MonoBehaviour, IMenuable
     /// <returns></returns>
     private IEnumerator SetText()
     {
-        textDialogMain.text = "";
-        textDialogBigPicture.text = "";
-        textDialogSub.text = "";
-        _animatingText = true;
+        _selectedTextDialog.text = "";
         char[] textChar = _dialogsManager.SelectedStep.dialogText.text.ToCharArray();
         foreach (char tChar in textChar)
         {
-            if (!_animatingText && _dialogsManager.ActivatedDialog != null) continue;
-            if (_dialogsManager.ActivatedDialog?.styleOfDialog == Dialog.DialogStyle.Main)
-                textDialogMain.text += tChar;
-            else if (_dialogsManager.ActivatedDialog?.styleOfDialog == Dialog.DialogStyle.BigPicture)
-                textDialogBigPicture.text += tChar;
-            else
-                textDialogSub.text += tChar;
-            yield return new WaitForSeconds(1f / textChar.Length);
+            _selectedTextDialog.text += tChar;
+            yield return null;
         }
 
-        _animatingText = false;
         if (_dialogsManager.SelectedStep.delayAfterNext != 0)
         {
             yield return new WaitForSeconds(_dialogsManager.SelectedStep.delayAfterNext);
@@ -296,5 +278,7 @@ public class DialogUI : MonoBehaviour, IMenuable
                     ActivateChoiceMenu();
             }
         }
+
+        _textGenerate = null;
     }
 }

@@ -15,6 +15,7 @@ public class GameMenuManager: MonoBehaviour
     private List<IMenuable> _allGameMenu = new List<IMenuable>();
     public GameObject startViewMenu;
     public Image noViewPanel;
+    public Sprite nullSprite;
 
     private void Awake() => Instance = this;
     
