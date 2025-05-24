@@ -36,15 +36,15 @@ public class DevConsole : MonoBehaviour
 
     private IEnumerator UpdateInfo()
     {
-        if (DialogsManager.Instance.ActivatedDialog != null)
-            dialogText.text = "activated dialog: " + DialogsManager.Instance.ActivatedDialog.nameDialog + "\n" +
-                              "selected branch: " + DialogsManager.Instance.SelectedBranch.branchName + "\n" +
+        if (DialogsManager.Instance.SelectedDialog != null)
+            dialogText.text = "Dialog: " + DialogsManager.Instance.SelectedDialog.nameDialog + "\n" +
+                              "Branch: " + DialogsManager.Instance.SelectedBranch.branchName + "\n" +
                               "Talker: " + DialogsManager.Instance.SelectedStep.totalNpc.nameInWorld + "\n" +
                               "Mood: " + DialogsManager.Instance.SelectedStep.iconMoodSelected + "\n" +
                               "TotalStep: " + DialogsManager.Instance.TotalStep;
         else
             dialogText.text = "";
-        if (ManageLocation.Instance.TotalLocation != null)
+        if (ManageLocation.Instance.TotalLocation)
         {
             locationText.text = "";
             locationText.text = "TotalLocation: " + ManageLocation.Instance.TotalLocation.gameName + "\n";
@@ -55,7 +55,7 @@ public class DevConsole : MonoBehaviour
         else
             locationText.text = "";
 
-        playerText.text = "SelectedStyle: " + Player.Instance.selectedStyle +"\n" +
+        playerText.text = "Style: " + Player.Instance.selectedStyle +"\n" +
                           "CanMove: " + Player.Instance.canMove + "\n" +
                           "CanMoveZ: " + !Player.Instance.blockMoveZ +"\n" +
                           "Position: " + Player.Instance.transform.position +"\n";

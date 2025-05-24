@@ -10,10 +10,10 @@ public class DialogsManager
     private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
     [Header("Current dialog")] public int TotalStep;
-    public Dialog ActivatedDialog;
+    public Dialog SelectedDialog;
     public StepBranch SelectedBranch;
     public DialogStep SelectedStep;
-    public List<Npc> NpcInTotalDialog = new List<Npc>();
+    public List<Npc> NpcInSelectedDialog = new List<Npc>();
 
     public void Initialize()
     {
@@ -26,7 +26,7 @@ public class DialogsManager
             dialog.UpdateDialogDicts();
         }
 
-        ActivatedDialog = null;
+        SelectedDialog = null;
         SelectedBranch = null;
         SelectedStep = null;
     }
@@ -51,16 +51,16 @@ public class DialogsManager
         if (newDialog == null) return;
         if (newDialog.read) return;
 
-        if (ActivatedDialog != null)
+        if (SelectedDialog != null)
             TotalStep = 0;
 
-        ActivatedDialog = newDialog;
-        SelectedBranch = ActivatedDialog.stepBranches[0];
+        SelectedDialog = newDialog;
+        SelectedBranch = SelectedDialog.stepBranches[0];
         SelectedStep = SelectedBranch.dialogSteps[0];
-        Player.Instance.canMove = ActivatedDialog.canMove;
-        Interactions.Instance.lockInter = !ActivatedDialog.canInter;
-        if (!ActivatedDialog.moreRead)
-            ActivatedDialog.read = true;
+        Player.Instance.canMove = SelectedDialog.canMove;
+        Interactions.Instance.lockInter = !SelectedDialog.canInter;
+        if (!SelectedDialog.moreRead)
+            SelectedDialog.read = true;
 
         DialogUI.ActivateDialogWindow();
         CameraManager.Instance.CameraZoom(-5f, true);
@@ -74,25 +74,25 @@ public class DialogsManager
     /// <summary>
     /// Закрытие диалога
     /// </summary>
-    public void DialogCLose() => DialogUI.DialogCLose();
+    public void DialogCLose() => DialogUI.CLoseDialogWindow();
 
     /// <summary>
     /// Выполнить действия для закрытия диалога
     /// </summary>
-    public void DoActionToClose()
+    public void DoActionsToClose()
     {
         TotalStep = 0;
         //if (_activatedDialog.posAfterEnd)
         //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
-        NpcInTotalDialog = new List<Npc>();
+        NpcInSelectedDialog = new List<Npc>();
         Player.Instance.canMove = true;
         Player.Instance.virtualCamera.Follow = Player.Instance.transform;
-        ActivatedDialog = null;
+        SelectedDialog = null;
     }
 
     public void ChangeDialogBranch(string nameOfBranch)
     {
-        StepBranch newBranch = ActivatedDialog.FindBranch(nameOfBranch);
+        StepBranch newBranch = SelectedDialog.FindBranch(nameOfBranch);
         SelectedBranch = newBranch;
         SelectedStep = SelectedBranch.dialogSteps[0];
         DialogUI.ActivateDialogWindow();
@@ -140,13 +140,13 @@ public class DialogsManager
     {
         SelectedStep.UpdateStep();
 
-        if (SelectedStep.totalNpcName != "nothing" && !NpcInTotalDialog.Contains(SelectedStep.totalNpc))
+        if (SelectedStep.totalNpcName != "nothing" && !NpcInSelectedDialog.Contains(SelectedStep.totalNpc))
         {
-            NpcInTotalDialog.Add(SelectedStep.totalNpc);
+            NpcInSelectedDialog.Add(SelectedStep.totalNpc);
             DialogUI.UpdateTalkersDict(SelectedStep.totalNpc);
         }
 
-        DialogUI.UpdateUI();
+        DialogUI.UpdateDialogWindow();
 
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {

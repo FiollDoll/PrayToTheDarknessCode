@@ -56,11 +56,11 @@ public class DialogUI : MonoBehaviour, IMenuable
     public void ActivateDialogWindow()
     {
         dialogMenu.gameObject.SetActive(true);
-        StartCoroutine(ActivateUIMainMenuWithDelay(_dialogsManager.ActivatedDialog.mainPanelStartDelay));
+        StartCoroutine(ActivateUIMainMenuWithDelay(_dialogsManager.SelectedDialog.mainPanelStartDelay));
         TextManager.EndCursedText(textDialogMain);
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
-            switch (_dialogsManager.ActivatedDialog.styleOfDialog)
+            switch (_dialogsManager.SelectedDialog.styleOfDialog)
             {
                 case Dialog.DialogStyle.Main:
                     mainDialogMenu.gameObject.SetActive(true);
@@ -130,7 +130,7 @@ public class DialogUI : MonoBehaviour, IMenuable
     {
         DialogChoice choice = _dialogsManager.SelectedBranch.choices[id];
         if (choice.nameNewBranch == "") // Быстрое закрытие диалога
-            DialogCLose();
+            CLoseDialogWindow();
         else
         {
             choiceDialogMenu.gameObject.SetActive(false);
@@ -141,9 +141,9 @@ public class DialogUI : MonoBehaviour, IMenuable
         }
     }
 
-    public void UpdateUI()
+    public void UpdateDialogWindow()
     {
-        switch (_dialogsManager.ActivatedDialog.styleOfDialog)
+        switch (_dialogsManager.SelectedDialog.styleOfDialog)
         {
             case Dialog.DialogStyle.Main:
                 textNameMain.text = _dialogsManager.SelectedStep.totalNpc.nameOfNpc.text;
@@ -190,21 +190,21 @@ public class DialogUI : MonoBehaviour, IMenuable
     }
 
     /// <summary>
-    /// Закрытие диалога
+    /// Закрытие окна диалога
     /// </summary>
-    public void DialogCLose()
+    public void CLoseDialogWindow()
     {
         Interactions.Instance.lockInter = false;
 
-        if (_dialogsManager.ActivatedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
-            GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionToClose);
-        else if (_dialogsManager.ActivatedDialog.darkAfterEnd)
-            GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionToClose);
+        if (_dialogsManager.SelectedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+            GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionsToClose);
+        else if (_dialogsManager.SelectedDialog.darkAfterEnd)
+            GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionsToClose);
         else
-            DoActionToClose();
+            DoActionsToClose();
     }
 
-    private void DoActionToClose()
+    private void DoActionsToClose()
     {
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
@@ -221,14 +221,14 @@ public class DialogUI : MonoBehaviour, IMenuable
             //if (_activatedDialog.posAfterEnd)
             //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
 
-            _dialogsManager.DoActionToClose();
+            _dialogsManager.DoActionsToClose();
         });
         _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     }
 
     private void Update()
     {
-        if (_dialogsManager?.ActivatedDialog == null) return;
+        if (_dialogsManager?.SelectedDialog == null) return;
         if (_dialogsManager.SelectedStep.delayAfterNext == 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -268,8 +268,8 @@ public class DialogUI : MonoBehaviour, IMenuable
         if (_dialogsManager.SelectedStep.delayAfterNext != 0)
         {
             yield return new WaitForSeconds(_dialogsManager.SelectedStep.delayAfterNext);
-            if (_dialogsManager.TotalStep + 1 == _dialogsManager.ActivatedDialog?.stepBranches.Count) // Завершение
-                DialogCLose();
+            if (_dialogsManager.TotalStep + 1 == _dialogsManager.SelectedDialog?.stepBranches.Count) // Завершение
+                CLoseDialogWindow();
             else
             {
                 if (!_dialogsManager.CanChoice())
