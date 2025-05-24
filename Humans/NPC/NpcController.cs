@@ -41,8 +41,10 @@ public class NpcController : MonoBehaviour, IHumanable
         switch (other.gameObject.tag)
         {
             case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
+                ManageLocation.Instance.NpcAtTotalLocation.Remove(this);
                 transform.position = ManageLocation.Instance.GetLocation(locationOfPointName).spawns[0].spawn.position;
                 totalLocation = locationOfPointName;
+                ManageLocation.Instance.NpcAtTotalLocation.Add(this);
                 break;
             case "Player":
                 _playerInCollider = true;

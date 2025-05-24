@@ -22,8 +22,10 @@ public class Bootstrapper : MonoBehaviour
         
         QuestsManager.Instance.Initialize();
         yield return null;
-        
-        Notebook.Instance.Initialize();
+
+        NotesManager notesManager = new NotesManager();
+        notesManager.Initialize();
+        NotebookUI.Instance.Initialize(notesManager);
         yield return null;
         
         InventoryManager.Instance.Initialize();
@@ -56,6 +58,10 @@ public class Bootstrapper : MonoBehaviour
         
         GameMenuManager.Instance.DisableNoVision();
         yield return null;
-        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
+        
+        if (!DevConsole.Instance.devMode)
+            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
+        else
+            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("test"));
     }
 }

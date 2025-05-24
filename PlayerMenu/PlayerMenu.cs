@@ -1,77 +1,29 @@
-using System;
+using System.Collections;
 using UnityEngine;
 using MyBox;
 
 public class PlayerMenu : MonoBehaviour, IMenuable
 {
-    [SerializeField] private RectTransform[] buttonsPlayerMenuTransform = new RectTransform[0];
-    [Header("Prefabs")] [SerializeField] private GameObject buttonNotePrefab;
-    [SerializeField] private GameObject buttonNpcPrefab;
-    
-    [Foldout("Scene objects", true)] [SerializeField]
-    private GameObject playerMenu;
+    [SerializeField] private GameObject playerMenu, notebookMenu;
 
     public GameObject menu => playerMenu;
-
-    [Header("NotesPage")] [SerializeField] private GameObject pageNote;
-    [SerializeField] private GameObject notesContainer;
-    private AdaptiveScrollView _notesAdaptiveScrollView;
-
-    [Header("QuestsPage")] [SerializeField]
-    private GameObject pageQuest;
-
-    [SerializeField] private GameObject questsContainer;
-    private AdaptiveScrollView _questsAdaptiveScrollView;
-
-    [Header("NpcPage")] [SerializeField] private GameObject pageNpc;
-    [SerializeField] private GameObject npcContainer;
-    private AdaptiveScrollView _npcAdaptiveScrollView;
 
     [Header("InventoryPage")] [SerializeField]
     private GameObject pageInventory;
 
-    private AdaptiveScrollView _inventoryAdaptiveScrollView;
-
-
-    private void Start()
-    {
-        _notesAdaptiveScrollView = pageNote.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
-        _questsAdaptiveScrollView = pageQuest.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
-        _npcAdaptiveScrollView = pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
-    }
-
-    public void ManageActivationMenu()
+    public void ManagePlayerMenu()
     {
         if (!playerMenu.activeSelf)
         {
             if (GameMenuManager.Instance.CanMenuOpen())
-            {
-                playerMenu.gameObject.SetActive(true);
-                // TODO: сделать выбор по клавишам(какую стр открыть)
-                ChoicePagePlayerMenu(0);
-            }
+                StartCoroutine(ActivatePlayerMenu());
         }
         else
-            playerMenu.gameObject.SetActive(false);
-
-        Player.Instance.canMove = !playerMenu.activeSelf;
+            StartCoroutine(DisablePlayerMenu());
     }
 
     public void ChoicePagePlayerMenu(int page)
     {
-        // Начальное
-        pageNote.gameObject.SetActive(false);
-        pageQuest.gameObject.SetActive(false);
-        pageNpc.gameObject.SetActive(false);
-        InventoryManager.Instance.ManageInventoryPanel(false);
-        foreach (RectTransform rt in buttonsPlayerMenuTransform)
-            rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, 50f);
-
-        // Работа с активной кнопкой
-        buttonsPlayerMenuTransform[page].anchoredPosition =
-            new Vector2(buttonsPlayerMenuTransform[page].anchoredPosition.x,
-                buttonsPlayerMenuTransform[page].anchoredPosition.y + 5.5f);
-
         // Открытие новых
         switch (page)
         {
@@ -79,46 +31,45 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                 InventoryManager.Instance.ManageInventoryPanel(true);
                 break;
             case 1: // Записки
-                pageNote.gameObject.SetActive(true);
-                foreach (Transform child in notesContainer.transform)
-                    Destroy(child.gameObject);
-
-                for (int i = 0; i < Notebook.Instance.playerNotes.Count; i++)
-                {
-                    var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
-                    if (Notebook.Instance.playerNotes[i].read)
-                        obj.prefabNameTextMeshProUGUI.text = Notebook.Instance.playerNotes[i].name.text;
-                    else
-                        obj.prefabNameTextMeshProUGUI.text = "(*)" + Notebook.Instance.playerNotes[i].name;
-                    int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { Notebook.Instance.ReadNote(number); });
-                }
-
-                _notesAdaptiveScrollView.UpdateContentSize();
+                notebookMenu.SetActive(true);
+                NotebookUI.Instance.OpenNotes();
                 break;
             case 2: // НПС
-                pageNpc.gameObject.SetActive(true);
-                foreach (Transform child in npcContainer.transform)
-                    Destroy(child.gameObject);
-
-                for (int i = 0; i < Player.Instance.familiarNpc.Count; i++)
-                {
-                    var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
-                    Npc selectedNpc = Player.Instance.familiarNpc[i];
-                    obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
-                    obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
-                    int number = i;
-                    obj.prefabButton.onClick.AddListener(delegate { pageNpc.gameObject.SetActive(false); Notebook.Instance.ReadNote(number, 1); });
-                }
-
-                _npcAdaptiveScrollView.UpdateContentSize();
+                notebookMenu.SetActive(true);
+                NotebookUI.Instance.OpenRelation();
                 break;
         }
+    }
+
+    public void CloseNotebookMenu()
+    {
+        notebookMenu.SetActive(false);
+        NotebookUI.Instance.CloseNotes();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
-            ManageActivationMenu();
+            ManagePlayerMenu();
+    }
+
+    private IEnumerator ActivatePlayerMenu()
+    {
+        Player.Instance.canMove = false;
+        Coroutine cameraZoom = StartCoroutine(CameraManager.Instance.SmoothlyZoom(-10f));
+        yield return cameraZoom;
+        // Сделать плавное изменение slider
+        playerMenu.gameObject.SetActive(true);
+    }
+
+    private IEnumerator DisablePlayerMenu()
+    {
+        Player.Instance.canMove = true;
+        Coroutine cameraZoom = StartCoroutine(CameraManager.Instance.SmoothlyZoom(10f));
+        yield return cameraZoom;
+        // Сделать плавное изменение slider
+        playerMenu.gameObject.SetActive(false);
+        notebookMenu.SetActive(false);
+        NotebookUI.Instance.CloseNotes();
     }
 }

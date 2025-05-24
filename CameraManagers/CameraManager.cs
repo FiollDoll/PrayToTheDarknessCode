@@ -29,7 +29,7 @@ public class CameraManager
             Player.Instance.virtualCamera.m_Lens.FieldOfView = StartCameraSize + changeSize;
     }
 
-    private IEnumerator SmoothlyZoom(float changeSize)
+    public IEnumerator SmoothlyZoom(float changeSize)
     {
         if (changeSize == 0)
             changeSize = StartCameraSize - Player.Instance.virtualCamera.m_Lens.FieldOfView;

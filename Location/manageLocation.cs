@@ -7,11 +7,11 @@ public class ManageLocation
 {
     public static ManageLocation Instance { get; private set; }
     public Location TotalLocation;
+    public List<NpcController> NpcAtTotalLocation = new List<NpcController>();
 
     private readonly Dictionary<string, Location> _locationsDict = new Dictionary<string, Location>();
     private GameObject _player;
     private CinemachineConfiner _cinemachineConfiner;
-    public NpcController[] npсs;
 
     public void Initialize()
     {
@@ -25,7 +25,6 @@ public class ManageLocation
 
         _player = Player.Instance.gameObject;
         _cinemachineConfiner = Player.Instance.virtualCamera.GetComponent<CinemachineConfiner>();
-        //npсs = FindObjectsByType<NpcController>(FindObjectsSortMode.None);
     }
 
     public void FastMoveToLocation(string locationName)
@@ -48,7 +47,6 @@ public class ManageLocation
     /// <param name="locationName"></param>
     /// <returns></returns>
     public Location GetLocation(string locationName) => _locationsDict.GetValueOrDefault(locationName);
-    
 
     public IEnumerator ActivateLocation(string locationName, string spawn = "")
     {
@@ -66,12 +64,18 @@ public class ManageLocation
         Player.Instance.virtualCamera.m_Lens.OrthographicSize =
             CameraManager.Instance.StartCameraSize + TotalLocation.modifCamera;
 
-        // Todo: переделать
-        //foreach (NpcController totalNpc in npсs)
-        //{
-            //if (totalNpc.moveToPlayer)
-                //totalNpc.gameObject.transform.position = newPosition;
-        //}
+        NpcAtTotalLocation = new List<NpcController>();
+        foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
+        {
+            if (totalNpc.NpcController is NpcController npcController)
+            {
+                if (npcController.totalLocation == TotalLocation.gameName)
+                    NpcAtTotalLocation.Add(npcController);
+                
+                if (npcController.moveToPlayer)
+                    npcController.gameObject.transform.position = newPosition;
+            }
+        }
         
         yield return null;
         // Инициализируем взаимодействия, если требуется

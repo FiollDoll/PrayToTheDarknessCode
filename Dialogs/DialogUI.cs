@@ -46,7 +46,7 @@ public class DialogUI : MonoBehaviour, IMenuable
         _dialogsManager.DialogUI = this;
     }
 
-    public void ManageActivationMenu()
+    public void ManagePlayerMenu()
     {
     }
 

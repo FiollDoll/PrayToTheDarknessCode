@@ -48,9 +48,8 @@ public class DevConsole : MonoBehaviour
         {
             locationText.text = "";
             locationText.text = "TotalLocation: " + ManageLocation.Instance.TotalLocation.gameName + "\n";
-            // Переделать
-            //foreach (NpcController npc in ManageLocation.Instance.npсs)
-                //locationText.text += npc.npcEntity?.nameInWorld + ", ";
+            foreach (NpcController npc in ManageLocation.Instance.NpcAtTotalLocation)
+                locationText.text += npc.gameObject.name + ", ";
         }
         else
             locationText.text = "";

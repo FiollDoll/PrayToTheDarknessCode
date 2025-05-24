@@ -90,7 +90,7 @@ public class FastChangesController
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);
         foreach (string note in addNote)
-            Notebook.Instance.AddNote(note);
+            NotesManager.Instance.AddNote(note);
         
         foreach (ChangeRelationship changer in changeRelationships)
         {

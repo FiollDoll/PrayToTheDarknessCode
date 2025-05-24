@@ -4,5 +4,5 @@ public interface IMenuable
 {
     public GameObject menu { get; }
 
-    public void ManageActivationMenu();
+    public void ManagePlayerMenu();
 }
