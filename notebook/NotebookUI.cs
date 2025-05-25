@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -25,10 +26,8 @@ public class NotebookUI : MonoBehaviour
     [SerializeField] private Slider sliderHuman;
     [SerializeField] private Image iconHuman;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private void Awake() => Instance = this;
+    
 
     public void Initialize(NotesManager notesManager)
     {
@@ -37,44 +36,9 @@ public class NotebookUI : MonoBehaviour
         _npcAdaptiveScrollView = pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
     }
 
-    public void OpenNotes()
-    {
-        pageNotes.SetActive(true);
-        foreach (Transform child in notesContainer.transform)
-            Destroy(child.gameObject);
+    public void OpenNotes() => StartCoroutine(OpenNoteMenu());
 
-        for (int i = 0; i < _notesManager.PlayerNotes.Count; i++)
-        {
-            var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
-            int number = i;
-            obj.prefabButton.onClick.AddListener(delegate { ReadNote(number); });
-        }
-
-        _notesAdaptiveScrollView.UpdateContentSize();
-    }
-
-    public void OpenRelation()
-    {
-        pageNpc.SetActive(true);
-        foreach (Transform child in npcContainer.transform)
-            Destroy(child.gameObject);
-
-        for (int i = 0; i < Player.Instance.familiarNpc.Count; i++)
-        {
-            var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
-            Npc selectedNpc = Player.Instance.familiarNpc[i];
-            obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
-            obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
-            int number = i;
-            obj.prefabButton.onClick.AddListener(delegate
-            {
-                pageNpc.gameObject.SetActive(false);
-                ReadNote(number, 1);
-            });
-        }
-
-        _npcAdaptiveScrollView.UpdateContentSize();
-    }
+    public void OpenRelation() => StartCoroutine(OpenNpcMenu());
 
     private void ReadNote(int num, int mode = 0)
     {
@@ -82,14 +46,16 @@ public class NotebookUI : MonoBehaviour
         {
             case 0:
             {
+                pageNotes.SetActive(false);
                 pageReadNote.gameObject.SetActive(true);
                 headerMain.text = _notesManager.PlayerNotes[num].noteName.text;
                 noteMain.text = _notesManager.PlayerNotes[num].description.text;
                 break;
             }
             case 1:
-                Npc selectedNpc = Player.Instance.familiarNpc[num];
+                pageNpc.SetActive(false);
                 pageReadHuman.gameObject.SetActive(true);
+                Npc selectedNpc = Player.Instance.familiarNpc[num];
                 headerHuman.text = selectedNpc.nameOfNpc.text;
                 noteHuman.text = selectedNpc.description.text;
                 iconHuman.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
@@ -107,5 +73,44 @@ public class NotebookUI : MonoBehaviour
         pageNpc.SetActive(false);
         pageReadHuman.gameObject.SetActive(false);
         pageReadNote.gameObject.SetActive(false);
+    }
+
+    private IEnumerator OpenNoteMenu()
+    {
+        pageNotes.SetActive(true);
+        foreach (Transform child in notesContainer.transform)
+            Destroy(child.gameObject);
+
+        yield return null;
+        
+        for (int i = 0; i < _notesManager.PlayerNotes.Count; i++)
+        {
+            var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
+            int number = i;
+            obj.prefabButton.onClick.AddListener(delegate { ReadNote(number); });
+        }
+        yield return null;
+        _notesAdaptiveScrollView.UpdateContentSize();
+    }
+
+    private IEnumerator OpenNpcMenu()
+    {
+        pageNpc.SetActive(true);
+        foreach (Transform child in npcContainer.transform)
+            Destroy(child.gameObject);
+        
+        yield return null;
+
+        for (int i = 0; i < Player.Instance.familiarNpc.Count; i++)
+        {
+            var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
+            Npc selectedNpc = Player.Instance.familiarNpc[i];
+            obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
+            obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
+            int number = i;
+            obj.prefabButton.onClick.AddListener(delegate{ReadNote(number, 1);});
+        }
+        yield return null;
+        _npcAdaptiveScrollView.UpdateContentSize();
     }
 }

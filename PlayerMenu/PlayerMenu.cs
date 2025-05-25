@@ -5,7 +5,7 @@ using MyBox;
 public class PlayerMenu : MonoBehaviour, IMenuable
 {
     [SerializeField] private GameObject playerMenu, notebookMenu;
-
+    [SerializeField] private GameObject buttonsPage;
     public GameObject menu => playerMenu;
 
     [Header("InventoryPage")] [SerializeField]
@@ -24,6 +24,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
     public void ChoicePagePlayerMenu(int page)
     {
+        buttonsPage.SetActive(false);
         // Открытие новых
         switch (page)
         {
@@ -45,6 +46,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     {
         notebookMenu.SetActive(false);
         NotebookUI.Instance.CloseNotes();
+        buttonsPage.SetActive(true);
     }
 
     private void Update()
@@ -59,7 +61,8 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         Coroutine cameraZoom = StartCoroutine(CameraManager.Instance.SmoothlyZoom(-10f));
         yield return cameraZoom;
         // Сделать плавное изменение slider
-        playerMenu.gameObject.SetActive(true);
+        playerMenu.SetActive(true);
+        buttonsPage.SetActive(true);
     }
 
     private IEnumerator DisablePlayerMenu()
@@ -68,7 +71,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         Coroutine cameraZoom = StartCoroutine(CameraManager.Instance.SmoothlyZoom(10f));
         yield return cameraZoom;
         // Сделать плавное изменение slider
-        playerMenu.gameObject.SetActive(false);
+        playerMenu.SetActive(false);
         notebookMenu.SetActive(false);
         NotebookUI.Instance.CloseNotes();
     }

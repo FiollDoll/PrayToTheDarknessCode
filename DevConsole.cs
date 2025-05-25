@@ -45,6 +45,12 @@ public class DevConsole : MonoBehaviour
         foreach (Note note in NotesManager.Instance.Notes)
             NotesManager.Instance.AddNote(note.gameName);
     }
+
+    public void UnlockMove()
+    {
+        Player.Instance.blockMoveZ = false;
+        Player.Instance.canMove = true;
+    }
     
     public void ActivateInfo()
     {
