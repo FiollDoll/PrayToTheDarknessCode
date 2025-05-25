@@ -12,20 +12,39 @@ public class DevConsole : MonoBehaviour
     private void Awake() => Instance = this;
 
     public void ManageDevMenu()
-    { 
+    {
         if (devMode)
-            devMenu.SetActive(!devMenu.activeSelf); 
+            devMenu.SetActive(!devMenu.activeSelf);
     }
-    
+
     public void ActivatePresets()
     {
         infoMenu.SetActive(false);
         presetsMenu.SetActive(true);
     }
 
-    public void ChangeLocation(string locationName) => StartCoroutine(ManageLocation.Instance.ActivateLocation(locationName));
+    public void ChangeLocation(string locationName) =>
+        StartCoroutine(ManageLocation.Instance.ActivateLocation(locationName));
 
     public void ChangeStyle(string newStyle) => Player.Instance.ChangeStyle(newStyle);
+
+    public void ChangeChapter(string chapter) =>
+        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName(chapter));
+
+    public void UnlockAllRelationship()
+    {
+        foreach (Npc npc in NpcManager.Instance.AllNpc)
+        {
+            if (npc.canMeet)
+                Player.Instance.familiarNpc.Add(npc);
+        }
+    }
+
+    public void UnlockAllNotes()
+    {
+        foreach (Note note in NotesManager.Instance.Notes)
+            NotesManager.Instance.AddNote(note.gameName);
+    }
     
     public void ActivateInfo()
     {
@@ -54,10 +73,10 @@ public class DevConsole : MonoBehaviour
         else
             locationText.text = "";
 
-        playerText.text = "Style: " + Player.Instance.selectedStyle +"\n" +
+        playerText.text = "Style: " + Player.Instance.selectedStyle + "\n" +
                           "CanMove: " + Player.Instance.canMove + "\n" +
-                          "CanMoveZ: " + !Player.Instance.blockMoveZ +"\n" +
-                          "Position: " + Player.Instance.transform.position +"\n";
+                          "CanMoveZ: " + !Player.Instance.blockMoveZ + "\n" +
+                          "Position: " + Player.Instance.transform.position + "\n";
 
         yield return null;
         if (infoMenu.activeSelf)

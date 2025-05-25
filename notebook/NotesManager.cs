@@ -5,14 +5,15 @@ public class NotesManager
 {
     public static NotesManager Instance { get; private set; }
     public List<Note> PlayerNotes = new List<Note>();
-    
+
+    public Note[] Notes;
     private readonly Dictionary<string, Note> _gameNotesDict = new Dictionary<string, Note>();
 
     public void Initialize()
     {
         Instance = this;
-        Note[] notes = Resources.LoadAll<Note>("Notes/");
-        foreach (Note note in notes)
+        Notes = Resources.LoadAll<Note>("Notes/");
+        foreach (Note note in Notes)
             _gameNotesDict.TryAdd(note.gameName, note);
     }
 
