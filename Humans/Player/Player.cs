@@ -12,12 +12,14 @@ public class Player : MonoBehaviour, IHumanable
     [Header("Stats")] public bool canMove;
     public bool blockMoveZ;
     private bool _run;
+    public float addiction, sanity;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     [HideInInspector] public List<Npc> familiarNpc = new List<Npc>();
 
     [Header("Preferences")] [SerializeField]
     private GameObject model;
+
     public CinemachineVirtualCamera virtualCamera;
 
     private Rigidbody _rb;

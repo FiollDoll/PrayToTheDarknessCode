@@ -88,6 +88,7 @@ public class NotebookUI : MonoBehaviour
             var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
             int number = i;
             obj.prefabButton.onClick.AddListener(delegate { ReadNote(number); });
+            yield return null;
         }
         yield return null;
         _notesAdaptiveScrollView.UpdateContentSize();
@@ -109,6 +110,7 @@ public class NotebookUI : MonoBehaviour
             obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standart);
             int number = i;
             obj.prefabButton.onClick.AddListener(delegate{ReadNote(number, 1);});
+            yield return null;
         }
         yield return null;
         _npcAdaptiveScrollView.UpdateContentSize();
