@@ -30,7 +30,7 @@ public class ManageLocation
     public void FastMoveToLocation(string locationName)
     {
         CoroutineContainer.Instance.StartCoroutine(ActivateLocation(locationName, "fromStairs")); // Для кнопок лестницы
-        Interactions.Instance.floorChangeMenu.gameObject.SetActive(false);
+        //Interactions.Instance.floorChangeMenu.gameObject.SetActive(false);
     }
 
     /// <summary>

@@ -10,21 +10,18 @@ public class Player : MonoBehaviour, IHumanable
     public string selectedStyle { get; set; } = "standard";
 
     [Header("Stats")] public bool canMove;
-    private bool _run;
     public bool blockMoveZ;
+    private bool _run;
     [SerializeField] private float moveSpeed;
     [HideInInspector] public float changeSpeed;
     [HideInInspector] public List<Npc> familiarNpc = new List<Npc>();
 
-    [Header("Preferences")] [SerializeField] private Transform rayStart;
-    [SerializeField] private GameObject model;
-    [SerializeField] private LayerMask layerMaskInteractAuto;
+    [Header("Preferences")] [SerializeField]
+    private GameObject model;
     public CinemachineVirtualCamera virtualCamera;
 
-    private Collider _enteredCollider;
     private Rigidbody _rb;
     private Animator _animator;
-    private bool _hasInteracted;
 
     private void Awake() => Instance = this;
 
@@ -59,7 +56,7 @@ public class Player : MonoBehaviour, IHumanable
             _run = true;
         if (Input.GetKeyUp(KeyCode.LeftShift))
             _run = false;
-        
+
         if (canMove)
         {
             if (!_run)
@@ -76,6 +73,7 @@ public class Player : MonoBehaviour, IHumanable
                 _animator.SetBool("walk", false);
                 _animator.SetBool("run", (horiz != 0 || vert != 0));
             }
+
             model.transform.localScale = horiz switch
             {
                 > 0 => new Vector3(-1, 1, 1),
@@ -88,24 +86,5 @@ public class Player : MonoBehaviour, IHumanable
             _rb.linearVelocity = Vector3.zero;
             _animator.SetBool("walk", false);
         }
-
-        var newColliders = Physics.OverlapSphere(rayStart.position, 0.5f, layerMaskInteractAuto);
-
-        if (newColliders.Length > 0)
-        {
-            _enteredCollider = newColliders[0];
-            if (_enteredCollider.GetComponent<Collider>().TryGetComponent(out IInteractable interactable))
-            {
-                Interactions.Instance.EnteredInteraction = interactable;
-                if (Interactions.Instance.CanActivateInteraction(interactable) && interactable.autoUse &&
-                    !_hasInteracted)
-                {
-                    interactable.DoInteraction();
-                    _hasInteracted = true;
-                }
-            }
-        }
-        else
-            _hasInteracted = false;
     }
 }

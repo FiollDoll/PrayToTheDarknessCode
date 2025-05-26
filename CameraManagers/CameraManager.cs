@@ -34,21 +34,13 @@ public class CameraManager
         if (changeSize == 0)
             changeSize = StartCameraSize - Player.Instance.virtualCamera.m_Lens.FieldOfView;
 
-        if (changeSize < 0) // Если отрицательное
+        float change = changeSize < 0 ? -1f : 1f;
+        float targetSize = Player.Instance.virtualCamera.m_Lens.FieldOfView + changeSize;
+
+        while (Player.Instance.virtualCamera.m_Lens.FieldOfView != targetSize) // Пока не целое
         {
-            for (float i = 0; i > changeSize; i--)
-            {
-                Player.Instance.virtualCamera.m_Lens.FieldOfView -= 1f;
-                yield return new WaitForSeconds(0.01f);
-            }
-        }
-        else if (changeSize > 0)
-        {
-            for (float i = 0; i < changeSize; i++)
-            {
-                Player.Instance.virtualCamera.m_Lens.FieldOfView += 1f;
-                yield return new WaitForSeconds(0.01f);
-            }
+            Player.Instance.virtualCamera.m_Lens.FieldOfView += change;
+            yield return null;
         }
     }
 

@@ -92,10 +92,10 @@ public class InventoryManager : MonoBehaviour
         {
             if (selectedItem.useInCollider) // Только для enteredColliders
             {
-                if (Interactions.Instance.EnteredInteraction == null ||
-                    (Interactions.Instance.EnteredInteraction != null &&
-                     Interactions.Instance.EnteredInteraction.itemNameUse != selectedItem.nameInGame))
-                    buttonItemActivate.gameObject.SetActive(false);
+                /*if (Interactions.Instance.EnteredInteractions == null ||
+                    (Interactions.Instance.EnteredInteractions != null &&
+                     Interactions.Instance.EnteredInteractions.itemNameUse != selectedItem.nameInGame))
+                    buttonItemActivate.gameObject.SetActive(false);*/
             }
         }
         else
