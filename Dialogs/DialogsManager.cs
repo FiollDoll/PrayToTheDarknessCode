@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VNCreator;
 
 public class DialogsManager
 {
@@ -7,39 +8,29 @@ public class DialogsManager
     public DialogUI DialogUI;
 
     // Все диалоги
-    private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
+    private readonly Dictionary<string, StoryObject> _dialogsDict = new Dictionary<string, StoryObject>();
 
-    [Header("Current dialog")] public int TotalStep;
-    public Dialog SelectedDialog;
-    public StepBranch SelectedBranch;
-    public DialogStep SelectedStep;
     public List<Npc> NpcInSelectedDialog = new List<Npc>();
 
     public void Initialize()
     {
         Instance = this;
-        DialogsLoader dl = new DialogsLoader();
-        List<Dialog> dialogs = dl.LoadDialogs();
-        foreach (Dialog dialog in dialogs)
-        {
-            _dialogsDict.TryAdd(dialog.nameDialog, dialog);
-            dialog.UpdateDialogDicts();
-        }
-
-        SelectedDialog = null;
-        SelectedBranch = null;
-        SelectedStep = null;
+        //DialogsLoader dl = new DialogsLoader();
+        //List<Dialog> dialogs = dl.LoadDialogs();
+        StoryObject[] storyObjects = Resources.LoadAll<StoryObject>("Dialogs");
+        foreach (StoryObject dialog in storyObjects)
+            _dialogsDict.TryAdd(dialog.name, dialog);
     }
 
     /// <summary>
     /// Поиск диалога
     /// </summary>
-    private Dialog GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
+    private StoryObject GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
 
     /// <summary>
     /// Проверка - пора ли активировать выборы и есть ли они вообще?
     /// </summary>
-    public bool CanChoice() => SelectedBranch.choices.Count != 0 && TotalStep == SelectedBranch.dialogSteps.Count;
+    public bool CanChoice() => DialogUI.currentNode.choices > 1;
 
     /// <summary>
     ///  Активирует новый диалог
@@ -47,20 +38,16 @@ public class DialogsManager
     /// <param name="nameDialog">Название диалога</param>
     public void ActivateDialog(string nameDialog) // Старт диалога
     {
-        Dialog newDialog = GetDialog(nameDialog);
-        if (newDialog == null) return;
-        if (newDialog.read) return;
+        StoryObject newDialog = GetDialog(nameDialog);
+        if (!newDialog) return;
+        //if (newDialog.read) return;
 
-        if (SelectedDialog != null)
-            TotalStep = 0;
-
-        SelectedDialog = newDialog;
-        SelectedBranch = SelectedDialog.stepBranches[0];
-        SelectedStep = SelectedBranch.dialogSteps[0];
-        Player.Instance.canMove = SelectedDialog.canMove;
-        Interactions.Instance.lockInter = !SelectedDialog.canInter;
-        if (!SelectedDialog.moreRead)
-            SelectedDialog.read = true;
+        DialogUI.story = newDialog;
+        DialogUI.currentNode = DialogUI.story.GetFirstNode();
+        Player.Instance.canMove = DialogUI.currentNode.canMove;
+        Interactions.Instance.lockInter = !DialogUI.currentNode.canInter;
+        //if (!SelectedDialog.moreRead)
+            //SelectedDialog.read = true;
 
         DialogUI.ActivateDialogWindow();
         CameraManager.Instance.CameraZoom(-5f, true);
@@ -81,26 +68,11 @@ public class DialogsManager
     /// </summary>
     public void DoActionsToClose()
     {
-        TotalStep = 0;
         //if (_activatedDialog.posAfterEnd)
         //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
         NpcInSelectedDialog = new List<Npc>();
         Player.Instance.canMove = true;
         Player.Instance.virtualCamera.Follow = Player.Instance.transform;
-        SelectedDialog = null;
-    }
-
-    public void ChangeDialogBranch(string nameOfBranch)
-    {
-        StepBranch newBranch = SelectedDialog.FindBranch(nameOfBranch);
-        SelectedBranch = newBranch;
-        SelectedStep = SelectedBranch.dialogSteps[0];
-        DialogUI.ActivateDialogWindow();
-
-        if (!CanChoice())
-            DialogUpdateAction();
-        else
-            DialogUI.ActivateChoiceMenu();
     }
 
     /// <summary>
@@ -108,29 +80,14 @@ public class DialogsManager
     /// </summary>
     public void DialogMoveNext()
     {
-        bool AddStep()
-        {
-            TotalStep++;
-            if (TotalStep != SelectedBranch.dialogSteps.Count)
-            {
-                SelectedStep = SelectedBranch.dialogSteps[TotalStep];
-                DialogUpdateAction();
-                return true;
-            }
-
-            // Продолжение не найдено, выдаём false
-            return false;
-        }
-
         // Окончание обычного диалога
-        if (!AddStep())
+        if (DialogUI.lastNode)
         {
-            // Если выбора нет.
-            if (!CanChoice())
-                DialogCLose();
-            else
-                DialogUI.ActivateChoiceMenu();
+            DialogCLose();
+            return;
         }
+        DialogUI.NextNode(0);
+        DialogUpdateAction();
     }
 
     /// <summary>
@@ -138,31 +95,30 @@ public class DialogsManager
     /// </summary>
     public void DialogUpdateAction()
     {
-        SelectedStep.UpdateStep();
-
-        if (SelectedStep.totalNpcName != "nothing" && !NpcInSelectedDialog.Contains(SelectedStep.totalNpc))
+        Npc npc = NpcManager.Instance.GetNpcByName(DialogUI.currentNode.characterName);
+        if (DialogUI.currentNode.characterName != "." && !NpcInSelectedDialog.Contains(npc))
         {
-            NpcInSelectedDialog.Add(SelectedStep.totalNpc);
-            DialogUI.UpdateTalkersDict(SelectedStep.totalNpc);
+            NpcInSelectedDialog.Add(npc);
+            DialogUI.UpdateTalkersDict(npc);
         }
 
-        DialogUI.UpdateDialogWindow();
+        DialogUI.UpdateDialogWindow(npc);
 
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
             if (!totalNpc.canMeet) continue;
-            if (totalNpc.nameOfNpc != SelectedStep.totalNpc.nameOfNpc) continue;
+            if (totalNpc.nameOfNpc.text != DialogUI.currentNode.characterName) continue;
             if (Player.Instance.familiarNpc.Contains(totalNpc)) continue;
             Player.Instance.familiarNpc.Add(totalNpc);
             break;
         }
 
-        SelectedStep.fastChanges.ActivateChanges();
+        //SelectedStep.fastChanges.ActivateChanges();
 
-        CutsceneManager.Instance.ActivateCutsceneStep(SelectedStep.activateCutsceneStep);
+        //CutsceneManager.Instance.ActivateCutsceneStep(SelectedStep.activateCutsceneStep);
 
-        if (SelectedStep.stepSpeech != "")
-            AudioManager.Instance.PlaySpeech(SelectedStep.GetSpeech());
+        if (DialogUI.currentNode.stepSpeech)
+            AudioManager.Instance.PlaySpeech(DialogUI.currentNode.stepSpeech);
         else
             AudioManager.Instance.StopSpeech();
     }

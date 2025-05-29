@@ -5,14 +5,16 @@ using LastFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VNCreator;
 
-public class DialogUI : MonoBehaviour, IMenuable
+public class DialogUI : DisplayBase, IMenuable
 {
     public static DialogUI Instance { get; private set; }
     private DialogsManager _dialogsManager;
-    
-    [Header("GameObjects")]
-    [SerializeField] private GameObject dialogMenu;
+
+    [Header("GameObjects")] [SerializeField]
+    private GameObject dialogMenu;
+
     public GameObject menu => dialogMenu;
 
     [SerializeField] private GameObject choicesContainer;
@@ -25,7 +27,7 @@ public class DialogUI : MonoBehaviour, IMenuable
     [SerializeField] private Image bigPicture;
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
-    
+
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
 
     [Header("Preferences")] [SerializeField]
@@ -56,22 +58,22 @@ public class DialogUI : MonoBehaviour, IMenuable
     public void ActivateDialogWindow()
     {
         dialogMenu.gameObject.SetActive(true);
-        StartCoroutine(ActivateUIMainMenuWithDelay(_dialogsManager.SelectedDialog.mainPanelStartDelay));
+        StartCoroutine(ActivateUIMainMenuWithDelay(0)); // _dialogsManager.SelectedDialog.mainPanelStartDelay
         TextManager.EndCursedText(textDialogMain);
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
-            switch (_dialogsManager.SelectedDialog.styleOfDialog)
+            switch (currentNode.styleOfDialog)
             {
-                case Dialog.DialogStyle.Main:
+                case NodeData.DialogStyle.Main:
                     mainDialogMenu.gameObject.SetActive(true);
                     _selectedTextDialog = textDialogMain;
                     break;
-                case Dialog.DialogStyle.BigPicture:
+                case NodeData.DialogStyle.BigPicture:
                     _selectedTextDialog = textDialogBigPicture;
                     GameMenuManager.Instance.ActivateNoVision(1.2f,
                         () => { bigPictureMenu.gameObject.SetActive(true); });
                     break;
-                case Dialog.DialogStyle.SubMain:
+                case NodeData.DialogStyle.SubMain:
                     _selectedTextDialog = textDialogSub;
                     subDialogMenu.gameObject.SetActive(true);
                     break;
@@ -99,7 +101,7 @@ public class DialogUI : MonoBehaviour, IMenuable
     public void ActivateChoiceMenu(bool setScale = false)
     {
         choiceDialogMenu.gameObject.SetActive(true);
-        iconImageChoice.sprite = Player.Instance.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standart);
+        iconImageChoice.sprite = Player.Instance.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standard);
         adaptiveScrollViewChoice.UpdateContentSize();
         Player.Instance.virtualCamera.Follow = Player.Instance.transform;
         if (setScale)
@@ -107,16 +109,18 @@ public class DialogUI : MonoBehaviour, IMenuable
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
-        for (int i = 0; i < _dialogsManager.SelectedBranch.choices.Count; i++)
+        for (int i = 0; i < currentNode.choices; i++)
         {
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 choicesContainer.transform);
+            /*
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
                 _dialogsManager.SelectedBranch.choices[i].textQuestion.text;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
             if (_dialogsManager.SelectedBranch.choices[i].read)
                 obj.GetComponent<Button>().interactable = false;
+                */
         }
 
         adaptiveScrollViewChoice.UpdateContentSize();
@@ -128,6 +132,7 @@ public class DialogUI : MonoBehaviour, IMenuable
     /// <param name="id"></param>
     private void ActivateChoiceStep(int id)
     {
+        /*
         DialogChoice choice = _dialogsManager.SelectedBranch.choices[id];
         if (choice.nameNewBranch == "") // Быстрое закрытие диалога
             CLoseDialogWindow();
@@ -139,25 +144,26 @@ public class DialogUI : MonoBehaviour, IMenuable
                 choice.read = true;
             _dialogsManager.ChangeDialogBranch(choice.nameNewBranch);
         }
+        */
     }
 
-    public void UpdateDialogWindow()
+    public void UpdateDialogWindow(Npc npc)
     {
-        switch (_dialogsManager.SelectedDialog.styleOfDialog)
+        switch (currentNode.styleOfDialog)
         {
-            case Dialog.DialogStyle.Main:
-                textNameMain.text = _dialogsManager.SelectedStep.totalNpc.nameOfNpc.text;
-                SetIcon();
+            case NodeData.DialogStyle.Main:
+                textNameMain.text = npc.nameOfNpc.text;
+                SetIcon(npc);
                 break;
-            case Dialog.DialogStyle.BigPicture:
+            case NodeData.DialogStyle.BigPicture:
             {
-                if (_dialogsManager.SelectedStep.bigPictureName != "") // Меняем
-                    bigPicture.sprite = _dialogsManager.SelectedStep.GetBigPicture();
+                if (currentNode.bigPicture) // Меняем
+                    bigPicture.sprite = currentNode.bigPicture;
                 break;
             }
         }
 
-        if (_dialogsManager.SelectedStep.cursedText)
+        if (currentNode.cursedText)
             TextManager.SetCursedText(_selectedTextDialog, Random.Range(5, 40));
         else
             _textGenerate = StartCoroutine(SetText());
@@ -172,18 +178,18 @@ public class DialogUI : MonoBehaviour, IMenuable
             2 => thirdTalkerIcon
         });
     }
-    
-    private void SetIcon()
+
+    private void SetIcon(Npc npc)
     {
-        if (_dialogsManager.SelectedStep.totalNpc.nameInWorld == "nothing") return;
+        if (currentNode.characterName == ".") return;
 
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
             talker.Value.color = dontSelectedColor;
 
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {
-            if (_dialogsManager.SelectedStep.totalNpc != talker.Key) continue;
-            talker.Value.sprite = _dialogsManager.SelectedStep.icon;
+            if (npc != talker.Key) continue;
+            talker.Value.sprite = npc.GetStyleIcon((NpcIcon.IconMood)currentNode.mood);
             talker.Value.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
             talker.Value.color = Color.white;
         }
@@ -196,10 +202,10 @@ public class DialogUI : MonoBehaviour, IMenuable
     {
         Interactions.Instance.lockInter = false;
 
-        if (_dialogsManager.SelectedDialog.styleOfDialog == Dialog.DialogStyle.BigPicture)
+        if (currentNode.styleOfDialog == NodeData.DialogStyle.BigPicture)
             GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionsToClose);
-        else if (_dialogsManager.SelectedDialog.darkAfterEnd)
-            GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionsToClose);
+        //else if (_dialogsManager.SelectedDialog.darkAfterEnd)
+            //GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionsToClose);
         else
             DoActionsToClose();
     }
@@ -223,13 +229,17 @@ public class DialogUI : MonoBehaviour, IMenuable
 
             _dialogsManager.DoActionsToClose();
         });
+        story = null;
+        currentNode = null;
+        lastNode = false;
         _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     }
 
     private void Update()
     {
-        if (_dialogsManager?.SelectedDialog == null) return;
-        if (_dialogsManager.SelectedStep.delayAfterNext == 0)
+        if (!story) return;
+        //if (_dialogsManager.SelectedStep.delayAfterNext == 0)
+        if (0 == 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -237,14 +247,14 @@ public class DialogUI : MonoBehaviour, IMenuable
                 {
                     StopCoroutine(_textGenerate);
                     _textGenerate = null;
-                    _selectedTextDialog.text = _dialogsManager.SelectedStep.dialogText.text;
+                    _selectedTextDialog.text = currentNode.dialogueText;
                 }
                 else
                     _dialogsManager.DialogMoveNext();
             }
         }
     }
-    
+
     private IEnumerator ActivateUIMainMenuWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -258,13 +268,14 @@ public class DialogUI : MonoBehaviour, IMenuable
     private IEnumerator SetText()
     {
         _selectedTextDialog.text = "";
-        char[] textChar = _dialogsManager.SelectedStep.dialogText.text.ToCharArray();
+        char[] textChar = currentNode.dialogueText.ToCharArray();
         foreach (char tChar in textChar)
         {
             _selectedTextDialog.text += tChar;
             yield return null;
         }
-
+        
+        /*
         if (_dialogsManager.SelectedStep.delayAfterNext != 0)
         {
             yield return new WaitForSeconds(_dialogsManager.SelectedStep.delayAfterNext);
@@ -278,7 +289,7 @@ public class DialogUI : MonoBehaviour, IMenuable
                     ActivateChoiceMenu();
             }
         }
-
+        */
         _textGenerate = null;
     }
 }

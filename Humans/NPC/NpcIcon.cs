@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 [System.Serializable]
 public class NpcIcon
 {
-    public Sprite standartIcon, happyIcon, angryIcon, sadIcon, scaryIcon, wonderIcon, confusionIcon, curseIcon;
-    
+    public Sprite standardIcon, happyIcon, angryIcon, sadIcon, scaryIcon, wonderIcon, confusionIcon, curseIcon;
+
     public enum IconMood
     {
-        Standart,
+        Standard,
         Happy,
         Angry,
         Sad,
@@ -21,7 +22,7 @@ public class NpcIcon
     {
         return iconMoodSelected switch
         {
-            IconMood.Standart => standartIcon,
+            IconMood.Standard => standardIcon,
             IconMood.Happy => happyIcon,
             IconMood.Sad => sadIcon,
             IconMood.Scary => scaryIcon,
