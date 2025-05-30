@@ -44,8 +44,8 @@ public class Bootstrapper : MonoBehaviour
         yield return null;
 
         DialogsManager dialogsManager = new DialogsManager();
+        DialogUI.Instance.Initialize(dialogsManager); // Порядок изменён из-за fastChangesController для диалогов
         dialogsManager.Initialize();
-        DialogUI.Instance.Initialize(dialogsManager);
         yield return null;
         
         DayProcess dayProcess = new DayProcess();

@@ -29,6 +29,7 @@ public class DialogUI : DisplayBase, IMenuable
     private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
 
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
+    public FastChangesController[] fastChangesInDialogs = new FastChangesController[0];
 
     [Header("Preferences")] [SerializeField]
     private Color dontSelectedColor;
@@ -58,7 +59,7 @@ public class DialogUI : DisplayBase, IMenuable
     public void ActivateDialogWindow()
     {
         dialogMenu.gameObject.SetActive(true);
-        StartCoroutine(ActivateUIMainMenuWithDelay(0)); // _dialogsManager.SelectedDialog.mainPanelStartDelay
+        StartCoroutine(ActivateUIMainMenuWithDelay(currentNode.mainPanelStartDelay));
         TextManager.EndCursedText(textDialogMain);
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
@@ -204,8 +205,8 @@ public class DialogUI : DisplayBase, IMenuable
 
         if (currentNode.styleOfDialog == NodeData.DialogStyle.BigPicture)
             GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionsToClose);
-        //else if (_dialogsManager.SelectedDialog.darkAfterEnd)
-            //GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionsToClose);
+        else if (currentNode.darkAfterEnd)
+            GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionsToClose);
         else
             DoActionsToClose();
     }
@@ -238,8 +239,7 @@ public class DialogUI : DisplayBase, IMenuable
     private void Update()
     {
         if (!story) return;
-        //if (_dialogsManager.SelectedStep.delayAfterNext == 0)
-        if (0 == 0)
+        if (currentNode.delayAfterNext == 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -274,22 +274,13 @@ public class DialogUI : DisplayBase, IMenuable
             _selectedTextDialog.text += tChar;
             yield return null;
         }
-        
-        /*
-        if (_dialogsManager.SelectedStep.delayAfterNext != 0)
+
+        if (currentNode.delayAfterNext != 0)
         {
-            yield return new WaitForSeconds(_dialogsManager.SelectedStep.delayAfterNext);
-            if (_dialogsManager.TotalStep + 1 == _dialogsManager.SelectedDialog?.stepBranches.Count) // Завершение
-                CLoseDialogWindow();
-            else
-            {
-                if (!_dialogsManager.CanChoice())
-                    _dialogsManager.DialogUpdateAction();
-                else
-                    ActivateChoiceMenu();
-            }
+            yield return new WaitForSeconds(currentNode.delayAfterNext);
+            _dialogsManager.DialogMoveNext();
         }
-        */
+
         _textGenerate = null;
     }
 }

@@ -10,22 +10,32 @@ public class DialogsManager
     // Все диалоги
     private readonly Dictionary<string, StoryObject> _dialogsDict = new Dictionary<string, StoryObject>();
 
+    private readonly Dictionary<string, FastChangesController> _fastChangesDict =
+        new Dictionary<string, FastChangesController>();
+
     public List<Npc> NpcInSelectedDialog = new List<Npc>();
 
     public void Initialize()
     {
         Instance = this;
-        //DialogsLoader dl = new DialogsLoader();
-        //List<Dialog> dialogs = dl.LoadDialogs();
         StoryObject[] storyObjects = Resources.LoadAll<StoryObject>("Dialogs");
         foreach (StoryObject dialog in storyObjects)
             _dialogsDict.TryAdd(dialog.name, dialog);
+
+        foreach (FastChangesController fcc in DialogUI.fastChangesInDialogs)
+            _fastChangesDict.Add(fcc.controllerName, fcc);
     }
 
     /// <summary>
     /// Поиск диалога
     /// </summary>
     private StoryObject GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
+
+    /// <summary>
+    /// Поиск быстрых действий ДЛЯ диалогов
+    /// </summary>
+    /// <returns></returns>
+    public FastChangesController GetFastChanges(string name) => _fastChangesDict.GetValueOrDefault(name);
 
     /// <summary>
     /// Проверка - пора ли активировать выборы и есть ли они вообще?
@@ -47,7 +57,7 @@ public class DialogsManager
         Player.Instance.canMove = DialogUI.currentNode.canMove;
         Interactions.Instance.lockInter = !DialogUI.currentNode.canInter;
         //if (!SelectedDialog.moreRead)
-            //SelectedDialog.read = true;
+        //SelectedDialog.read = true;
 
         DialogUI.ActivateDialogWindow();
         CameraManager.Instance.CameraZoom(-5f, true);
@@ -86,6 +96,7 @@ public class DialogsManager
             DialogCLose();
             return;
         }
+
         DialogUI.NextNode(0);
         DialogUpdateAction();
     }
@@ -113,9 +124,10 @@ public class DialogsManager
             break;
         }
 
-        //SelectedStep.fastChanges.ActivateChanges();
+        if (DialogUI.currentNode.fastChangesName != "")
+            GetFastChanges(DialogUI.currentNode.fastChangesName)?.ActivateChanges();
 
-        //CutsceneManager.Instance.ActivateCutsceneStep(SelectedStep.activateCutsceneStep);
+        CutsceneManager.Instance.ActivateCutsceneStep(DialogUI.currentNode.activateCutsceneStep);
 
         if (DialogUI.currentNode.stepSpeech)
             AudioManager.Instance.PlaySpeech(DialogUI.currentNode.stepSpeech);

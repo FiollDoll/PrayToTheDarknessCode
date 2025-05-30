@@ -28,6 +28,8 @@ public class FastChangesController
         public Transform newTransform;
     }
 
+    public string controllerName;
+    
     public string activateDialog;
     public string activateCutscene;
     public string activateQuest;
