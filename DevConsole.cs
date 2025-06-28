@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -23,8 +23,7 @@ public class DevConsole : MonoBehaviour
         presetsMenu.SetActive(true);
     }
 
-    public void ChangeLocation(string locationName) =>
-        StartCoroutine(ManageLocation.Instance.ActivateLocation(locationName));
+    public async void ChangeLocation(string locationName) => await ManageLocation.Instance.ActivateLocation(locationName);
 
     public void ChangeStyle(string newStyle) => Player.Instance.ChangeStyle(newStyle);
 
@@ -52,14 +51,14 @@ public class DevConsole : MonoBehaviour
         Player.Instance.canMove = true;
     }
     
-    public void ActivateInfo()
+    public async void ActivateInfo()
     {
         presetsMenu.SetActive(false);
         infoMenu.SetActive(true);
-        StartCoroutine(UpdateInfo());
+        await UpdateInfo();
     }
 
-    private IEnumerator UpdateInfo()
+    private async Task UpdateInfo()
     {
         if (DialogUI.Instance.story)
             dialogText.text = "Dialog: " + DialogUI.Instance.story.name + "\n" +
@@ -83,8 +82,8 @@ public class DevConsole : MonoBehaviour
                           "CanMoveZ: " + !Player.Instance.blockMoveZ + "\n" +
                           "Position: " + Player.Instance.transform.position + "\n";
 
-        yield return null;
+        await Task.Delay(10);
         if (infoMenu.activeSelf)
-            StartCoroutine(UpdateInfo());
+            await UpdateInfo();
     }
 }

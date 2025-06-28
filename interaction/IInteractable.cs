@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 public interface IInteractable
 {
     // TODO: добавить auto use и другие условия в интеракциях
@@ -10,5 +12,5 @@ public interface IInteractable
     public string questName { get; }
     public void Initialize();
     public bool CanInteractByQuest();
-    public void DoInteraction();
+    public Task DoInteraction();
 }

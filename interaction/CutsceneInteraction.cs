@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 public class CutsceneInteraction : MonoBehaviour, IInteractable
 {
@@ -23,8 +24,8 @@ public class CutsceneInteraction : MonoBehaviour, IInteractable
         return true;
     }
 
-    public void DoInteraction()
+    public async Task DoInteraction()
     {
-        CutsceneManager.Instance.ActivateCutscene(gameObject.name);
+        await CutsceneManager.Instance.ActivateCutscene(gameObject.name);
     }
 }

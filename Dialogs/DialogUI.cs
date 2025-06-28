@@ -247,7 +247,7 @@ public class DialogUI : DisplayBase, IMenuable
                 {
                     StopCoroutine(_textGenerate);
                     _textGenerate = null;
-                    _selectedTextDialog.text = currentNode.dialogueText;
+                    _selectedTextDialog.text = currentNode.dialogTextRu;
                 }
                 else
                     _dialogsManager.DialogMoveNext();
@@ -268,7 +268,8 @@ public class DialogUI : DisplayBase, IMenuable
     private IEnumerator SetText()
     {
         _selectedTextDialog.text = "";
-        char[] textChar = currentNode.dialogueText.ToCharArray();
+        LanguageSetting totalLanguage = new LanguageSetting(currentNode.dialogTextRu, currentNode.dialogTextEn);
+        char[] textChar = totalLanguage.text.ToCharArray();
         foreach (char tChar in textChar)
         {
             _selectedTextDialog.text += tChar;

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using LastFramework;
@@ -68,15 +69,15 @@ public class GameMenuManager: MonoBehaviour
             DevConsole.Instance.ManageDevMenu();
     }
     
-    public IEnumerator ViewMenuActivate(string text)
+    public async Task ViewMenuActivate(string text)
     {
-        if (DevConsole.Instance.devMode) yield break;
+        if (DevConsole.Instance.devMode) return;
         TextMeshProUGUI newText = startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
         Image newImage = startViewMenu.transform.Find("Panel").GetComponent<Image>();
         newText.text = text;
         newText.color = Color.white;
         newImage.color = Color.black;
-        yield return new WaitForSeconds(3f);
+        await Task.Delay(3000);
         newImage.DOFade(0f, 1f).SetEase(Ease.OutQuart);
         newText.DOFade(0f, 1f).SetEase(Ease.OutQuart);
     }

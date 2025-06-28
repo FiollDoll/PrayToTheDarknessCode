@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
 public class DayProcess
@@ -8,19 +8,16 @@ public class DayProcess
     public int Hour, Minute;
     public bool StopTime;
 
-    private CoroutineContainer _coroutineContainer;
-
     public void Initialize()
     {
         Instance = this;
-        _coroutineContainer = CoroutineContainer.Instance;
-        _coroutineContainer.StartCoroutine(MoveTime());
+        MoveTime();
     }
 
-    private IEnumerator MoveTime()
+    private async void MoveTime()
     {
-        yield return new WaitForSeconds(4);
-        if (StopTime) yield break;
+        await Task.Delay(4000);
+        if (StopTime) return;
         Minute++;
         if (Minute == 30)
         {

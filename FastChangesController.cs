@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -29,7 +29,7 @@ public class FastChangesController
     }
 
     public string controllerName;
-    
+
     public string activateDialog;
     public string activateCutscene;
     public string activateQuest;
@@ -50,10 +50,10 @@ public class FastChangesController
     public List<ChangeRelationship> changeRelationships;
     public List<ChangeVisual> changeVisuals;
     public List<ChangeTransform> changeTransforms;
-    
-    public void ActivateChanges() => CoroutineContainer.Instance.StartCoroutine(SetChanges());
 
-    private IEnumerator SetChanges()
+    public Task ActivateChanges() => SetChanges();
+
+    private async Task SetChanges()
     {
         Player.Instance.changeSpeed = editPlayerSpeed;
         if (blockPlayerMove)
@@ -64,36 +64,25 @@ public class FastChangesController
             CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         if (setMusic)
             AudioManager.Instance.PlayMusic(setMusic);
-        yield return null;
-        
+        await Task.Delay(10);
+
         if (moveToLocation != "")
-        {
-            Coroutine coroutine = CoroutineContainer.Instance.StartCoroutine(ManageLocation.Instance.ActivateLocation(
-                moveToLocation,
-                moveToLocationSpawn));
-            yield return coroutine;
-        }
+            await ManageLocation.Instance.ActivateLocation(moveToLocation, moveToLocationSpawn);
 
         if (activateCutscene != "")
-        {
-            CutsceneManager.Instance.ActivateCutscene(activateCutscene);
-            yield return null;
-        }
+            await CutsceneManager.Instance.ActivateCutscene(activateCutscene);
 
         if (activateDialog != "")
-        {
-            DialogsManager.Instance.ActivateDialog(activateDialog);
-            yield return null;
-        }
+            await DialogsManager.Instance.ActivateDialog(activateDialog);
+
         if (activateQuest != "")
-            QuestsManager.Instance.ActivateQuest(activateQuest);
-        yield return null;
-        
+            await QuestsManager.Instance.ActivateQuest(activateQuest);
+
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);
         foreach (string note in addNote)
             NotesManager.Instance.AddNote(note);
-        
+
         foreach (ChangeRelationship changer in changeRelationships)
         {
             if (!changer.npc)
@@ -103,14 +92,14 @@ public class FastChangesController
                 NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.text,
                     changer.valueChange);
         }
-        yield return null;
+
+        await Task.Delay(10);
 
         foreach (ChangeVisual changer in changeVisuals)
             changer.npcToChange.NpcController.ChangeStyle(changer.newVisual);
-        yield return null;
-        
+        await Task.Delay(10);
+
         foreach (ChangeTransform changer in changeTransforms)
             changer.objToChange.transform.position = changer.newTransform.position;
-        yield return null;
     }
 }

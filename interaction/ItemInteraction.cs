@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 public class ItemInteraction : MonoBehaviour, IInteractable
 {
@@ -28,7 +29,7 @@ public class ItemInteraction : MonoBehaviour, IInteractable
                QuestsManager.Instance.GetTotalQuestStep().target == gameObject.name;
     }
 
-    public void DoInteraction()
+    public async Task DoInteraction()
     {
         if (darkAfterUse)
             GameMenuManager.Instance.ActivateNoVision(1f);

@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,10 +17,10 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         if (!playerMenu.activeSelf)
         {
             if (GameMenuManager.Instance.CanMenuOpen())
-                StartCoroutine(ActivatePlayerMenu());
+                ActivatePlayerMenu();
         }
         else
-            StartCoroutine(DisablePlayerMenu());
+            DisablePlayerMenu();
     }
 
     public void ChoicePagePlayerMenu(int page)
@@ -56,50 +56,42 @@ public class PlayerMenu : MonoBehaviour, IMenuable
             ManagePlayerMenu();
     }
 
-    private IEnumerator ActivatePlayerMenu()
+    private async Task ActivatePlayerMenu()
     {
         Player.Instance.canMove = false;
-        if (_cameraZoomCoroutine == null)
-            _cameraZoomCoroutine = StartCoroutine(CameraManager.Instance.SmoothlyZoom(-10f));
-        else
-            CameraManager.Instance.CameraZoom(0f);
-        yield return _cameraZoomCoroutine;
+
+        // Тут может возникать баг
+        await CameraManager.Instance.SmoothlyZoom(-10f);
 
         playerMenu.SetActive(true);
         buttonsPage.SetActive(true);
-        StartCoroutine(UpdateAddictionSlider());
-        StartCoroutine(UpdateSanitySlider());
+        UpdateAddictionSlider();
+        UpdateSanitySlider();
         _cameraZoomCoroutine = null;
     }
 
-    private IEnumerator UpdateAddictionSlider()
+    private async void UpdateAddictionSlider()
     {
         for (int i = 0; i < Player.Instance.addiction; i++)
         {
             addictionSlider.value++;
-            yield return null;
+            await Task.Delay(10);
         }
     }
 
-    private IEnumerator UpdateSanitySlider()
+    private async void UpdateSanitySlider()
     {
         for (int i = 0; i < Player.Instance.sanity; i++)
         {
             sanitySlider.value++;
-            yield return null;
+            await Task.Delay(10);
         }
     }
 
-    private IEnumerator DisablePlayerMenu()
+    private async void DisablePlayerMenu()
     {
         Player.Instance.canMove = true;
-        if (_cameraZoomCoroutine == null)
-            _cameraZoomCoroutine = StartCoroutine(CameraManager.Instance.SmoothlyZoom(10f));
-        else
-            CameraManager.Instance.CameraZoom(0f);
-
-        yield return _cameraZoomCoroutine;
-        
+        await CameraManager.Instance.SmoothlyZoom(10f);
         addictionSlider.value = 0f;
         sanitySlider.value = 0f;
         playerMenu.SetActive(false);

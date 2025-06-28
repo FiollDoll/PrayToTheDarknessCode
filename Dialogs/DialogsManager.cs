@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using VNCreator;
 
@@ -46,7 +47,7 @@ public class DialogsManager
     ///  Активирует новый диалог
     /// </summary>
     /// <param name="nameDialog">Название диалога</param>
-    public void ActivateDialog(string nameDialog) // Старт диалога
+    public async Task ActivateDialog(string nameDialog) // Старт диалога
     {
         StoryObject newDialog = GetDialog(nameDialog);
         if (!newDialog) return;

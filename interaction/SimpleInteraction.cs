@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 public class SimpleInteraction : MonoBehaviour, IInteractable
 {
@@ -30,9 +31,9 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
                QuestsManager.Instance.GetTotalQuestStep().target == gameObject.name;
     }
 
-    public void DoInteraction()
+    public async Task DoInteraction()
     {
-        changesController.ActivateChanges();
+        await changesController.ActivateChanges();
         if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();
     }

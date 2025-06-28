@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
+using System.Threading.Tasks;
 using Cinemachine;
 
 public class CutsceneManager
@@ -24,12 +23,12 @@ public class CutsceneManager
             GameMenuManager.Instance.startViewMenu.gameObject.SetActive(true);
     }
 
-    public void ActivateCutscene(string cutsceneName)
+    public async Task ActivateCutscene(string cutsceneName)
     {
         if (string.IsNullOrEmpty(cutsceneName)) return;
         TotalCutscene = new Cutscene();
         TotalCutscene = _allCutsceneDict.GetValueOrDefault(cutsceneName);
-        if (TotalCutscene != null)
+        if (TotalCutscene)
             ActivateCutsceneStep(0);
     }
 
@@ -39,7 +38,7 @@ public class CutsceneManager
         if (totalCutsceneStep.chapterNext != "")
             ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName(totalCutsceneStep.chapterNext));
         if (totalCutsceneStep.startViewMenuActivate != "")
-            CoroutineContainer.Instance.StartCoroutine(GameMenuManager.Instance.ViewMenuActivate(totalCutsceneStep.startViewMenuActivate));
+            GameMenuManager.Instance.ViewMenuActivate(totalCutsceneStep.startViewMenuActivate);
 
         if (totalCutsceneStep.closeDialogMenu)
             DialogsManager.Instance.DialogCLose();
@@ -84,7 +83,7 @@ public class CutsceneManager
 
     public void ActivateCutsceneStep(int step)
     {
-        if (TotalCutscene == null || step == -1)
+        if (!TotalCutscene || step == -1)
             return;
 
         if (TotalCutscene.steps[step].timeDarkStart != 0)
@@ -95,12 +94,12 @@ public class CutsceneManager
             StepDo(step);
         
         if (TotalCutscene.steps[step].delayAndNext != 0)
-            CoroutineContainer.Instance.StartCoroutine(DelayAndNext(TotalCutscene.steps[step].delayAndNext, step));
+            DelayAndNext(TotalCutscene.steps[step].delayAndNext, step);
     }
     
-    private IEnumerator DelayAndNext(float delay, int totalStep)
+    private async void DelayAndNext(float delay, int totalStep)
     {
-        yield return new WaitForSeconds(delay);
+        await Task.Delay(Mathf.RoundToInt(delay * 1000));
         totalStep++;
         ActivateCutsceneStep(totalStep);
     }

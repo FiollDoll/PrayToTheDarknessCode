@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 public class DialogInteraction : MonoBehaviour, IInteractable
 {
@@ -27,9 +28,9 @@ public class DialogInteraction : MonoBehaviour, IInteractable
                QuestsManager.Instance.GetTotalQuestStep().target == gameObject.name;
     }
 
-    public void DoInteraction()
+    public async Task DoInteraction()
     {
-        DialogsManager.Instance.ActivateDialog(gameObject.name);
+        await DialogsManager.Instance.ActivateDialog(gameObject.name);
         if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();
     }

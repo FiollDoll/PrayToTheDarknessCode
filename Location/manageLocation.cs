@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Cinemachine;
 
@@ -29,7 +29,7 @@ public class ManageLocation
 
     public void FastMoveToLocation(string locationName)
     {
-        CoroutineContainer.Instance.StartCoroutine(ActivateLocation(locationName, "fromStairs")); // Для кнопок лестницы
+        ActivateLocation(locationName, "fromStairs"); // Для кнопок лестницы
         //Interactions.Instance.floorChangeMenu.gameObject.SetActive(false);
     }
 
@@ -48,11 +48,11 @@ public class ManageLocation
     /// <returns></returns>
     public Location GetLocation(string locationName) => _locationsDict.GetValueOrDefault(locationName);
 
-    public IEnumerator ActivateLocation(string locationName, string spawn = "")
+    public async Task ActivateLocation(string locationName, string spawn = "")
     {
         TotalLocation = GetLocation(locationName);
         GameMenuManager.Instance.noViewPanel.color = Color.black;
-        yield return null;
+        await Task.Delay(10);
         
         if (spawn == "")
             spawn = TotalLocation.spawns[0].name;
@@ -77,17 +77,17 @@ public class ManageLocation
             }
         }
         
-        yield return null;
+        await Task.Delay(10);
         // Инициализируем взаимодействия, если требуется
         foreach (KeyValuePair<GameObject, IInteractable> locationInteraction in TotalLocation.LocationInteractableObjects)
             locationInteraction.Value.Initialize();
         
-        yield return null;
+        await Task.Delay(10);
         SaveAndLoadManager.Instance.SaveGame();
 
-        yield return new WaitForSeconds(1.5f);
+        await Task.Delay(1500);
         GameMenuManager.Instance.DisableNoVision();
-        yield return null;
+        await Task.Delay(10);
         
         Player.Instance.canMove = true;
     }

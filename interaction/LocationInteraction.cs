@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 public class LocationInteraction : MonoBehaviour, IInteractable
 {
@@ -35,14 +36,14 @@ public class LocationInteraction : MonoBehaviour, IInteractable
                QuestsManager.Instance.GetTotalQuestStep().target == locationName;
     }
 
-    public void DoInteraction()
+    public async Task DoInteraction()
     {
         if (_location.locked) return;
 
         // Пока вырезано
         //if (ManageLocation.Instance.GetLocation(gameObject.name).autoEnter &&
         //ManageLocation.Instance.totalLocation.autoEnter)
-        StartCoroutine(ManageLocation.Instance.ActivateLocation(locationName, spawnName));
+        await ManageLocation.Instance.ActivateLocation(locationName, spawnName);
 
         if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();

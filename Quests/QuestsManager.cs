@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class QuestsManager : MonoBehaviour
@@ -20,7 +21,7 @@ public class QuestsManager : MonoBehaviour
 
     public QuestStep GetTotalQuestStep() => _selectedQuest?.questSteps[_selectedStep];
 
-    public void ActivateQuest(string name)
+    public async Task ActivateQuest(string name)
     {
         if (string.IsNullOrEmpty(name)) return;
         _selectedQuest = _allQuestsDict[name];

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,16 +22,14 @@ public class ChapterManager
     {
         _selectedChapter = chapter;
         if (chapter)
-            CoroutineContainer.Instance.StartCoroutine(LoadChapter(chapter));
+            LoadChapter(chapter);
         else
             Debug.Log("Chapter don`t find");
     }
 
-    private IEnumerator LoadChapter(Chapter chapter)
+    private async void LoadChapter(Chapter chapter)
     {
-        Coroutine viewMenuCoroutine =
-            CoroutineContainer.Instance.StartCoroutine(GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName));
-        yield return viewMenuCoroutine;
-        _selectedChapter.changesController.ActivateChanges();
+        await GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName);
+        await _selectedChapter.changesController.ActivateChanges();
     }
 }
