@@ -1,67 +1,57 @@
-using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Bootstrapper : MonoBehaviour
 {
-    private void Start() => StartCoroutine(InitializeGame());
+    [SerializeField] private Sprite nullSprite;
+    [SerializeField] private GameObject startViewMenu, noViewPanel;
 
-    private IEnumerator InitializeGame()
+    private void Start() => InitializeGame();
+
+    private async void InitializeGame()
     {
-        GameMenuManager.Instance.noViewPanel.color = Color.black;
-        
-        Player.Instance.Initialize();
-        yield return null;
-        
-        NpcManager npcManager = new NpcManager();
-        npcManager.Initialize();
-        yield return null;
-        
-        ManageLocation manageLocation = new ManageLocation();
-        manageLocation.Initialize();
-        yield return null;
-        
-        QuestsManager.Instance.Initialize();
-        yield return null;
+        noViewPanel.GetComponent<UnityEngine.UI.Image>().color = Color.black;
 
-        NotesManager notesManager = new NotesManager();
-        notesManager.Initialize();
-        NotebookUI.Instance.Initialize(notesManager);
-        yield return null;
-        
-        InventoryManager.Instance.Initialize();
-        yield return null;
-        
-        CameraManager cameraManager = new CameraManager();
-        cameraManager.Initialize(Camera.main);
-        yield return null;
-        
-        ChapterManager chapterManager = new ChapterManager();
-        chapterManager.Initialize();
-        yield return null;
+        await InitializeComponent(Player.Instance.Initialize());
+        await InitializeComponent(new NpcManager().Initialize());
+        await InitializeComponent(new ManageLocation().Initialize());
+        await InitializeComponent(new GameMenuManager().Initialize(
+            GameObject.Find("Canvas").GetComponentsInChildren<IMenuable>(), startViewMenu, noViewPanel, nullSprite));
+        await InitializeComponent(QuestsManager.Instance.Initialize());
+        await InitializeComponent(new NotesManager().Initialize());
+        await InitializeComponent(NotebookUI.Instance.Initialize(new NotesManager()));
+        await InitializeComponent(InventoryManager.Instance.Initialize());
+        await InitializeComponent(new CameraManager().Initialize(Camera.main));
+        await InitializeComponent(new ChapterManager().Initialize());
+        await InitializeComponent(new CutsceneManager().Initialize());
+        await InitializeComponent(new DialogsManager().Initialize());
+        await InitializeComponent(DialogUI.Instance.Initialize(DialogsManager.Instance));
+        await InitializeComponent(new DayProcess().Initialize());
+        await InitializeComponent(new SaveAndLoadManager().Initialize());
 
-        CutsceneManager cutsceneManager = new CutsceneManager();
-        cutsceneManager.Initialize();
-        yield return null;
-
-        DialogsManager dialogsManager = new DialogsManager();
-        DialogUI.Instance.Initialize(dialogsManager); // Порядок изменён из-за fastChangesController для диалогов
-        dialogsManager.Initialize();
-        yield return null;
-        
-        DayProcess dayProcess = new DayProcess();
-        dayProcess.Initialize();
-        yield return null;
-        
-        SaveAndLoadManager saveAndLoad = new SaveAndLoadManager();
-        saveAndLoad.Initialize();
-        yield return null;
-        
         GameMenuManager.Instance.DisableNoVision();
-        yield return null;
-        
-        if (!DevConsole.Instance.devMode)
-            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
-        else
-            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("test"));
+
+# if UNITY_EDITOR
+        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("test"));
+#elif UNITY_STANDALONE
+        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
+#endif
+        Destroy(gameObject); // Самоуничтожение
+    }
+
+    /// <summary>
+    /// Метод общей инициализации для того, чтобы поток не умирал с ошибко
+    /// </summary>
+    /// <param name="task"></param>
+    private async Task InitializeComponent(Task task)
+    {
+        try
+        {
+            await task;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Инициализация завершилась ошибкой: {ex.Message}");
+        }
     }
 }

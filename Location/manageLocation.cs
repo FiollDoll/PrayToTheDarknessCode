@@ -13,7 +13,7 @@ public class ManageLocation
     private GameObject _player;
     private CinemachineConfiner _cinemachineConfiner;
 
-    public void Initialize()
+    public async Task Initialize()
     {
         Instance = this;
         Location[] locations = Resources.LoadAll<Location>("Locations/");
@@ -48,11 +48,11 @@ public class ManageLocation
     /// <returns></returns>
     public Location GetLocation(string locationName) => _locationsDict.GetValueOrDefault(locationName);
 
-    public async Task ActivateLocation(string locationName, string spawn = "")
+    public async Task ActivateLocation(string locationName, string spawn = "", bool fade = true)
     {
         TotalLocation = GetLocation(locationName);
-        GameMenuManager.Instance.noViewPanel.color = Color.black;
-        await Task.Delay(10);
+        if (fade)
+            await GameMenuManager.Instance.ActivateNoVision();
         
         if (spawn == "")
             spawn = TotalLocation.spawns[0].name;
@@ -86,7 +86,8 @@ public class ManageLocation
         SaveAndLoadManager.Instance.SaveGame();
 
         await Task.Delay(1500);
-        GameMenuManager.Instance.DisableNoVision();
+        if (fade)
+            await GameMenuManager.Instance.DisableNoVision();
         await Task.Delay(10);
         
         Player.Instance.canMove = true;

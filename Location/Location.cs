@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using MyBox;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Location")]
@@ -26,11 +25,11 @@ public class Location : ScriptableObject
             wallsForCamera = locationGameObject.transform.Find("wallForCam").GetComponent<Collider>();
             Transform[] children = locationGameObject.GetComponentsInChildren<Transform>(true);
 
-            // Перебор всех дочерних элементов
             foreach (Transform child in children)
             {
-                if (child.HasComponent<IInteractable>())
-                    LocationInteractableObjects.Add(child.gameObject, child.GetComponent<IInteractable>());
+                IInteractable[] interactables = child.GetComponentsInChildren<IInteractable>();
+                foreach (IInteractable interactable in interactables)
+                    LocationInteractableObjects.TryAdd(child.gameObject, interactable);
 
                 // Начисляем спавны
                 foreach (SpawnInLocation spawn in spawns)
@@ -40,6 +39,7 @@ public class Location : ScriptableObject
                     break;
                 }
             }
+
 
             UpdateSpawnsDict();
         }

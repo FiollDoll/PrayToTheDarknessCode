@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Cutscene")]
 public class Cutscene: ScriptableObject
 {
-    public string name;
+    public string cutsceneName;
     public CutsceneStep[] steps = new CutsceneStep[0];
 }

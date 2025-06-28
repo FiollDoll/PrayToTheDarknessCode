@@ -1,18 +1,19 @@
 ﻿using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CutsceneInteraction : MonoBehaviour, IInteractable
 {
     [Header("Main")] public LanguageSetting label;
-    public string interLabel => label.text;
+    public string InterLabel => label.text;
 
-    [Header("Requires")] public bool AutoUse;
-    public bool autoUse => AutoUse;
+    [Header("Requires")] public bool autoUse;
+    public bool AutoUse => autoUse;
 
-    [Header("Preferences")] public string ItemNameToUse;
-    public string itemNameUse => ItemNameToUse;
-    public string QuestName;
-    public string questName => QuestName;
+    [Header("Preferences")] public string itemNameToUse;
+    public string ItemNameUse => itemNameToUse;
+    public string questName;
+    public string QuestName => questName;
 
     public void Initialize()
     {

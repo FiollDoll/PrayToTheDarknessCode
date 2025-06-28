@@ -4,16 +4,16 @@ using UnityEngine;
 public class ItemInteraction : MonoBehaviour, IInteractable
 {
     [Header("Main")] public LanguageSetting label;
-    public string interLabel => label.text;
+    public string InterLabel => label.text;
 
-    [Header("Requires")] public bool AutoUse;
-    public bool autoUse => AutoUse;
+    [Header("Requires")] public bool autoUse;
+    public bool AutoUse => autoUse;
 
-    [Header("Preferences")] public bool darkAfterUse { get; set; }
-    public string ItemNameToUse;
-    public string itemNameUse => ItemNameToUse;
-    public string QuestName;
-    public string questName => QuestName;
+    [Header("Preferences")] public bool DarkAfterUse { get; set; }
+    public string itemNameToUse;
+    public string ItemNameUse => itemNameToUse;
+    public string questName;
+    public string QuestName => questName;
 
     public void Initialize()
     {
@@ -31,8 +31,8 @@ public class ItemInteraction : MonoBehaviour, IInteractable
 
     public async Task DoInteraction()
     {
-        if (darkAfterUse)
-            GameMenuManager.Instance.ActivateNoVision(1f);
+        if (DarkAfterUse)
+            GameMenuManager.Instance.NoVisionForTime(1f);
 
         InventoryManager.Instance.AddItem(gameObject.name);
         Destroy(gameObject);

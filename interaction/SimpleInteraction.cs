@@ -4,18 +4,18 @@ using UnityEngine;
 public class SimpleInteraction : MonoBehaviour, IInteractable
 {
     [Header("Main")] public LanguageSetting label;
-    public string interLabel => label.text;
+    public string InterLabel => label.text;
 
-    [Header("Requires")] public bool AutoUse;
-    public bool autoUse => AutoUse;
+    [Header("Requires")] public bool autoUse;
+    public bool AutoUse => autoUse;
 
     [Header("Preferences")] public FastChangesController changesController;
 
-    public string ItemNameToUse;
-    public string itemNameUse => ItemNameToUse;
+    public string itemNameToUse;
+    public string ItemNameUse => itemNameToUse;
     
-    public string QuestName;
-    public string questName => QuestName;
+    public string questName;
+    public string QuestName => questName;
 
     public void Initialize()
     {

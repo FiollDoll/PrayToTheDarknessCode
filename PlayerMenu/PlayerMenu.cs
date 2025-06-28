@@ -50,18 +50,11 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         buttonsPage.SetActive(true);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Tab))
-            ManagePlayerMenu();
-    }
-
     private async Task ActivatePlayerMenu()
     {
         Player.Instance.canMove = false;
 
-        // Тут может возникать баг
-        await CameraManager.Instance.SmoothlyZoom(-10f);
+        await CameraManager.Instance.CameraZoom(-10f, true);
 
         playerMenu.SetActive(true);
         buttonsPage.SetActive(true);
@@ -75,7 +68,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         for (int i = 0; i < Player.Instance.addiction; i++)
         {
             addictionSlider.value++;
-            await Task.Delay(10);
+            await Task.Delay(50);
         }
     }
 
@@ -84,19 +77,27 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         for (int i = 0; i < Player.Instance.sanity; i++)
         {
             sanitySlider.value++;
-            await Task.Delay(10);
+            await Task.Delay(50);
         }
     }
 
     private async void DisablePlayerMenu()
     {
         Player.Instance.canMove = true;
-        await CameraManager.Instance.SmoothlyZoom(10f);
+        await CameraManager.Instance.CameraZoom(10f, true);
         addictionSlider.value = 0f;
         sanitySlider.value = 0f;
         playerMenu.SetActive(false);
         notebookMenu.SetActive(false);
         NotebookUI.Instance.CloseNotes();
         _cameraZoomCoroutine = null;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+            ManagePlayerMenu();
+        if (Input.GetKeyDown(KeyCode.C))
+            DevConsole.Instance.ManageDevMenu();
     }
 }

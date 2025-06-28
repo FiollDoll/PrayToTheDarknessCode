@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 [System.Serializable]
 public class FastChangesController
@@ -27,21 +28,19 @@ public class FastChangesController
         public GameObject objToChange;
         public Transform newTransform;
     }
-
-    public string controllerName;
-
+    
     public string activateDialog;
     public string activateCutscene;
     public string activateQuest;
 
     [Header("-Locations")] public string moveToLocation;
     public string moveToLocationSpawn;
+    public bool moveWithFade = true;
 
     [Header("-Locks")] public bool lockAllMenu;
 
     [Header("-Player")] public float editPlayerSpeed;
-    public bool blockPlayerMove;
-    public bool blockPlayerMoveZ;
+    public bool playerCanMove = true, playerCanMoveZ = true;
     public VolumeProfile newVolumeProfile;
 
     [Header("-ChangeAnything")] public AudioClip setMusic;
@@ -56,27 +55,23 @@ public class FastChangesController
     private async Task SetChanges()
     {
         Player.Instance.changeSpeed = editPlayerSpeed;
-        if (blockPlayerMove)
-            Player.Instance.canMove = !Player.Instance.canMove;
-        if (blockPlayerMoveZ)
-            Player.Instance.blockMoveZ = !Player.Instance.blockMoveZ;
-        if (newVolumeProfile)
-            CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
-        if (setMusic)
-            AudioManager.Instance.PlayMusic(setMusic);
+        Player.Instance.canMove = playerCanMove;
+        Player.Instance.blockMoveZ = !playerCanMoveZ;
+        CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
+        AudioManager.Instance.PlayMusic(setMusic);
         await Task.Delay(10);
-
-        if (moveToLocation != "")
-            await ManageLocation.Instance.ActivateLocation(moveToLocation, moveToLocationSpawn);
-
-        if (activateCutscene != "")
-            await CutsceneManager.Instance.ActivateCutscene(activateCutscene);
 
         if (activateDialog != "")
             await DialogsManager.Instance.ActivateDialog(activateDialog);
+        
+        if (activateCutscene != "")
+            await CutsceneManager.Instance.ActivateCutscene(activateCutscene);
 
         if (activateQuest != "")
             await QuestsManager.Instance.ActivateQuest(activateQuest);
+        
+        if (moveToLocation != "")
+            await ManageLocation.Instance.ActivateLocation(moveToLocation, moveToLocationSpawn, moveWithFade);
 
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);

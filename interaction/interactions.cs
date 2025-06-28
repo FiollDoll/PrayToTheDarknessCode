@@ -45,7 +45,7 @@ public class Interactions : MonoBehaviour
             {
                 EnteredInteractions.Add(interactable);
 
-                if (CanActivateInteraction(interactable) && interactable.autoUse)
+                if (CanActivateInteraction(interactable) && interactable.AutoUse)
                     interactable.DoInteraction();
             }
         }
@@ -63,10 +63,10 @@ public class Interactions : MonoBehaviour
 
         interLabelText.text = "";
         if (EnteredInteractions.Count >= 1)
-            interLabelText.text += "(E)" + EnteredInteractions[0].interLabel + "\n";
+            interLabelText.text += "(E)" + EnteredInteractions[0].InterLabel + "\n";
         if (EnteredInteractions.Count >= 2)
-            interLabelText.text += "(F)" + EnteredInteractions[1].interLabel + "\n";
+            interLabelText.text += "(F)" + EnteredInteractions[1].InterLabel + "\n";
         if (EnteredInteractions.Count == 3)
-            interLabelText.text += "(G)" + EnteredInteractions[2].interLabel + "\n";
+            interLabelText.text += "(G)" + EnteredInteractions[2].InterLabel + "\n";
     }
 }

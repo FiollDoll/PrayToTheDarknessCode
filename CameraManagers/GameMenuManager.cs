@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using LastFramework;
-using DG.Tweening;
 using TMPro;
 
-public class GameMenuManager: MonoBehaviour
+public class GameMenuManager
 {
     public static GameMenuManager Instance { get; private set; }
-    [HideInInspector] public bool lockAnyMenu;
-    private List<IMenuable> _allGameMenu = new List<IMenuable>();
-    public GameObject startViewMenu;
-    public Image noViewPanel;
-    public Sprite nullSprite;
+    public bool LockAnyMenu;
+    public Sprite NullSprite;
 
-    private void Awake() => Instance = this;
-    
-    private void Initialize()
+    private IMenuable[] _allGameMenu = new IMenuable[0];
+    private GameObject _startViewMenu;
+    private Image _noViewPanel;
+    private Image _startViewMenuPanel;
+    private TextMeshProUGUI _startViewMenuText;
+
+    public async Task Initialize(IMenuable[] allGameMenu, GameObject startView, GameObject noView, Sprite nullSprite)
     {
-        _allGameMenu = FindObjectsOfType<MonoBehaviour>().OfType<IMenuable>().ToList();
+        Instance = this;
+        _allGameMenu = allGameMenu;
+        _startViewMenu = startView;
+        _noViewPanel = noView.GetComponent<Image>();
+        NullSprite = nullSprite;
+        _startViewMenuText = _startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        _startViewMenuPanel = _startViewMenu.transform.Find("Panel").GetComponent<Image>();
     }
 
     /// <summary>
@@ -37,48 +38,54 @@ public class GameMenuManager: MonoBehaviour
                 return false;
         }
 
-        if (lockAnyMenu)
+        if (LockAnyMenu)
             return false;
 
         return true;
     }
 
-    // ReSharper disable Unity.PerformanceAnalysis
+    public async Task ActivateNoVision() => await ChangeAlpha(_noViewPanel, 1f);
+
     /// <summary>
-    /// Активирует затемнение
+    /// Активирует временное затемнение
     /// </summary>
-    /// <param name="time"></param>
-    /// <param name="actionAfterFade"></param>
-    public void ActivateNoVision(float time, Action actionAfterFade = null, Action actionAfterEnd = null)
+    public async void NoVisionForTime(float duration, Task actionAfterFade = null, Task actionAfterEnd = null)
     {
-        Sequence sequence = DOTween.Sequence();
-        Tween fadeAnimation = noViewPanel.DOFade(100f, time / 2).SetEase(Ease.InQuart);
-        fadeAnimation.OnComplete(() => { actionAfterFade?.Invoke(); });
-        sequence.Append(fadeAnimation);
-        sequence.Append(noViewPanel.DOFade(0f, time / 2).SetEase(Ease.OutQuart));
-        sequence.OnComplete(() => { actionAfterEnd?.Invoke(); });
-        sequence.Insert(0, transform.DOScale(new Vector3(1, 1, 1), sequence.Duration()));
+        await ChangeAlpha(_noViewPanel, 1f);
+        if (actionAfterFade != null)
+            await actionAfterFade;
+
+        await Task.Delay(Mathf.RoundToInt(duration * 1000));
+
+        await ChangeAlpha(_noViewPanel, 0f);
+        if (actionAfterEnd != null)
+            await actionAfterEnd;
     }
-    
-    public void DisableNoVision() => noViewPanel.DOFade(0f, 2f).SetEase(Ease.OutQuart);
-    
-    private void Update()
+
+    public async Task DisableNoVision() => await ChangeAlpha(_noViewPanel, 0f);
+
+    public async Task ChangeAlpha(Graphic graphic, float alphaValue, float speed = 1f)
     {
-        TextManager.UpdateCursedText();
-        if (Input.GetKeyDown(KeyCode.C))
-            DevConsole.Instance.ManageDevMenu();
+        float step = 0.01f * Mathf.Sign(alphaValue - graphic.color.a);
+
+        while (Mathf.Abs(alphaValue - graphic.color.a) > Mathf.Epsilon)
+        {
+            float newAlpha = Mathf.Clamp(graphic.color.a + step, 0f, 1f);
+            graphic.color = new Color(_noViewPanel.color.r, _noViewPanel.color.g, _noViewPanel.color.b, newAlpha);
+            await Task.Delay(Mathf.RoundToInt(5 * speed));
+        }
     }
-    
-    public async Task ViewMenuActivate(string text)
+
+    public async void ViewMenuActivate(string text)
     {
-        if (DevConsole.Instance.devMode) return;
-        TextMeshProUGUI newText = startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-        Image newImage = startViewMenu.transform.Find("Panel").GetComponent<Image>();
-        newText.text = text;
-        newText.color = Color.white;
-        newImage.color = Color.black;
-        await Task.Delay(3000);
-        newImage.DOFade(0f, 1f).SetEase(Ease.OutQuart);
-        newText.DOFade(0f, 1f).SetEase(Ease.OutQuart);
+        _startViewMenu.SetActive(true);
+        _startViewMenuText.text = text;
+        _startViewMenuText.color = Color.white;
+        _startViewMenuPanel.color = Color.black;
+        await Task.Delay(4000);
+        ChangeAlpha(_startViewMenuText, 0f);
+        ChangeAlpha(_startViewMenuPanel, 0f);
+        await Task.Delay(2000);
+        _startViewMenu.SetActive(false);
     }
 }

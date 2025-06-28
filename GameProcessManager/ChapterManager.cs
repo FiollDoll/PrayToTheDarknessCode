@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ChapterManager
@@ -8,7 +9,7 @@ public class ChapterManager
     private readonly Dictionary<string, Chapter> chaptersDict = new Dictionary<string, Chapter>();
     private Chapter _selectedChapter;
 
-    public void Initialize()
+    public async Task Initialize()
     {
         Instance = this;
         _allChapters = Resources.LoadAll<Chapter>("Chapters/");
@@ -29,7 +30,7 @@ public class ChapterManager
 
     private async void LoadChapter(Chapter chapter)
     {
-        await GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName);
+        GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName);
         await _selectedChapter.changesController.ActivateChanges();
     }
 }

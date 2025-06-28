@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DG.Tweening;
 using LastFramework;
 using TMPro;
@@ -38,7 +39,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     private void Awake() => Instance = this;
 
-    public void Initialize(DialogsManager dialogsManager)
+    public async Task Initialize(DialogsManager dialogsManager)
     {
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
@@ -56,7 +57,7 @@ public class DialogUI : DisplayBase, IMenuable
     /// <summary>
     /// Активация диалоговых меню
     /// </summary>
-    public void ActivateDialogWindow()
+    public async void ActivateDialogWindow()
     {
         dialogMenu.gameObject.SetActive(true);
         StartCoroutine(ActivateUIMainMenuWithDelay(currentNode.mainPanelStartDelay));
@@ -71,8 +72,8 @@ public class DialogUI : DisplayBase, IMenuable
                     break;
                 case NodeData.DialogStyle.BigPicture:
                     _selectedTextDialog = textDialogBigPicture;
-                    GameMenuManager.Instance.ActivateNoVision(1.2f,
-                        () => { bigPictureMenu.gameObject.SetActive(true); });
+                    GameMenuManager.Instance.NoVisionForTime(1.2f,
+                        new Task(() => { bigPictureMenu.gameObject.SetActive(true); }));
                     break;
                 case NodeData.DialogStyle.SubMain:
                     _selectedTextDialog = textDialogSub;
@@ -191,7 +192,7 @@ public class DialogUI : DisplayBase, IMenuable
         {
             if (npc != talker.Key) continue;
             talker.Value.sprite = npc.GetStyleIcon((NpcIcon.IconMood)currentNode.mood);
-            talker.Value.GetComponent<RectTransform>().DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
+            talker.Value.rectTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
             talker.Value.color = Color.white;
         }
     }
@@ -199,31 +200,31 @@ public class DialogUI : DisplayBase, IMenuable
     /// <summary>
     /// Закрытие окна диалога
     /// </summary>
-    public void CLoseDialogWindow()
+    public async void CLoseDialogWindow()
     {
         Interactions.Instance.lockInter = false;
 
         if (currentNode.styleOfDialog == NodeData.DialogStyle.BigPicture)
-            GameMenuManager.Instance.ActivateNoVision(1.5f, DoActionsToClose);
+            GameMenuManager.Instance.NoVisionForTime(1.5f, DoActionsToClose());
         else if (currentNode.darkAfterEnd)
-            GameMenuManager.Instance.ActivateNoVision(1.2f, DoActionsToClose);
+            GameMenuManager.Instance.NoVisionForTime(1.2f, DoActionsToClose());
         else
-            DoActionsToClose();
+            await DoActionsToClose();
     }
 
-    private void DoActionsToClose()
+    private async Task DoActionsToClose()
     {
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
-        _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(() =>
+        _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(async () =>
         {
-            CameraManager.Instance.CameraZoom(0, true);
+            await CameraManager.Instance.CameraZoom(0, true);
             TextManager.EndCursedText(textDialogMain);
             dialogMenu.gameObject.SetActive(false);
             mainDialogMenu.gameObject.SetActive(false);
             subDialogMenu.gameObject.SetActive(false);
             bigPictureMenu.gameObject.SetActive(false);
             foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
-                talker.Value.sprite = GameMenuManager.Instance.nullSprite;
+                talker.Value.sprite = GameMenuManager.Instance.NullSprite;
 
             //if (_activatedDialog.posAfterEnd)
             //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;

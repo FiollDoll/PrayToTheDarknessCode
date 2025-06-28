@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.U2D.Animation;
@@ -27,7 +28,7 @@ public class Player : MonoBehaviour, IHumanable
 
     private void Awake() => Instance = this;
 
-    public void Initialize()
+    public async Task Initialize()
     {
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();

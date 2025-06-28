@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using Newtonsoft.Json;
 
 public class SaveAndLoadManager
@@ -6,7 +7,7 @@ public class SaveAndLoadManager
     public static SaveAndLoadManager Instance { get; private set; }
     private GameSave gameSave;
 
-    public void Initialize()
+    public async Task Initialize()
     {
         Instance = this;
         LoadGame();
@@ -24,7 +25,6 @@ public class SaveAndLoadManager
         //gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
         gameSave.familiarNpc = Player.Instance.familiarNpc;
         string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
-        Debug.Log(json);
         // TODO: Сохранение
     }
 

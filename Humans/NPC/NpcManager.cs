@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class NpcManager
@@ -5,7 +6,7 @@ public class NpcManager
     public static NpcManager Instance { get; private set; }
     public Npc[] AllNpc;
     
-    public void Initialize()
+    public async Task Initialize()
     {
         Instance = this;
         AllNpc = Resources.LoadAll<Npc>("NPC");

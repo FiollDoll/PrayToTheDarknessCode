@@ -5,18 +5,18 @@ public class LocationInteraction : MonoBehaviour, IInteractable
 {
     [Header("Label")] public LanguageSetting label;
     [SerializeField] private bool useLocationName;
-    public string interLabel => label.text;
+    public string InterLabel => label.text;
 
-    [Header("Requires")] public bool AutoUse;
-    public bool autoUse => AutoUse;
+    [Header("Requires")] public bool autoUse;
+    public bool AutoUse => autoUse;
 
     [Header("Preferences")] public string locationName;
     public string spawnName;
     public bool destroyAfterInter;
     public string itemNameToUse;
-    public string itemNameUse => itemNameToUse;
-    public string QuestName;
-    public string questName => QuestName;
+    public string ItemNameUse => itemNameToUse;
+    public string questName;
+    public string QuestName => questName;
 
     private Location _location;
 

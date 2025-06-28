@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class NotesManager
@@ -9,7 +10,7 @@ public class NotesManager
     public Note[] Notes;
     private readonly Dictionary<string, Note> _gameNotesDict = new Dictionary<string, Note>();
 
-    public void Initialize()
+    public async Task Initialize()
     {
         Instance = this;
         Notes = Resources.LoadAll<Note>("Notes/");

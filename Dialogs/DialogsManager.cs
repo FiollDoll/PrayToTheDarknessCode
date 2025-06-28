@@ -11,20 +11,14 @@ public class DialogsManager
     // Все диалоги
     private readonly Dictionary<string, StoryObject> _dialogsDict = new Dictionary<string, StoryObject>();
 
-    private readonly Dictionary<string, FastChangesController> _fastChangesDict =
-        new Dictionary<string, FastChangesController>();
-
     public List<Npc> NpcInSelectedDialog = new List<Npc>();
 
-    public void Initialize()
+    public async Task Initialize()
     {
         Instance = this;
         StoryObject[] storyObjects = Resources.LoadAll<StoryObject>("Dialogs");
         foreach (StoryObject dialog in storyObjects)
             _dialogsDict.TryAdd(dialog.name, dialog);
-
-        foreach (FastChangesController fcc in DialogUI.fastChangesInDialogs)
-            _fastChangesDict.Add(fcc.controllerName, fcc);
     }
 
     /// <summary>
@@ -36,7 +30,7 @@ public class DialogsManager
     /// Поиск быстрых действий ДЛЯ диалогов
     /// </summary>
     /// <returns></returns>
-    public FastChangesController GetFastChanges(string name) => _fastChangesDict.GetValueOrDefault(name);
+    //private FastChangesController GetFastChanges(string name) => _fastChangesDict.GetValueOrDefault(name);
 
     /// <summary>
     /// Проверка - пора ли активировать выборы и есть ли они вообще?
@@ -61,7 +55,7 @@ public class DialogsManager
         //SelectedDialog.read = true;
 
         DialogUI.ActivateDialogWindow();
-        CameraManager.Instance.CameraZoom(-5f, true);
+        await CameraManager.Instance.CameraZoom(-5f, true);
 
         if (!CanChoice())
             DialogUpdateAction();
@@ -125,8 +119,8 @@ public class DialogsManager
             break;
         }
 
-        if (DialogUI.currentNode.fastChangesName != "")
-            GetFastChanges(DialogUI.currentNode.fastChangesName)?.ActivateChanges();
+        //if (DialogUI.currentNode.fastChangesName != "")
+            //GetFastChanges(DialogUI.currentNode.fastChangesName)?.ActivateChanges();
 
         CutsceneManager.Instance.ActivateCutsceneStep(DialogUI.currentNode.activateCutsceneStep);
 

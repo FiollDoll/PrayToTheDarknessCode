@@ -5,7 +5,6 @@ using UnityEngine;
 public class DevConsole : MonoBehaviour
 {
     public static DevConsole Instance { get; private set; }
-    public bool devMode;
     [SerializeField] private GameObject devMenu, presetsMenu, infoMenu;
     [SerializeField] private TextMeshProUGUI dialogText, locationText, playerText, otherText;
 
@@ -13,8 +12,7 @@ public class DevConsole : MonoBehaviour
 
     public void ManageDevMenu()
     {
-        if (devMode)
-            devMenu.SetActive(!devMenu.activeSelf);
+        devMenu.SetActive(!devMenu.activeSelf);
     }
 
     public void ActivatePresets()

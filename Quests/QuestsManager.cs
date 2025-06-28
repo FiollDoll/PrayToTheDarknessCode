@@ -13,7 +13,7 @@ public class QuestsManager : MonoBehaviour
     private void Awake() => Instance = this;
     
 
-    public void Initialize()
+    public async Task Initialize()
     {
         foreach (Quest quest in allQuests)
             _allQuestsDict.Add(quest.questName, quest);

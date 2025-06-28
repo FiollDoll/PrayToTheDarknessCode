@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -29,7 +30,7 @@ public class NotebookUI : MonoBehaviour
     private void Awake() => Instance = this;
     
 
-    public void Initialize(NotesManager notesManager)
+    public async Task Initialize(NotesManager notesManager)
     {
         _notesManager = notesManager;
         _notesAdaptiveScrollView = pageNotes.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();

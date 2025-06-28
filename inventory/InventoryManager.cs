@@ -1,7 +1,7 @@
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using MyBox;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -10,8 +10,7 @@ public class InventoryManager : MonoBehaviour
 
     [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
 
-    [Foldout("SceneObjects", true)] [SerializeField]
-    private Button buttonItemActivate;
+    [SerializeField] private Button buttonItemActivate;
 
     [SerializeField] private GameObject invMenu, itemInfoMenu;
     [SerializeField] private GameObject mainView, onlyIconView;
@@ -23,7 +22,7 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
     }
 
-    public void Initialize()
+    public async Task Initialize()
     {
         inventory.UpdateGameItemsDict();
     }

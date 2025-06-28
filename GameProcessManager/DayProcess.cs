@@ -8,7 +8,7 @@ public class DayProcess
     public int Hour, Minute;
     public bool StopTime;
 
-    public void Initialize()
+    public async Task Initialize()
     {
         Instance = this;
         MoveTime();
