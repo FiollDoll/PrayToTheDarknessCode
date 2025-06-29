@@ -50,17 +50,21 @@ public class ManageLocation
 
     public async Task ActivateLocation(string locationName, string spawn = "", bool fade = true)
     {
+        if (string.IsNullOrEmpty(locationName)) return;
+
         TotalLocation = GetLocation(locationName);
+        if (!TotalLocation) return;
+
+        Player.Instance.canMove = false;
         if (fade)
             await GameMenuManager.Instance.ActivateNoVision();
-        
+
         if (spawn == "")
             spawn = TotalLocation.spawns[0].name;
-        
+
         Vector3 newPosition = TotalLocation.GetSpawn(spawn).position;
         _player.transform.position = newPosition;
         _cinemachineConfiner.m_BoundingVolume = TotalLocation.wallsForCamera;
-        Player.Instance.canMove = false;
         Player.Instance.virtualCamera.m_Lens.OrthographicSize =
             CameraManager.Instance.StartCameraSize + TotalLocation.modifCamera;
 
@@ -71,25 +75,24 @@ public class ManageLocation
             {
                 if (npcController.totalLocation == TotalLocation.gameName)
                     NpcAtTotalLocation.Add(npcController);
-                
+
                 if (npcController.moveToPlayer)
                     npcController.gameObject.transform.position = newPosition;
             }
         }
-        
+
         await Task.Delay(10);
         // Инициализируем взаимодействия, если требуется
-        foreach (KeyValuePair<GameObject, IInteractable> locationInteraction in TotalLocation.LocationInteractableObjects)
+        foreach (KeyValuePair<GameObject, IInteractable> locationInteraction in TotalLocation
+                     .LocationInteractableObjects)
             locationInteraction.Value.Initialize();
-        
-        await Task.Delay(10);
-        SaveAndLoadManager.Instance.SaveGame();
+
+        await SaveAndLoadManager.Instance.SaveGame();
 
         await Task.Delay(1500);
         if (fade)
             await GameMenuManager.Instance.DisableNoVision();
-        await Task.Delay(10);
-        
+
         Player.Instance.canMove = true;
     }
 }

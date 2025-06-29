@@ -72,7 +72,7 @@ public class GameMenuManager
         {
             float newAlpha = Mathf.Clamp(graphic.color.a + step, 0f, 1f);
             graphic.color = new Color(_noViewPanel.color.r, _noViewPanel.color.g, _noViewPanel.color.b, newAlpha);
-            await Task.Delay(Mathf.RoundToInt(5 * speed));
+            await Task.Delay(Mathf.RoundToInt(1 * speed));
         }
     }
 
@@ -83,8 +83,8 @@ public class GameMenuManager
         _startViewMenuText.color = Color.white;
         _startViewMenuPanel.color = Color.black;
         await Task.Delay(4000);
-        ChangeAlpha(_startViewMenuText, 0f);
-        ChangeAlpha(_startViewMenuPanel, 0f);
+        ChangeAlpha(_startViewMenuText, 0f, 3f);
+        ChangeAlpha(_startViewMenuPanel, 0f, 3f);
         await Task.Delay(2000);
         _startViewMenu.SetActive(false);
     }

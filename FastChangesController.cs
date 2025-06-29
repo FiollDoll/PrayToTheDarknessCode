@@ -2,33 +2,10 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Serialization;
 
 [System.Serializable]
 public class FastChangesController
 {
-    [System.Serializable]
-    public class ChangeRelationship
-    {
-        public Npc npc;
-        [HideInInspector] public string npcName; // Для json
-        public float valueChange;
-    }
-
-    [System.Serializable]
-    public class ChangeVisual
-    {
-        public Npc npcToChange;
-        public string newVisual;
-    }
-
-    [System.Serializable]
-    public class ChangeTransform
-    {
-        public GameObject objToChange;
-        public Transform newTransform;
-    }
-    
     public string activateDialog;
     public string activateCutscene;
     public string activateQuest;
@@ -59,19 +36,11 @@ public class FastChangesController
         Player.Instance.blockMoveZ = !playerCanMoveZ;
         CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         AudioManager.Instance.PlayMusic(setMusic);
-        await Task.Delay(10);
 
-        if (activateDialog != "")
-            await DialogsManager.Instance.ActivateDialog(activateDialog);
-        
-        if (activateCutscene != "")
-            await CutsceneManager.Instance.ActivateCutscene(activateCutscene);
-
-        if (activateQuest != "")
-            await QuestsManager.Instance.ActivateQuest(activateQuest);
-        
-        if (moveToLocation != "")
-            await ManageLocation.Instance.ActivateLocation(moveToLocation, moveToLocationSpawn, moveWithFade);
+        await DialogsManager.Instance.ActivateDialog(activateDialog);
+        await CutsceneManager.Instance.ActivateCutscene(activateCutscene);
+        await QuestsManager.Instance.ActivateQuest(activateQuest);
+        await ManageLocation.Instance.ActivateLocation(moveToLocation, moveToLocationSpawn, moveWithFade);
 
         foreach (string item in addItem)
             InventoryManager.Instance.AddItem(item);
@@ -88,13 +57,32 @@ public class FastChangesController
                     changer.valueChange);
         }
 
-        await Task.Delay(10);
-
         foreach (ChangeVisual changer in changeVisuals)
             changer.npcToChange.NpcController.ChangeStyle(changer.newVisual);
-        await Task.Delay(10);
 
         foreach (ChangeTransform changer in changeTransforms)
             changer.objToChange.transform.position = changer.newTransform.position;
     }
+}
+
+[System.Serializable]
+public class ChangeRelationship
+{
+    public Npc npc;
+    [HideInInspector] public string npcName; // Для json
+    public float valueChange;
+}
+
+[System.Serializable]
+public class ChangeVisual
+{
+    public Npc npcToChange;
+    public string newVisual;
+}
+
+[System.Serializable]
+public class ChangeTransform
+{
+    public GameObject objToChange;
+    public Transform newTransform;
 }

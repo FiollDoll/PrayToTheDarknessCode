@@ -1,0 +1,26 @@
+<engine:UXML xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="False">
+    <engine:VisualElement class="row">
+        <engine:VisualElement name="VisualElement">
+            <engine:TextField label="Character" name="Character" />
+            <engine:DropdownField label="Mood" name="Char_Mood" />
+            <engine:TextField name="Dialogue_Field_Ru" label="Ru text" class="dialogue_field" />
+            <engine:TextField name="Dialogue_Field_En" label="En text" class="dialogue_field" />
+            <engine:Foldout text="DialogSettings" name="Dialog_Settings" enabled="true" style="visibility: visible; display: flex;">
+                <engine:DropdownField label="Style Dialog" name="Style_Dialogs" />
+                <engine:Toggle label="MoreRead" name="More_Read" />
+                <engine:Toggle label="CanMove" name="Can_Move" />
+                <engine:Toggle label="CanInter" name="Can_Inter" />
+                <engine:Toggle label="DarkAfterEnd" name="Dark_End" />
+                <engine:TextField label="mainPanelStartDelay" value="0" name="MainPanelStartDelay" />
+            </engine:Foldout>
+            <engine:Foldout text="Preference" name="Preference">
+                <editor:ObjectField name="Speech" data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" label="Speech" class="sound_selector" />
+                <editor:ObjectField name="Big_Picture" data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" label="BigPictureSprite" class="sound_selector" />
+                <engine:TextField label="ActivateCutsceneStep" value="-1" name="Activate_Cutscene_Step" />
+                <engine:TextField label="DelayAfterNext" value="0" name="Delay_After_Step" />
+                <engine:Toggle label="CursedText" name="Cursed_Text" />
+                <engine:TextField label="FastChanges" name="Fast_Changes" />
+            </engine:Foldout>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

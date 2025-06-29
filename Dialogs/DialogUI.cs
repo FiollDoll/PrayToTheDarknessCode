@@ -6,7 +6,6 @@ using LastFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using VNCreator;
 
 public class DialogUI : DisplayBase, IMenuable
 {
@@ -66,16 +65,16 @@ public class DialogUI : DisplayBase, IMenuable
         {
             switch (currentNode.styleOfDialog)
             {
-                case NodeData.DialogStyle.Main:
+                case Enums.DialogStyle.Main:
                     mainDialogMenu.gameObject.SetActive(true);
                     _selectedTextDialog = textDialogMain;
                     break;
-                case NodeData.DialogStyle.BigPicture:
+                case Enums.DialogStyle.BigPicture:
                     _selectedTextDialog = textDialogBigPicture;
                     GameMenuManager.Instance.NoVisionForTime(1.2f,
                         new Task(() => { bigPictureMenu.gameObject.SetActive(true); }));
                     break;
-                case NodeData.DialogStyle.SubMain:
+                case Enums.DialogStyle.SubMain:
                     _selectedTextDialog = textDialogSub;
                     subDialogMenu.gameObject.SetActive(true);
                     break;
@@ -153,11 +152,11 @@ public class DialogUI : DisplayBase, IMenuable
     {
         switch (currentNode.styleOfDialog)
         {
-            case NodeData.DialogStyle.Main:
+            case Enums.DialogStyle.Main:
                 textNameMain.text = npc.nameOfNpc.text;
                 SetIcon(npc);
                 break;
-            case NodeData.DialogStyle.BigPicture:
+            case Enums.DialogStyle.BigPicture:
             {
                 if (currentNode.bigPicture) // Меняем
                     bigPicture.sprite = currentNode.bigPicture;
@@ -204,7 +203,7 @@ public class DialogUI : DisplayBase, IMenuable
     {
         Interactions.Instance.lockInter = false;
 
-        if (currentNode.styleOfDialog == NodeData.DialogStyle.BigPicture)
+        if (currentNode.styleOfDialog == Enums.DialogStyle.BigPicture)
             GameMenuManager.Instance.NoVisionForTime(1.5f, DoActionsToClose());
         else if (currentNode.darkAfterEnd)
             GameMenuManager.Instance.NoVisionForTime(1.2f, DoActionsToClose());

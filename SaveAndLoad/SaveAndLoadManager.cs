@@ -13,7 +13,7 @@ public class SaveAndLoadManager
         LoadGame();
     }
     
-    public void SaveGame()
+    public async Task SaveGame()
     {
         gameSave = new GameSave();
         gameSave.playerStyle = Player.Instance.selectedStyle;
@@ -28,7 +28,7 @@ public class SaveAndLoadManager
         // TODO: Сохранение
     }
 
-    public void LoadGame()
+    public async Task LoadGame()
     {
         // TODO: Загрузка
         string json = "";

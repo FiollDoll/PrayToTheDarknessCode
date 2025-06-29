@@ -1,0 +1,48 @@
+﻿.header{
+	font-size: 15px;
+	margin-right: 80px;
+	margin-left: 80px;
+}
+
+.row{
+	display: flex;
+	flex-direction: row;
+}
+
+.char_img{
+	height: 90px;
+	width: 160px;
+	margin: 5px;
+	margin-right: 20px;
+	background-color: #fff;
+}
+
+.char_container{
+	width: 115px;
+}
+
+.char_selector{
+	width: 20px;
+	height: 20px;
+	margin: 0px;
+	padding: 0px;
+	float: left;
+}
+
+.char_name{
+	height: 20px;
+	width: 150px;
+}
+
+.dialogue_field{
+	height: 70px;
+	width: 300px;
+}
+
+.back_img{
+	height: 90px;
+	width: 160px;
+	margin: 5px;
+	margin-right: 20px;
+	background-color: #fff;
+}
