@@ -33,11 +33,11 @@ public class ExtendedGraphView : GraphView
         bool _endNode)
     {
         return CreateNode(_nodeName, _mousePos, choiceAmount, new string[choiceAmount].ToList(), _startNode,
-            _endNode, new NodeData());
+            _endNode, new DialogStepNode());
     }
 
     public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, List<string> _choices,
-        bool _startNode, bool _endNode, NodeData _data)
+        bool _startNode, bool _endNode, DialogStepNode _data)
     {
         BaseNode _node = new BaseNode(_data, _startNode);
 
@@ -45,10 +45,10 @@ public class ExtendedGraphView : GraphView
         _node.SetPosition(new Rect(
             (new Vector2(viewTransform.position.x, viewTransform.position.y) * -(1 / scale)) +
             (_mousePos * (1 / scale)), Vector2.one));
-        _node.nodeData.startNode = _startNode;
-        _node.nodeData.endNode = _endNode;
-        _node.nodeData.choices = choiceAmount;
-        _node.nodeData.choiceOptions = _choices;
+        _node.DialogStepNode.startNode = _startNode;
+        _node.DialogStepNode.endNode = _endNode;
+        _node.DialogStepNode.choices = choiceAmount;
+        _node.DialogStepNode.choiceOptions = _choices;
 
         if (!_startNode)
         {
@@ -70,11 +70,11 @@ public class ExtendedGraphView : GraphView
 
                     string _value = _data.choiceOptions.Count == 0
                         ? "Choice " + (i + 1)
-                        : _node.nodeData.choiceOptions[i];
+                        : _node.DialogStepNode.choiceOptions[i];
                     int _idx = i;
 
                     TextField _field = new TextField { value = _value };
-                    _field.RegisterValueChangedCallback(e => { _node.nodeData.choiceOptions[_idx] = _field.value; }
+                    _field.RegisterValueChangedCallback(e => { _node.DialogStepNode.choiceOptions[_idx] = _field.value; }
                     );
 
                     _node.outputContainer.Add(_field);

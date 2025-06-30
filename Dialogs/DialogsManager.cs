@@ -8,22 +8,22 @@ public class DialogsManager
     public DialogUI DialogUI;
 
     // Все диалоги
-    private readonly Dictionary<string, StoryObject> _dialogsDict = new Dictionary<string, StoryObject>();
+    private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
 
     public List<Npc> NpcInSelectedDialog = new List<Npc>();
 
     public async Task Initialize()
     {
         Instance = this;
-        StoryObject[] storyObjects = Resources.LoadAll<StoryObject>("Dialogs");
-        foreach (StoryObject dialog in storyObjects)
+        Dialog[] storyObjects = Resources.LoadAll<Dialog>("Dialogs");
+        foreach (Dialog dialog in storyObjects)
             _dialogsDict.TryAdd(dialog.name, dialog);
     }
 
     /// <summary>
     /// Поиск диалога
     /// </summary>
-    private StoryObject GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
+    private Dialog GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
 
     /// <summary>
     /// Поиск быстрых действий ДЛЯ диалогов
@@ -34,7 +34,7 @@ public class DialogsManager
     /// <summary>
     /// Проверка - пора ли активировать выборы и есть ли они вообще?
     /// </summary>
-    public bool CanChoice() => DialogUI.currentNode.choices > 1;
+    public bool CanChoice() => DialogUI.currentDialogStepNode.choices > 1;
 
     /// <summary>
     ///  Активирует новый диалог
@@ -42,14 +42,14 @@ public class DialogsManager
     /// <param name="nameDialog">Название диалога</param>
     public async Task ActivateDialog(string nameDialog) // Старт диалога
     {
-        StoryObject newDialog = GetDialog(nameDialog);
+        Dialog newDialog = GetDialog(nameDialog);
         if (!newDialog) return;
         //if (newDialog.read) return;
 
         DialogUI.story = newDialog;
-        DialogUI.currentNode = DialogUI.story.GetFirstNode();
-        Player.Instance.canMove = DialogUI.currentNode.canMove;
-        Interactions.Instance.lockInter = !DialogUI.currentNode.canInter;
+        DialogUI.currentDialogStepNode = DialogUI.story.GetFirstNode();
+        Player.Instance.canMove = DialogUI.currentDialogStepNode.canMove;
+        Interactions.Instance.lockInter = !DialogUI.currentDialogStepNode.canInter;
         //if (!SelectedDialog.moreRead)
         //SelectedDialog.read = true;
 
@@ -100,8 +100,13 @@ public class DialogsManager
     /// </summary>
     public void DialogUpdateAction()
     {
-        Npc npc = NpcManager.Instance.GetNpcByName(DialogUI.currentNode.characterName);
-        if (DialogUI.currentNode.characterName != "." && !NpcInSelectedDialog.Contains(npc))
+        // Проверка на пустого нипа
+        Npc npc = DialogUI.currentDialogStepNode.character
+            ? DialogUI.currentDialogStepNode.character
+            : NpcManager.Instance.GetNpcByName("nothing");
+        
+        // Проверяем - был нип в диалоге или нет
+        if (npc && !NpcInSelectedDialog.Contains(npc))
         {
             NpcInSelectedDialog.Add(npc);
             DialogUI.UpdateTalkersDict(npc);
@@ -112,19 +117,19 @@ public class DialogsManager
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
             if (!totalNpc.canMeet) continue;
-            if (totalNpc.nameOfNpc.text != DialogUI.currentNode.characterName) continue;
+            if (totalNpc.nameOfNpc.text != DialogUI.currentDialogStepNode.character.nameOfNpc.text) continue;
             if (Player.Instance.familiarNpc.Contains(totalNpc)) continue;
             Player.Instance.familiarNpc.Add(totalNpc);
             break;
         }
 
-        //if (DialogUI.currentNode.fastChangesName != "")
-            //GetFastChanges(DialogUI.currentNode.fastChangesName)?.ActivateChanges();
+        if (DialogUI.currentDialogStepNode.fastChanges)
+            DialogUI.currentDialogStepNode.fastChanges.ActivateChanges();
 
-        CutsceneManager.Instance.ActivateCutsceneStep(DialogUI.currentNode.activateCutsceneStep);
+        CutsceneManager.Instance.ActivateCutsceneStep(DialogUI.currentDialogStepNode.activateCutsceneStep);
 
-        if (DialogUI.currentNode.stepSpeech)
-            AudioManager.Instance.PlaySpeech(DialogUI.currentNode.stepSpeech);
+        if (DialogUI.currentDialogStepNode.stepSpeech)
+            AudioManager.Instance.PlaySpeech(DialogUI.currentDialogStepNode.stepSpeech);
         else
             AudioManager.Instance.StopSpeech();
     }

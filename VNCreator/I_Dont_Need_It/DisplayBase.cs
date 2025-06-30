@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class DisplayBase : MonoBehaviour
 {
-    [HideInInspector] public StoryObject story;
+    [HideInInspector] public Dialog story;
 
-    [HideInInspector] public NodeData currentNode;
+    [FormerlySerializedAs("currentDialogNode")] [FormerlySerializedAs("currentNode")] [HideInInspector] public DialogStepNode currentDialogStepNode;
     [HideInInspector] public bool lastNode;
 
     protected List<string> loadList = new List<string>();
@@ -14,21 +15,21 @@ public class DisplayBase : MonoBehaviour
     {
         if (PlayerPrefs.GetString(GameSaveManager.currentLoadName) == string.Empty)
         {
-            currentNode = story.GetFirstNode();
-            loadList.Add(currentNode.guid);
+            currentDialogStepNode = story.GetFirstNode();
+            loadList.Add(currentDialogStepNode.guid);
         }
         else
         {
             loadList = GameSaveManager.Load();
             if (loadList == null || loadList.Count == 0)
             {
-                currentNode = story.GetFirstNode();
+                currentDialogStepNode = story.GetFirstNode();
                 loadList = new List<string>();
-                loadList.Add(currentNode.guid);
+                loadList.Add(currentDialogStepNode.guid);
             }
             else
             {
-                currentNode = story.GetCurrentNode(loadList[loadList.Count - 1]);
+                currentDialogStepNode = story.GetCurrentNode(loadList[loadList.Count - 1]);
             }
         }
     }
@@ -37,17 +38,17 @@ public class DisplayBase : MonoBehaviour
     {
         if (!lastNode)
         {
-            currentNode = story.GetNextNode(currentNode.guid, _choiceId);
-            lastNode = currentNode.endNode;
-            loadList.Add(currentNode.guid);
+            currentDialogStepNode = story.GetNextNode(currentDialogStepNode.guid, _choiceId);
+            lastNode = currentDialogStepNode.endNode;
+            loadList.Add(currentDialogStepNode.guid);
         }
     }
 
     protected virtual void Previous()
     {
         loadList.RemoveAt(loadList.Count - 1);
-        currentNode = story.GetCurrentNode(loadList[loadList.Count - 1]);
-        lastNode = currentNode.endNode;
+        currentDialogStepNode = story.GetCurrentNode(loadList[loadList.Count - 1]);
+        lastNode = currentDialogStepNode.endNode;
     }
 
     protected void Save()

@@ -5,13 +5,13 @@ using UnityEngine.UIElements;
 #if UNITY_EDITOR
 public class StoryObjectEditorWindow : EditorWindow
 {
-    StoryObject storyObj;
+    Dialog storyObj;
     ExtendedGraphView graphView;
     SaveUtility save = new SaveUtility();
 
     private Vector2 mousePosition = new Vector2();
 
-    public static void Open(StoryObject _storyObj)
+    public static void Open(Dialog _storyObj)
     {
         StoryObjectEditorWindow window = GetWindow<StoryObjectEditorWindow>("Story");
         window.storyObj = _storyObj;

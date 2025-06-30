@@ -2,7 +2,7 @@
 using UnityEditor;
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(StoryObject))]
+[CustomEditor(typeof(Dialog))]
 public class StoryObjectEditor : Editor
 {
     public override void OnInspectorGUI()
@@ -13,7 +13,7 @@ public class StoryObjectEditor : Editor
 
         if (GUILayout.Button("Open", GUILayout.Height(40)))
         {
-            StoryObjectEditorWindow.Open((StoryObject)target);
+            StoryObjectEditorWindow.Open((Dialog)target);
         }
     }
 }

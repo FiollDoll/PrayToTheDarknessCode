@@ -9,39 +9,39 @@ using UnityEngine.UIElements;
 public class SaveUtility
 {
 #if UNITY_EDITOR
-    public void SaveGraph(StoryObject _story, ExtendedGraphView _graph)
+    public void SaveGraph(Dialog _story, ExtendedGraphView _graph)
     {
         EditorUtility.SetDirty(_story);
 
-        List<NodeData> nodes = new List<NodeData>();
+        List<DialogStepNode> nodes = new List<DialogStepNode>();
         List<Link> links = new List<Link>();
 
         foreach (BaseNode _node in _graph.nodes.ToList().Cast<BaseNode>().ToList())
         {
             nodes.Add(
-                new NodeData
+                new DialogStepNode
                 {
-                    guid = _node.nodeData.guid,
-                    characterName = _node.nodeData.characterName,
-                    dialogTextRu = _node.nodeData.dialogTextRu,
-                    dialogTextEn = _node.nodeData.dialogTextEn,
-                    startNode = _node.nodeData.startNode,
-                    endNode = _node.nodeData.endNode,
-                    choices = _node.nodeData.choices,
-                    choiceOptions = _node.nodeData.choiceOptions,
-                    moreRead = _node.nodeData.moreRead,
-                    canMove = _node.nodeData.canMove,
-                    canInter = _node.nodeData.canInter,
-                    mood = _node.nodeData.mood,
-                    styleOfDialog = _node.nodeData.styleOfDialog,
-                    cursedText = _node.nodeData.cursedText,
-                    stepSpeech = _node.nodeData.stepSpeech,
-                    bigPicture = _node.nodeData.bigPicture,
-                    activateCutsceneStep = _node.nodeData.activateCutsceneStep,
-                    mainPanelStartDelay = _node.nodeData.mainPanelStartDelay,
-                    delayAfterNext = _node.nodeData.delayAfterNext,
-                    darkAfterEnd = _node.nodeData.darkAfterEnd,
-                    fastChangesName = _node.nodeData.fastChangesName,
+                    guid = _node.DialogStepNode.guid,
+                    character = _node.DialogStepNode.character,
+                    dialogTextRu = _node.DialogStepNode.dialogTextRu,
+                    dialogTextEn = _node.DialogStepNode.dialogTextEn,
+                    startNode = _node.DialogStepNode.startNode,
+                    endNode = _node.DialogStepNode.endNode,
+                    choices = _node.DialogStepNode.choices,
+                    choiceOptions = _node.DialogStepNode.choiceOptions,
+                    moreRead = _node.DialogStepNode.moreRead,
+                    canMove = _node.DialogStepNode.canMove,
+                    canInter = _node.DialogStepNode.canInter,
+                    mood = _node.DialogStepNode.mood,
+                    styleOfDialog = _node.DialogStepNode.styleOfDialog,
+                    cursedText = _node.DialogStepNode.cursedText,
+                    stepSpeech = _node.DialogStepNode.stepSpeech,
+                    bigPicture = _node.DialogStepNode.bigPicture,
+                    activateCutsceneStep = _node.DialogStepNode.activateCutsceneStep,
+                    mainPanelStartDelay = _node.DialogStepNode.mainPanelStartDelay,
+                    delayAfterNext = _node.DialogStepNode.delayAfterNext,
+                    darkAfterEnd = _node.DialogStepNode.darkAfterEnd,
+                    fastChanges = _node.DialogStepNode.fastChanges,
                     nodePosition = _node.GetPosition(),
                 });
         }
@@ -54,8 +54,8 @@ public class SaveUtility
 
             links.Add(new Link
             {
-                guid = _output.nodeData.guid,
-                targetGuid = _input.nodeData.guid,
+                guid = _output.DialogStepNode.guid,
+                targetGuid = _input.DialogStepNode.guid,
                 portId = i
             });
         }
@@ -66,9 +66,9 @@ public class SaveUtility
         //_story.links = links;
     }
 
-    public void LoadGraph(StoryObject _story, ExtendedGraphView _graph)
+    public void LoadGraph(Dialog _story, ExtendedGraphView _graph)
     {
-        foreach (NodeData _data in _story.nodes)
+        foreach (DialogStepNode _data in _story.nodes)
         {
             BaseNode _tempNode = _graph.CreateNode("", _data.nodePosition.position, _data.choices,
                 _data.choiceOptions, _data.startNode, _data.endNode, _data);
@@ -78,18 +78,18 @@ public class SaveUtility
         GenerateLinks(_story, _graph);
     }
 
-    void GenerateLinks(StoryObject _story, ExtendedGraphView _graph)
+    void GenerateLinks(Dialog _story, ExtendedGraphView _graph)
     {
         List<BaseNode> _nodes = _graph.nodes.ToList().Cast<BaseNode>().ToList();
 
         for (int i = 0; i < _nodes.Count; i++)
         {
             int _outputIdx = 1;
-            List<Link> _links = _story.links.Where(x => x.guid == _nodes[i].nodeData.guid).ToList();
+            List<Link> _links = _story.links.Where(x => x.guid == _nodes[i].DialogStepNode.guid).ToList();
             for (int j = 0; j < _links.Count; j++)
             {
                 string targetGuid = _links[j].targetGuid;
-                BaseNode _target = _nodes.First(x => x.nodeData.guid == targetGuid);
+                BaseNode _target = _nodes.First(x => x.DialogStepNode.guid == targetGuid);
                 LinkNodes(_nodes[i].outputContainer[_links.Count > 1 ? _outputIdx : 0].Q<Port>(),
                     (Port)_target.inputContainer[0], _graph);
                 _outputIdx += 2;

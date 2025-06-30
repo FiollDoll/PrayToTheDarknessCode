@@ -2,42 +2,36 @@
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "New Story", menuName = "New Story")]
-public class StoryObject : ScriptableObject
+[CreateAssetMenu(fileName = "Dialog")]
+public class Dialog : ScriptableObject
 {
     [HideInInspector] public List<Link> links;
-    [HideInInspector] public List<NodeData> nodes;
+    [HideInInspector] public List<DialogStepNode> nodes;
 
-    public void SetLists(List<NodeData> _nodes, List<Link> _links)
+    public void SetLists(List<DialogStepNode> _nodes, List<Link> _links)
     {
         links = new List<Link>();
-        for (int i = 0; i < _links.Count; i++)
-        {
-            links.Add(_links[i]);
-        }
+        foreach (var t in _links)
+            links.Add(t);
 
-        nodes = new List<NodeData>();
-        for (int i = 0; i < _nodes.Count; i++)
-        {
-            nodes.Add(_nodes[i]);
-        }
+        nodes = new List<DialogStepNode>();
+        foreach (var t in _nodes)
+            nodes.Add(t);
     }
 
-    public NodeData GetFirstNode()
+    public DialogStepNode GetFirstNode()
     {
         for (int i = 0; i < nodes.Count; i++)
         {
             if (nodes[i].startNode)
-            {
                 return nodes[i];
-            }
         }
 
         Debug.LogError("You need a start node");
         return null;
     }
 
-    public NodeData GetCurrentNode(string _currentGuid)
+    public DialogStepNode GetCurrentNode(string _currentGuid)
     {
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -50,7 +44,7 @@ public class StoryObject : ScriptableObject
 
     List<Link> _tempLinks = new List<Link>();
 
-    public NodeData GetNextNode(string _currentGuid, int _choiceId)
+    public DialogStepNode GetNextNode(string _currentGuid, int _choiceId)
     {
         _tempLinks = new List<Link>();
 

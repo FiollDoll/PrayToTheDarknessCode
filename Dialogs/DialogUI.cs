@@ -59,11 +59,11 @@ public class DialogUI : DisplayBase, IMenuable
     public async void ActivateDialogWindow()
     {
         dialogMenu.gameObject.SetActive(true);
-        StartCoroutine(ActivateUIMainMenuWithDelay(currentNode.mainPanelStartDelay));
+        StartCoroutine(ActivateUIMainMenuWithDelay(currentDialogStepNode.mainPanelStartDelay));
         TextManager.EndCursedText(textDialogMain);
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
-            switch (currentNode.styleOfDialog)
+            switch (currentDialogStepNode.styleOfDialog)
             {
                 case Enums.DialogStyle.Main:
                     mainDialogMenu.gameObject.SetActive(true);
@@ -110,7 +110,7 @@ public class DialogUI : DisplayBase, IMenuable
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
-        for (int i = 0; i < currentNode.choices; i++)
+        for (int i = 0; i < currentDialogStepNode.choices; i++)
         {
             var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 choicesContainer.transform);
@@ -150,7 +150,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     public void UpdateDialogWindow(Npc npc)
     {
-        switch (currentNode.styleOfDialog)
+        switch (currentDialogStepNode.styleOfDialog)
         {
             case Enums.DialogStyle.Main:
                 textNameMain.text = npc.nameOfNpc.text;
@@ -158,13 +158,13 @@ public class DialogUI : DisplayBase, IMenuable
                 break;
             case Enums.DialogStyle.BigPicture:
             {
-                if (currentNode.bigPicture) // Меняем
-                    bigPicture.sprite = currentNode.bigPicture;
+                if (currentDialogStepNode.bigPicture) // Меняем
+                    bigPicture.sprite = currentDialogStepNode.bigPicture;
                 break;
             }
         }
 
-        if (currentNode.cursedText)
+        if (currentDialogStepNode.cursedText)
             TextManager.SetCursedText(_selectedTextDialog, Random.Range(5, 40));
         else
             _textGenerate = StartCoroutine(SetText());
@@ -182,7 +182,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     private void SetIcon(Npc npc)
     {
-        if (currentNode.characterName == ".") return;
+        if (!currentDialogStepNode.character) return;
 
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
             talker.Value.color = dontSelectedColor;
@@ -190,7 +190,7 @@ public class DialogUI : DisplayBase, IMenuable
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {
             if (npc != talker.Key) continue;
-            talker.Value.sprite = npc.GetStyleIcon((NpcIcon.IconMood)currentNode.mood);
+            talker.Value.sprite = npc.GetStyleIcon((NpcIcon.IconMood)currentDialogStepNode.mood);
             talker.Value.rectTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
             talker.Value.color = Color.white;
         }
@@ -203,9 +203,9 @@ public class DialogUI : DisplayBase, IMenuable
     {
         Interactions.Instance.lockInter = false;
 
-        if (currentNode.styleOfDialog == Enums.DialogStyle.BigPicture)
+        if (currentDialogStepNode.styleOfDialog == Enums.DialogStyle.BigPicture)
             GameMenuManager.Instance.NoVisionForTime(1.5f, DoActionsToClose());
-        else if (currentNode.darkAfterEnd)
+        else if (currentDialogStepNode.darkAfterEnd)
             GameMenuManager.Instance.NoVisionForTime(1.2f, DoActionsToClose());
         else
             await DoActionsToClose();
@@ -231,7 +231,7 @@ public class DialogUI : DisplayBase, IMenuable
             _dialogsManager.DoActionsToClose();
         });
         story = null;
-        currentNode = null;
+        currentDialogStepNode = null;
         lastNode = false;
         _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     }
@@ -239,7 +239,7 @@ public class DialogUI : DisplayBase, IMenuable
     private void Update()
     {
         if (!story) return;
-        if (currentNode.delayAfterNext == 0)
+        if (currentDialogStepNode.delayAfterNext == 0)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -247,7 +247,7 @@ public class DialogUI : DisplayBase, IMenuable
                 {
                     StopCoroutine(_textGenerate);
                     _textGenerate = null;
-                    _selectedTextDialog.text = currentNode.dialogTextRu;
+                    _selectedTextDialog.text = currentDialogStepNode.dialogTextRu;
                 }
                 else
                     _dialogsManager.DialogMoveNext();
@@ -268,7 +268,7 @@ public class DialogUI : DisplayBase, IMenuable
     private IEnumerator SetText()
     {
         _selectedTextDialog.text = "";
-        LanguageSetting totalLanguage = new LanguageSetting(currentNode.dialogTextRu, currentNode.dialogTextEn);
+        LanguageSetting totalLanguage = new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn);
         char[] textChar = totalLanguage.text.ToCharArray();
         foreach (char tChar in textChar)
         {
@@ -276,9 +276,9 @@ public class DialogUI : DisplayBase, IMenuable
             yield return null;
         }
 
-        if (currentNode.delayAfterNext != 0)
+        if (currentDialogStepNode.delayAfterNext != 0)
         {
-            yield return new WaitForSeconds(currentNode.delayAfterNext);
+            yield return new WaitForSeconds(currentDialogStepNode.delayAfterNext);
             _dialogsManager.DialogMoveNext();
         }
 

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[System.Serializable]
-public class FastChangesController
+[CreateAssetMenu(fileName = "FastChangesController")]
+public class FastChangesController: ScriptableObject
 {
     public string activateDialog;
     public string activateCutscene;

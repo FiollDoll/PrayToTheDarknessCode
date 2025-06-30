@@ -60,9 +60,9 @@ public class DevConsole : MonoBehaviour
     {
         if (DialogUI.Instance.story)
             dialogText.text = "Dialog: " + DialogUI.Instance.story.name + "\n" +
-                              "Node id: " + DialogUI.Instance.currentNode.guid + "\n" +
-                              "Talker: " + DialogUI.Instance.currentNode.characterName + "\n" +
-                              "Mood: " + DialogUI.Instance.currentNode.mood;
+                              "Node id: " + DialogUI.Instance.currentDialogStepNode.guid + "\n" +
+                              "Talker: " + DialogUI.Instance.currentDialogStepNode.character.nameInWorld + "\n" +
+                              "Mood: " + DialogUI.Instance.currentDialogStepNode.mood;
         else
             dialogText.text = "";
         if (ManageLocation.Instance.TotalLocation)

@@ -14,12 +14,12 @@ using UnityEngine.UIElements;
 #if UNITY_EDITOR
 public class BaseNode : Node
 {
-    public NodeData nodeData;
+    public DialogStepNode DialogStepNode;
     public NodeViewer visuals;
 
-    public BaseNode(NodeData _data, bool _startNode)
+    public BaseNode(DialogStepNode _data, bool _startNode)
     {
-        nodeData = _data != null ? _data : new NodeData();
+        DialogStepNode = _data != null ? _data : new DialogStepNode();
         visuals = new NodeViewer(this, _startNode);
     }
 }
@@ -33,52 +33,57 @@ public class NodeViewer : VisualElement
         node = _node;
 
         VisualTreeAsset tree =
-            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-                "Assets/VNCreator/Editor/Graph/Node/BaseNodeTemplate.uxml");
+            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/VNCreator/BaseNodeTemplate.uxml");
         tree.CloneTree(this);
 
         styleSheets.Add(
-            AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/VNCreator/Editor/Graph/Node/BaseNodeStyle.uss"));
+            AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/VNCreator/BaseNodeStyle.uss"));
 
         if (_startNode)
         {
             DropdownField dialogStyleDropdownMenu = this.Query<DropdownField>("Style_Dialogs");
             dialogStyleDropdownMenu.choices = Enum.GetNames(typeof(Enums.DialogStyle)).ToList();
-            dialogStyleDropdownMenu.value = _node.nodeData.styleOfDialog.ToString();
+            dialogStyleDropdownMenu.value = _node.DialogStepNode.styleOfDialog.ToString();
 
             // Добавляем обработчик события изменения значения
             dialogStyleDropdownMenu.RegisterValueChangedCallback(evt =>
             {
                 dialogStyleDropdownMenu.value = Enum.Parse(typeof(Enums.DialogStyle), evt.newValue).ToString();
-                _node.nodeData.styleOfDialog =
+                _node.DialogStepNode.styleOfDialog =
                     (Enums.DialogStyle)Enum.Parse(typeof(Enums.DialogStyle), evt.newValue);
             });
 
             Toggle moreReadToggle = this.Query<Toggle>("More_Read");
-            moreReadToggle.value = _node.nodeData.moreRead;
-            moreReadToggle.RegisterValueChangedCallback(evt => { _node.nodeData.moreRead = moreReadToggle.value; });
+            moreReadToggle.value = _node.DialogStepNode.moreRead;
+            moreReadToggle.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.moreRead = moreReadToggle.value;
+            });
 
             Toggle canMoveToggle = this.Query<Toggle>("Can_Move");
-            canMoveToggle.value = _node.nodeData.canMove;
-            canMoveToggle.RegisterValueChangedCallback(evt => { _node.nodeData.canMove = canMoveToggle.value; });
+            canMoveToggle.value = _node.DialogStepNode.canMove;
+            canMoveToggle.RegisterValueChangedCallback(evt => { _node.DialogStepNode.canMove = canMoveToggle.value; });
 
             Toggle canInterToggle = this.Query<Toggle>("Can_Inter");
-            canInterToggle.value = _node.nodeData.canInter;
-            canInterToggle.RegisterValueChangedCallback(evt => { _node.nodeData.canInter = canInterToggle.value; });
+            canInterToggle.value = _node.DialogStepNode.canInter;
+            canInterToggle.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.canInter = canInterToggle.value;
+            });
 
             Toggle darkAfterEndToggle = this.Query<Toggle>("Dark_End");
-            darkAfterEndToggle.value = _node.nodeData.darkAfterEnd;
+            darkAfterEndToggle.value = _node.DialogStepNode.darkAfterEnd;
             darkAfterEndToggle.RegisterValueChangedCallback(evt =>
             {
-                _node.nodeData.darkAfterEnd = darkAfterEndToggle.value;
+                _node.DialogStepNode.darkAfterEnd = darkAfterEndToggle.value;
             });
 
             TextField mainPanelDelayTextField = this.Query<TextField>("MainPanelStartDelay");
-            mainPanelDelayTextField.value = _node.nodeData.mainPanelStartDelay.ToString();
+            mainPanelDelayTextField.value = _node.DialogStepNode.mainPanelStartDelay.ToString();
 
             mainPanelDelayTextField.RegisterValueChangedCallback(evt =>
             {
-                _node.nodeData.mainPanelStartDelay = float.Parse(mainPanelDelayTextField.value);
+                _node.DialogStepNode.mainPanelStartDelay = float.Parse(mainPanelDelayTextField.value);
             });
         }
         else
@@ -87,75 +92,81 @@ public class NodeViewer : VisualElement
             dialogSettingFoldout.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
         }
 
-        TextField charNameField = this.Query<TextField>("Character");
-        charNameField.value = _node.nodeData.characterName;
-        charNameField.RegisterValueChangedCallback(e => { node.nodeData.characterName = charNameField.value; }
+        ObjectField charNameField = this.Query<ObjectField>("Character");
+        charNameField.value = (Npc)_node.DialogStepNode.character;
+        charNameField.RegisterValueChangedCallback(e => { node.DialogStepNode.character = (Npc)charNameField.value; }
         );
 
         DropdownField moodDropdownMenu = this.Query<DropdownField>("Char_Mood");
         moodDropdownMenu.choices = Enum.GetNames(typeof(Enums.IconMood)).ToList();
-        moodDropdownMenu.value = _node.nodeData.mood.ToString();
+        moodDropdownMenu.value = _node.DialogStepNode.mood.ToString();
 
         moodDropdownMenu.RegisterValueChangedCallback(evt =>
         {
             moodDropdownMenu.value = Enum.Parse(typeof(Enums.IconMood), evt.newValue).ToString();
-            _node.nodeData.mood = (Enums.IconMood)Enum.Parse(typeof(Enums.IconMood), evt.newValue);
+            _node.DialogStepNode.mood = (Enums.IconMood)Enum.Parse(typeof(Enums.IconMood), evt.newValue);
         });
 
         TextField dialogueFieldRu = this.Query<TextField>("Dialogue_Field_Ru");
         dialogueFieldRu.multiline = true;
-        dialogueFieldRu.value = node.nodeData.dialogTextRu;
-        dialogueFieldRu.RegisterValueChangedCallback(e => { node.nodeData.dialogTextRu = dialogueFieldRu.value; }
+        dialogueFieldRu.value = node.DialogStepNode.dialogTextRu;
+        dialogueFieldRu.RegisterValueChangedCallback(e => { node.DialogStepNode.dialogTextRu = dialogueFieldRu.value; }
         );
 
         TextField dialogueFieldEn = this.Query<TextField>("Dialogue_Field_En");
         dialogueFieldEn.multiline = true;
-        dialogueFieldEn.value = node.nodeData.dialogTextEn;
-        dialogueFieldEn.RegisterValueChangedCallback(e => { node.nodeData.dialogTextEn = dialogueFieldEn.value; }
+        dialogueFieldEn.value = node.DialogStepNode.dialogTextEn;
+        dialogueFieldEn.RegisterValueChangedCallback(e => { node.DialogStepNode.dialogTextEn = dialogueFieldEn.value; }
         );
 
         Toggle cursedTextToggle = this.Query<Toggle>("Cursed_Text");
-        cursedTextToggle.value = _node.nodeData.cursedText;
-        cursedTextToggle.RegisterValueChangedCallback(evt => { _node.nodeData.cursedText = cursedTextToggle.value; });
+        cursedTextToggle.value = _node.DialogStepNode.cursedText;
+        cursedTextToggle.RegisterValueChangedCallback(evt =>
+        {
+            _node.DialogStepNode.cursedText = cursedTextToggle.value;
+        });
 
         ObjectField speechField = this.Query<ObjectField>("Speech");
-        speechField.value = _node.nodeData.stepSpeech;
-        speechField.RegisterValueChangedCallback(evt => { _node.nodeData.stepSpeech = (AudioClip)speechField.value; });
+        speechField.value = _node.DialogStepNode.stepSpeech;
+        speechField.RegisterValueChangedCallback(evt =>
+        {
+            _node.DialogStepNode.stepSpeech = (AudioClip)speechField.value;
+        });
 
         ObjectField bigPictureField = this.Query<ObjectField>("Big_Picture");
-        if (_node.nodeData.styleOfDialog == Enums.DialogStyle.BigPicture)
+        if (_node.DialogStepNode.styleOfDialog == Enums.DialogStyle.BigPicture)
         {
-            bigPictureField.value = _node.nodeData.bigPicture;
+            bigPictureField.value = _node.DialogStepNode.bigPicture;
             bigPictureField.RegisterValueChangedCallback(evt =>
             {
-                _node.nodeData.bigPicture = (Sprite)bigPictureField.value;
+                _node.DialogStepNode.bigPicture = (Sprite)bigPictureField.value;
             });
         }
         else
             bigPictureField.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
 
         TextField activateCutsceneStepTextField = this.Query<TextField>("Activate_Cutscene_Step");
-        activateCutsceneStepTextField.value = _node.nodeData.activateCutsceneStep.ToString();
+        activateCutsceneStepTextField.value = _node.DialogStepNode.activateCutsceneStep.ToString();
 
         activateCutsceneStepTextField.RegisterValueChangedCallback(evt =>
         {
-            _node.nodeData.activateCutsceneStep = int.Parse(activateCutsceneStepTextField.value);
+            _node.DialogStepNode.activateCutsceneStep = int.Parse(activateCutsceneStepTextField.value);
         });
 
         TextField delayAfterNextTextField = this.Query<TextField>("Delay_After_Step");
-        delayAfterNextTextField.value = _node.nodeData.delayAfterNext.ToString();
+        delayAfterNextTextField.value = _node.DialogStepNode.delayAfterNext.ToString();
 
         delayAfterNextTextField.RegisterValueChangedCallback(evt =>
         {
-            _node.nodeData.delayAfterNext = float.Parse(delayAfterNextTextField.value);
+            _node.DialogStepNode.delayAfterNext = float.Parse(delayAfterNextTextField.value);
         });
 
-        TextField fastChangesTextField = this.Query<TextField>("Fast_Changes");
-        fastChangesTextField.value = _node.nodeData.fastChangesName;
+        ObjectField fastChangesTextField = this.Query<ObjectField>("Fast_Changes");
+        fastChangesTextField.value = _node.DialogStepNode.fastChanges;
 
         fastChangesTextField.RegisterValueChangedCallback(evt =>
         {
-            _node.nodeData.fastChangesName = fastChangesTextField.value;
+            _node.DialogStepNode.fastChanges = (FastChangesController)fastChangesTextField.value;
         });
     }
 }

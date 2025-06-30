@@ -66,7 +66,7 @@ public class GameMenuManager
 
     public async Task ChangeAlpha(Graphic graphic, float alphaValue, float speed = 1f)
     {
-        float step = 0.01f * Mathf.Sign(alphaValue - graphic.color.a);
+        float step = 0.05f * Mathf.Sign(alphaValue - graphic.color.a);
 
         while (Mathf.Abs(alphaValue - graphic.color.a) > Mathf.Epsilon)
         {
