@@ -26,12 +26,6 @@ public class DialogsManager
     private Dialog GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
 
     /// <summary>
-    /// Поиск быстрых действий ДЛЯ диалогов
-    /// </summary>
-    /// <returns></returns>
-    //private FastChangesController GetFastChanges(string name) => _fastChangesDict.GetValueOrDefault(name);
-
-    /// <summary>
     /// Проверка - пора ли активировать выборы и есть ли они вообще?
     /// </summary>
     public bool CanChoice() => DialogUI.currentDialogStepNode.choices > 1;
@@ -80,9 +74,9 @@ public class DialogsManager
     }
 
     /// <summary>
-    /// Продвижение диалога далее
+    /// Продвижение диалога далее(не для выбора)
     /// </summary>
-    public void DialogMoveNext()
+    public void DialogMoveNext(int choiceId = 0)
     {
         // Окончание обычного диалога
         if (DialogUI.lastNode)
@@ -91,7 +85,7 @@ public class DialogsManager
             return;
         }
 
-        DialogUI.NextNode(0);
+        DialogUI.NextNode(choiceId);
         DialogUpdateAction();
     }
 
@@ -103,8 +97,8 @@ public class DialogsManager
         // Проверка на пустого нипа
         Npc npc = DialogUI.currentDialogStepNode.character
             ? DialogUI.currentDialogStepNode.character
-            : NpcManager.Instance.GetNpcByName("nothing");
-        
+            : NpcManager.Instance.GetNpcByName(".");
+
         // Проверяем - был нип в диалоге или нет
         if (npc && !NpcInSelectedDialog.Contains(npc))
         {
@@ -117,7 +111,7 @@ public class DialogsManager
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
             if (!totalNpc.canMeet) continue;
-            if (totalNpc.nameOfNpc.text != DialogUI.currentDialogStepNode.character.nameOfNpc.text) continue;
+            if (totalNpc.nameOfNpc.text != npc.nameOfNpc.text) continue;
             if (Player.Instance.familiarNpc.Contains(totalNpc)) continue;
             Player.Instance.familiarNpc.Add(totalNpc);
             break;

@@ -83,9 +83,12 @@ public class ManageLocation
 
         await Task.Delay(10);
         // Инициализируем взаимодействия, если требуется
-        foreach (KeyValuePair<GameObject, IInteractable> locationInteraction in TotalLocation
-                     .LocationInteractableObjects)
-            locationInteraction.Value.Initialize();
+        foreach (KeyValuePair<GameObject, IInteractable> locationInteraction in TotalLocation.LocationInteractableObjects)
+        {
+            var interactable = locationInteraction.Value as MonoBehaviour; // Для оптимизации
+            if (interactable)
+                interactable.enabled = true;
+        }
 
         await SaveAndLoadManager.Instance.SaveGame();
 

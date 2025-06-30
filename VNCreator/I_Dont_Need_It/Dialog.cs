@@ -27,7 +27,6 @@ public class Dialog : ScriptableObject
                 return nodes[i];
         }
 
-        Debug.LogError("You need a start node");
         return null;
     }
 

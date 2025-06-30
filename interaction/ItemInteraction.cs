@@ -15,6 +15,8 @@ public class ItemInteraction : MonoBehaviour, IInteractable
     public string questName;
     public string QuestName => questName;
 
+    private void OnEnable() => Initialize();
+    
     public void Initialize()
     {
         

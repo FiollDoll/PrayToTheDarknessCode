@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DG.Tweening;
@@ -34,7 +33,7 @@ public class DialogUI : DisplayBase, IMenuable
     [Header("Preferences")] [SerializeField]
     private Color dontSelectedColor;
 
-    private Coroutine _textGenerate;
+    private Task _textGenerate;
 
     private void Awake() => Instance = this;
 
@@ -59,7 +58,7 @@ public class DialogUI : DisplayBase, IMenuable
     public async void ActivateDialogWindow()
     {
         dialogMenu.gameObject.SetActive(true);
-        StartCoroutine(ActivateUIMainMenuWithDelay(currentDialogStepNode.mainPanelStartDelay));
+        await ActivateUIMainMenuWithDelay(currentDialogStepNode.mainPanelStartDelay);
         TextManager.EndCursedText(textDialogMain);
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
@@ -94,61 +93,44 @@ public class DialogUI : DisplayBase, IMenuable
         _choiceDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart);
     }
 
-    // ReSharper disable Unity.PerformanceAnalysis
     /// <summary>
     /// Активация + генерация меню с выборами
     /// </summary>
-    /// <param name="setScale"></param>
-    public void ActivateChoiceMenu(bool setScale = false)
+    public async void ActivateChoiceMenu()
     {
-        choiceDialogMenu.gameObject.SetActive(true);
+        mainDialogMenu.SetActive(false);
+        choiceDialogMenu.SetActive(true);
         iconImageChoice.sprite = Player.Instance.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standard);
-        adaptiveScrollViewChoice.UpdateContentSize();
-        Player.Instance.virtualCamera.Follow = Player.Instance.transform;
-        if (setScale)
-            _choiceDialogMenuTransform.localScale = new Vector2(1f, 1f);
+
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
         for (int i = 0; i < currentDialogStepNode.choices; i++)
         {
-            var obj = Instantiate(buttonChoicePrefab, new Vector3(0, 0, 0), Quaternion.identity,
+            var obj = Instantiate(buttonChoicePrefab, Vector3.zero, new Quaternion(),
                 choicesContainer.transform);
-            /*
+
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                _dialogsManager.SelectedBranch.choices[i].textQuestion.text;
+                currentDialogStepNode.choiceOptions[i];
             int num = i;
-            obj.GetComponent<Button>().onClick.AddListener(delegate { ActivateChoiceStep(num); });
-            if (_dialogsManager.SelectedBranch.choices[i].read)
-                obj.GetComponent<Button>().interactable = false;
-                */
+            obj.GetComponent<Button>().onClick.AddListener(() => { ActivateChoiceStep(num); });
+            obj.transform.localPosition = Vector3.zero; // Хз почему, но по Z слетает
         }
 
-        adaptiveScrollViewChoice.UpdateContentSize();
+        await adaptiveScrollViewChoice.UpdateContentSize();
     }
 
     /// <summary>
-    /// Активация выбора
+    /// Выбор шага диалога
     /// </summary>
-    /// <param name="id"></param>
     private void ActivateChoiceStep(int id)
     {
-        /*
-        DialogChoice choice = _dialogsManager.SelectedBranch.choices[id];
-        if (choice.nameNewBranch == "") // Быстрое закрытие диалога
-            CLoseDialogWindow();
-        else
-        {
-            choiceDialogMenu.gameObject.SetActive(false);
-            _dialogsManager.TotalStep = 0;
-            if (!choice.moreRead)
-                choice.read = true;
-            _dialogsManager.ChangeDialogBranch(choice.nameNewBranch);
-        }
-        */
+        choiceDialogMenu.gameObject.SetActive(false);
+        mainDialogMenu.SetActive(true);
+        _dialogsManager.DialogMoveNext(id);
     }
 
-    public void UpdateDialogWindow(Npc npc)
+    public async void UpdateDialogWindow(Npc npc)
     {
         switch (currentDialogStepNode.styleOfDialog)
         {
@@ -164,10 +146,20 @@ public class DialogUI : DisplayBase, IMenuable
             }
         }
 
-        if (currentDialogStepNode.cursedText)
-            TextManager.SetCursedText(_selectedTextDialog, Random.Range(5, 40));
+        if (!_dialogsManager.CanChoice())
+        {
+            if (currentDialogStepNode.cursedText)
+            {
+                TextManager.SetCursedText(_selectedTextDialog, Random.Range(5, 40));
+            }
+            else
+            {
+                _textGenerate = SetText();
+                await _textGenerate;
+            }
+        }
         else
-            _textGenerate = StartCoroutine(SetText());
+            ActivateChoiceMenu();
     }
 
     public void UpdateTalkersDict(Npc npc)
@@ -225,9 +217,6 @@ public class DialogUI : DisplayBase, IMenuable
             foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
                 talker.Value.sprite = GameMenuManager.Instance.NullSprite;
 
-            //if (_activatedDialog.posAfterEnd)
-            //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
-
             _dialogsManager.DoActionsToClose();
         });
         story = null;
@@ -245,19 +234,21 @@ public class DialogUI : DisplayBase, IMenuable
             {
                 if (_textGenerate != null)
                 {
-                    StopCoroutine(_textGenerate);
                     _textGenerate = null;
                     _selectedTextDialog.text = currentDialogStepNode.dialogTextRu;
                 }
                 else
-                    _dialogsManager.DialogMoveNext();
+                {
+                    if (!_dialogsManager.CanChoice())
+                        _dialogsManager.DialogMoveNext();
+                }
             }
         }
     }
 
-    private IEnumerator ActivateUIMainMenuWithDelay(float delay)
+    private async Task ActivateUIMainMenuWithDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);
+        await Task.Delay(Mathf.RoundToInt(delay * 1000));
         OpenPanels();
     }
 
@@ -265,20 +256,21 @@ public class DialogUI : DisplayBase, IMenuable
     ///  Посимвольная установка текста
     /// </summary>
     /// <returns></returns>
-    private IEnumerator SetText()
+    private async Task SetText()
     {
         _selectedTextDialog.text = "";
-        LanguageSetting totalLanguage = new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn);
+        LanguageSetting totalLanguage =
+            new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn);
         char[] textChar = totalLanguage.text.ToCharArray();
         foreach (char tChar in textChar)
         {
             _selectedTextDialog.text += tChar;
-            yield return null;
+            await Task.Delay(5);
         }
 
         if (currentDialogStepNode.delayAfterNext != 0)
         {
-            yield return new WaitForSeconds(currentDialogStepNode.delayAfterNext);
+            await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.delayAfterNext * 1000));
             _dialogsManager.DialogMoveNext();
         }
 

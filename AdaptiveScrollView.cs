@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ public class AdaptiveScrollView : MonoBehaviour
 
     private void OnEnable() => UpdateContentSize();
     
-    public void UpdateContentSize()
+    public async Task UpdateContentSize()
     {
         float totalHeight = 0f;
 

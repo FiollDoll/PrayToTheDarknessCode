@@ -29,7 +29,12 @@ public class Location : ScriptableObject
             {
                 IInteractable[] interactables = child.GetComponentsInChildren<IInteractable>();
                 foreach (IInteractable interactable in interactables)
+                {
                     LocationInteractableObjects.TryAdd(child.gameObject, interactable);
+                    var interactableMono = interactable as MonoBehaviour; // Для оптимизации
+                    if (interactableMono)
+                        interactableMono.enabled = false;
+                }
 
                 // Начисляем спавны
                 foreach (SpawnInLocation spawn in spawns)

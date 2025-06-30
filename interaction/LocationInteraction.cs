@@ -20,9 +20,11 @@ public class LocationInteraction : MonoBehaviour, IInteractable
 
     private Location _location;
 
+    private void OnEnable() => Initialize();
+    
     public void Initialize()
     {
-        _location = ManageLocation.Instance.GetLocation(locationName);
+        _location = ManageLocation.Instance?.GetLocation(locationName);
         if (useLocationName && _location)
             label = _location.name;
     }
