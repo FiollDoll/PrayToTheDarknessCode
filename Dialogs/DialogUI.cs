@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DG.Tweening;
 using LastFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class DialogUI : DisplayBase, IMenuable
@@ -33,7 +35,7 @@ public class DialogUI : DisplayBase, IMenuable
     [Header("Preferences")] [SerializeField]
     private Color dontSelectedColor;
 
-    private Task _textGenerate;
+    private Coroutine _textGenerate;
 
     private void Awake() => Instance = this;
 
@@ -50,6 +52,26 @@ public class DialogUI : DisplayBase, IMenuable
 
     public void ManagePlayerMenu()
     {
+    }
+
+    public void OnNextDialogStep(InputAction.CallbackContext context)
+    {
+        if (context.action.IsPressed())
+        {
+            if (!story) return;
+            if (_textGenerate != null)
+            {
+                StopCoroutine(_textGenerate);
+                _textGenerate = null;
+                _selectedTextDialog.text =
+                    new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).text;
+            }
+            else
+            {
+                if (!_dialogsManager.CanChoice())
+                    _dialogsManager.DialogMoveNext();
+            }
+        }
     }
 
     /// <summary>
@@ -149,14 +171,9 @@ public class DialogUI : DisplayBase, IMenuable
         if (!_dialogsManager.CanChoice())
         {
             if (currentDialogStepNode.cursedText)
-            {
                 TextManager.SetCursedText(_selectedTextDialog, Random.Range(5, 40));
-            }
             else
-            {
-                _textGenerate = SetText();
-                await _textGenerate;
-            }
+                _textGenerate = StartCoroutine(SetText());
         }
         else
             ActivateChoiceMenu();
@@ -225,27 +242,6 @@ public class DialogUI : DisplayBase, IMenuable
         _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     }
 
-    private void Update()
-    {
-        if (!story) return;
-        if (currentDialogStepNode.delayAfterNext == 0)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (_textGenerate != null)
-                {
-                    _textGenerate = null;
-                    _selectedTextDialog.text = currentDialogStepNode.dialogTextRu;
-                }
-                else
-                {
-                    if (!_dialogsManager.CanChoice())
-                        _dialogsManager.DialogMoveNext();
-                }
-            }
-        }
-    }
-
     private async Task ActivateUIMainMenuWithDelay(float delay)
     {
         await Task.Delay(Mathf.RoundToInt(delay * 1000));
@@ -256,21 +252,22 @@ public class DialogUI : DisplayBase, IMenuable
     ///  Посимвольная установка текста
     /// </summary>
     /// <returns></returns>
-    private async Task SetText()
+    private IEnumerator SetText()
     {
         _selectedTextDialog.text = "";
-        LanguageSetting totalLanguage =
-            new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn);
-        char[] textChar = totalLanguage.text.ToCharArray();
+        string totalText =
+            new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).text;
+        char[] textChar = totalText.ToCharArray();
         foreach (char tChar in textChar)
         {
             _selectedTextDialog.text += tChar;
-            await Task.Delay(5);
+            yield return new WaitForSeconds(0.0001f);
         }
 
+        _selectedTextDialog.text = totalText;
         if (currentDialogStepNode.delayAfterNext != 0)
         {
-            await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.delayAfterNext * 1000));
+            yield return new WaitForSeconds(currentDialogStepNode.delayAfterNext);
             _dialogsManager.DialogMoveNext();
         }
 

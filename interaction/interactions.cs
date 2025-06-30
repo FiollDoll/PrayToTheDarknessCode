@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class Interactions : MonoBehaviour
 {
@@ -30,6 +31,24 @@ public class Interactions : MonoBehaviour
         return true;
     }
 
+    public void OnInteractFirst(InputAction.CallbackContext context)
+    {
+        if (!lockInter && EnteredInteractions.Count == 1 && context.action.IsPressed())
+            EnteredInteractions[0]?.DoInteraction();
+    }
+    
+    public void OnInteractSecond(InputAction.CallbackContext context)
+    {
+        if (!lockInter && EnteredInteractions.Count == 2 && context.action.IsPressed())
+            EnteredInteractions[1]?.DoInteraction();
+    }
+    
+    public void OnInteractThird(InputAction.CallbackContext context)
+    {
+        if (!lockInter && EnteredInteractions.Count == 3 && context.action.IsPressed())
+            EnteredInteractions[2]?.DoInteraction();
+    }
+    
     private void Update()
     {
         if (!GameMenuManager.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
@@ -48,17 +67,6 @@ public class Interactions : MonoBehaviour
                 if (CanActivateInteraction(interactable) && interactable.AutoUse)
                     interactable.DoInteraction();
             }
-        }
-
-        // Перебор по коллайдерам, в которые вошёл игрок, и в которых !autoUse
-        if (!lockInter)
-        {
-            if (Input.GetKeyDown(KeyCode.E))
-                EnteredInteractions[0]?.DoInteraction();
-            if (Input.GetKeyDown(KeyCode.F))
-                EnteredInteractions[1]?.DoInteraction();
-            if (Input.GetKeyDown(KeyCode.G))
-                EnteredInteractions[2]?.DoInteraction();
         }
 
         interLabelText.text = "";

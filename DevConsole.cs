@@ -1,19 +1,20 @@
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DevConsole : MonoBehaviour
 {
-    public static DevConsole Instance { get; private set; }
     [SerializeField] private GameObject devMenu, presetsMenu, infoMenu;
     [SerializeField] private TextMeshProUGUI dialogText, locationText, playerText, otherText;
 
-    private void Awake() => Instance = this;
-
-    public void ManageDevMenu()
+    public void OnManageDevConsole(InputAction.CallbackContext context)
     {
-        devMenu.SetActive(!devMenu.activeSelf);
+        if (context.action.IsPressed())
+            ManageDevMenu();
     }
+
+    private void ManageDevMenu() => devMenu.SetActive(!devMenu.activeSelf);
 
     public void ActivatePresets()
     {
@@ -21,7 +22,8 @@ public class DevConsole : MonoBehaviour
         presetsMenu.SetActive(true);
     }
 
-    public async void ChangeLocation(string locationName) => await ManageLocation.Instance.ActivateLocation(locationName);
+    public async void ChangeLocation(string locationName) =>
+        await ManageLocation.Instance.ActivateLocation(locationName);
 
     public void ChangeStyle(string newStyle) => Player.Instance.ChangeStyle(newStyle);
 
@@ -48,7 +50,7 @@ public class DevConsole : MonoBehaviour
         Player.Instance.blockMoveZ = false;
         Player.Instance.canMove = true;
     }
-    
+
     public async void ActivateInfo()
     {
         presetsMenu.SetActive(false);

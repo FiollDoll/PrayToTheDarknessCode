@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.InputSystem;
 using UnityEngine.U2D.Animation;
 
 public class Player : MonoBehaviour, IHumanable
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour, IHumanable
 
     private Rigidbody _rb;
     private Animator _animator;
+    private Vector2 _moveDirection;
 
     private void Awake() => Instance = this;
 
@@ -48,46 +50,41 @@ public class Player : MonoBehaviour, IHumanable
     public void MoveTo(Transform target) =>
         NpcManager.Instance.MoveTo(target, moveSpeed, transform, model, _animator);
 
-    private void Update()
+
+    public void OnMove(InputAction.CallbackContext context) => _moveDirection = context.ReadValue<Vector2>();
+
+    public void OnRun(InputAction.CallbackContext context) => _run = context.action.IsPressed();
+
+    private void Move(Vector2 direction)
     {
-        float horiz = Input.GetAxis("Horizontal");
-        float vert = 0f;
-        if (!blockMoveZ)
-            vert = Input.GetAxis("Vertical");
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-            _run = true;
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-            _run = false;
-
         if (canMove)
         {
-            if (!_run)
-            {
-                _rb.linearVelocity =
-                    new Vector3(horiz * (moveSpeed + changeSpeed), 0, vert * (moveSpeed + changeSpeed));
-                _animator.SetBool("walk", horiz != 0 || vert != 0);
-                _animator.SetBool("run", false);
-            }
-            else
-            {
-                _rb.linearVelocity =
-                    new Vector3(horiz * (moveSpeed + changeSpeed + 2.5f), 0, vert * (moveSpeed + changeSpeed + 2.5f));
-                _animator.SetBool("walk", false);
-                _animator.SetBool("run", (horiz != 0 || vert != 0));
-            }
+            float runChange = 0f;
+            if (_run)
+                runChange = 2.5f;
 
-            model.transform.localScale = horiz switch
+            float totalChange = moveSpeed + changeSpeed + runChange;
+            _rb.linearVelocity = new Vector3(direction.x * totalChange, 0, direction.y * totalChange);
+            _animator.SetBool("walk", !_run && (direction.x != 0 || direction.y != 0));
+            _animator.SetBool("run", _run && (direction.x != 0 || direction.y != 0));
+
+            model.transform.localScale = direction.x switch
             {
                 > 0 => new Vector3(-1, 1, 1),
                 < 0 => new Vector3(1, 1, 1),
                 _ => model.transform.localScale
             };
+            return;
         }
-        else
-        {
-            _rb.linearVelocity = Vector3.zero;
-            _animator.SetBool("walk", false);
-        }
+
+        _rb.linearVelocity = Vector3.zero;
+        _animator.SetBool("walk", false);
+        _animator.SetBool("run", false);
+    }
+
+
+    private void Update()
+    {
+        Move(_moveDirection);
     }
 }

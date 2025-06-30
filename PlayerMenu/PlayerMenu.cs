@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerMenu : MonoBehaviour, IMenuable
@@ -9,9 +10,13 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     [SerializeField] private Slider addictionSlider, sanitySlider;
 
     public GameObject menu => playerMenu;
-
-    private Coroutine _cameraZoomCoroutine;
-
+    
+    public void OnManagePlayerMenu(InputAction.CallbackContext context)
+    {
+        if (context.action.IsPressed())
+            ManagePlayerMenu();
+    }
+    
     public void ManagePlayerMenu()
     {
         if (!playerMenu.activeSelf)
@@ -60,7 +65,6 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         buttonsPage.SetActive(true);
         UpdateAddictionSlider();
         UpdateSanitySlider();
-        _cameraZoomCoroutine = null;
     }
 
     private async void UpdateAddictionSlider()
@@ -90,14 +94,5 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         playerMenu.SetActive(false);
         notebookMenu.SetActive(false);
         NotebookUI.Instance.CloseNotes();
-        _cameraZoomCoroutine = null;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Tab))
-            ManagePlayerMenu();
-        if (Input.GetKeyDown(KeyCode.C))
-            DevConsole.Instance.ManageDevMenu();
     }
 }
