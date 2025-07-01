@@ -13,16 +13,16 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     
     public void OnManagePlayerMenu(InputAction.CallbackContext context)
     {
-        if (context.action.IsPressed())
+        if (context.action.WasPerformedThisFrame())
             ManagePlayerMenu();
     }
     
-    public void ManagePlayerMenu()
+    public async void ManagePlayerMenu()
     {
         if (!playerMenu.activeSelf)
         {
             if (GameMenuManager.Instance.CanMenuOpen())
-                ActivatePlayerMenu();
+                await ActivatePlayerMenu();
         }
         else
             DisablePlayerMenu();

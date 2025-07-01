@@ -33,19 +33,19 @@ public class Interactions : MonoBehaviour
 
     public void OnInteractFirst(InputAction.CallbackContext context)
     {
-        if (!lockInter && EnteredInteractions.Count == 1 && context.action.IsPressed())
+        if (!lockInter && EnteredInteractions.Count == 1 && context.action.WasPerformedThisFrame())
             EnteredInteractions[0]?.DoInteraction();
     }
     
     public void OnInteractSecond(InputAction.CallbackContext context)
     {
-        if (!lockInter && EnteredInteractions.Count == 2 && context.action.IsPressed())
+        if (!lockInter && EnteredInteractions.Count == 2 && context.action.WasPerformedThisFrame())
             EnteredInteractions[1]?.DoInteraction();
     }
     
     public void OnInteractThird(InputAction.CallbackContext context)
     {
-        if (!lockInter && EnteredInteractions.Count == 3 && context.action.IsPressed())
+        if (!lockInter && EnteredInteractions.Count == 3 && context.action.WasPerformedThisFrame())
             EnteredInteractions[2]?.DoInteraction();
     }
     

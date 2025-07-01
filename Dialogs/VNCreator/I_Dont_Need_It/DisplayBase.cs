@@ -6,7 +6,7 @@ public class DisplayBase : MonoBehaviour
 {
     [HideInInspector] public Dialog story;
 
-    [FormerlySerializedAs("currentDialogNode")] [FormerlySerializedAs("currentNode")] [HideInInspector] public DialogStepNode currentDialogStepNode;
+    [HideInInspector] public DialogStepNode currentDialogStepNode;
     [HideInInspector] public bool lastNode;
 
     protected List<string> loadList = new List<string>();

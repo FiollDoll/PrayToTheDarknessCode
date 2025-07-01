@@ -10,11 +10,9 @@ public class DevConsole : MonoBehaviour
 
     public void OnManageDevConsole(InputAction.CallbackContext context)
     {
-        if (context.action.IsPressed())
-            ManageDevMenu();
+        if (context.action.WasPerformedThisFrame())
+            devMenu.SetActive(!devMenu.activeSelf);
     }
-
-    private void ManageDevMenu() => devMenu.SetActive(!devMenu.activeSelf);
 
     public void ActivatePresets()
     {
@@ -60,29 +58,32 @@ public class DevConsole : MonoBehaviour
 
     private async Task UpdateInfo()
     {
-        if (DialogUI.Instance.story)
-            dialogText.text = "Dialog: " + DialogUI.Instance.story.name + "\n" +
-                              "Node id: " + DialogUI.Instance.currentDialogStepNode.guid + "\n" +
-                              "Talker: " + DialogUI.Instance.currentDialogStepNode.character.nameInWorld + "\n" +
-                              "Mood: " + DialogUI.Instance.currentDialogStepNode.mood;
-        else
-            dialogText.text = "";
-        if (ManageLocation.Instance.TotalLocation)
+        if (devMenu.activeSelf)
         {
-            locationText.text = "";
-            locationText.text = "TotalLocation: " + ManageLocation.Instance.TotalLocation.gameName + "\n";
-            foreach (NpcController npc in ManageLocation.Instance.NpcAtTotalLocation)
-                locationText.text += npc.gameObject.name + ", ";
+            if (DialogUI.Instance.story)
+                dialogText.text = "Dialog: " + DialogUI.Instance.story.name + "\n" +
+                                  "Node id: " + DialogUI.Instance.currentDialogStepNode.guid + "\n" +
+                                  "Talker: " + DialogUI.Instance.currentDialogStepNode.character.nameInWorld + "\n" +
+                                  "Mood: " + DialogUI.Instance.currentDialogStepNode.mood;
+            else
+                dialogText.text = "";
+            if (ManageLocation.Instance.TotalLocation)
+            {
+                locationText.text = "";
+                locationText.text = "TotalLocation: " + ManageLocation.Instance.TotalLocation.gameName + "\n";
+                foreach (NpcController npc in ManageLocation.Instance.NpcAtTotalLocation)
+                    locationText.text += npc.gameObject.name + ", ";
+            }
+            else
+                locationText.text = "";
+
+            playerText.text = "Style: " + Player.Instance.selectedStyle + "\n" +
+                              "CanMove: " + Player.Instance.canMove + "\n" +
+                              "CanMoveZ: " + !Player.Instance.blockMoveZ + "\n" +
+                              "Position: " + Player.Instance.transform.position + "\n";
         }
-        else
-            locationText.text = "";
 
-        playerText.text = "Style: " + Player.Instance.selectedStyle + "\n" +
-                          "CanMove: " + Player.Instance.canMove + "\n" +
-                          "CanMoveZ: " + !Player.Instance.blockMoveZ + "\n" +
-                          "Position: " + Player.Instance.transform.position + "\n";
-
-        await Task.Delay(10);
+        await Task.Delay(100);
         if (infoMenu.activeSelf)
             await UpdateInfo();
     }

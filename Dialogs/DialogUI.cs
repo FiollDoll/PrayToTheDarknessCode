@@ -3,12 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DG.Tweening;
-using LastFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 public class DialogUI : DisplayBase, IMenuable
 {
@@ -59,7 +57,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     public void OnNextDialogStep(InputAction.CallbackContext context)
     {
-        if (context.action.IsPressed())
+        if (context.action.WasPerformedThisFrame())
         {
             if (!story) return;
             if (_textGenerate != null)
@@ -84,7 +82,6 @@ public class DialogUI : DisplayBase, IMenuable
     {
         dialogMenu.gameObject.SetActive(true);
         await ActivateUIMainMenuWithDelay(currentDialogStepNode.mainPanelStartDelay);
-        TextManager.EndCursedText(textDialogMain);
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
             switch (currentDialogStepNode.styleOfDialog)
@@ -172,12 +169,7 @@ public class DialogUI : DisplayBase, IMenuable
         }
 
         if (!_dialogsManager.CanChoice())
-        {
-            if (currentDialogStepNode.cursedText)
-                TextManager.SetCursedText(_selectedTextDialog, Random.Range(5, 40));
-            else
-                _textGenerate = StartCoroutine(SetText());
-        }
+            _textGenerate = StartCoroutine(SetText());
         else
             ActivateChoiceMenu();
     }
@@ -230,7 +222,6 @@ public class DialogUI : DisplayBase, IMenuable
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(async () =>
         {
             await CameraManager.Instance.CameraZoom(0, true);
-            TextManager.EndCursedText(textDialogMain);
             dialogMenu.gameObject.SetActive(false);
             mainDialogMenu.gameObject.SetActive(false);
             subDialogMenu.gameObject.SetActive(false);

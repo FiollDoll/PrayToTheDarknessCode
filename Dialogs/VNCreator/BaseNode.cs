@@ -33,11 +33,11 @@ public class NodeViewer : VisualElement
         node = _node;
 
         VisualTreeAsset tree =
-            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/VNCreator/BaseNodeTemplate.uxml");
+            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/VNCreator/Dialogs/BaseNodeTemplate.uxml");
         tree.CloneTree(this);
 
         styleSheets.Add(
-            AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/VNCreator/BaseNodeStyle.uss"));
+            AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/Dialogs/VNCreator/BaseNodeStyle.uss"));
 
         if (_startNode)
         {

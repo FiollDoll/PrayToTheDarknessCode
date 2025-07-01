@@ -9,6 +9,8 @@ using UnityEngine.UIElements;
 #if UNITY_EDITOR
 public class ExtendedGraphView : GraphView
 {
+    public SaveUtility save;
+    public Dialog storyObj;
     private Vector2 mousePosition = new Vector2();
 
     public ExtendedGraphView()
@@ -27,6 +29,7 @@ public class ExtendedGraphView : GraphView
     public void GenerateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, bool _startNode, bool _endNode)
     {
         AddElement(CreateNode(_nodeName, _mousePos, choiceAmount, _startNode, _endNode));
+        save.SaveGraph(storyObj, this);
     }
 
     public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, bool _startNode,
