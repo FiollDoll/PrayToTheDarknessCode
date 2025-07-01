@@ -5,7 +5,7 @@ public class LocationInteraction : MonoBehaviour, IInteractable
 {
     [Header("Label")] public LanguageSetting label;
     [SerializeField] private bool useLocationName;
-    public string InterLabel => label.text;
+    public string InterLabel => label.Text;
 
     [Header("Requires")] public bool autoUse;
     public bool AutoUse => autoUse;

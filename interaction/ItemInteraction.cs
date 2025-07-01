@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemInteraction : MonoBehaviour, IInteractable
 {
     [Header("Main")] public LanguageSetting label;
-    public string InterLabel => label.text;
+    public string InterLabel => label.Text;
 
     [Header("Requires")] public bool autoUse;
     public bool AutoUse => autoUse;

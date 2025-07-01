@@ -49,20 +49,20 @@ public class NotebookUI : MonoBehaviour
             {
                 pageNotes.SetActive(false);
                 pageReadNote.gameObject.SetActive(true);
-                headerMain.text = _notesManager.PlayerNotes[num].noteName.text;
-                noteMain.text = _notesManager.PlayerNotes[num].description.text;
+                headerMain.text = _notesManager.PlayerNotes[num].noteName.Text;
+                noteMain.text = _notesManager.PlayerNotes[num].description.Text;
                 break;
             }
             case 1:
                 pageNpc.SetActive(false);
                 pageReadHuman.gameObject.SetActive(true);
                 Npc selectedNpc = Player.Instance.familiarNpc[num];
-                headerHuman.text = selectedNpc.nameOfNpc.text;
-                noteHuman.text = selectedNpc.description.text;
+                headerHuman.text = selectedNpc.nameOfNpc.Text;
+                noteHuman.text = selectedNpc.description.Text;
                 iconHuman.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standard);
                 relationshipTextHuman.text =
                     new LanguageSetting($"Отношения({selectedNpc.NpcController.npcEntity.relationshipWithPlayer})",
-                        $"Relationships({selectedNpc.NpcController.npcEntity.relationshipWithPlayer})").text;
+                        $"Relationships({selectedNpc.NpcController.npcEntity.relationshipWithPlayer})").Text;
                 sliderHuman.value = selectedNpc.NpcController.npcEntity.relationshipWithPlayer;
                 break;
         }
@@ -107,7 +107,7 @@ public class NotebookUI : MonoBehaviour
         {
             var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
             Npc selectedNpc = Player.Instance.familiarNpc[i];
-            obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.text;
+            obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
             obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standard);
             int number = i;
             obj.prefabButton.onClick.AddListener(delegate{ReadNote(number, 1);});

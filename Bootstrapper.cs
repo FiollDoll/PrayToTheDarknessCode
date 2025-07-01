@@ -29,7 +29,7 @@ public class Bootstrapper : MonoBehaviour
         await InitializeComponent(new DayProcess().Initialize());
         await InitializeComponent(new SaveAndLoadManager().Initialize());
 
-        GameMenuManager.Instance.DisableNoVision();
+        _ = GameMenuManager.Instance.DisableNoVision();
 
 # if UNITY_EDITOR
         ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("test"));

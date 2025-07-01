@@ -10,10 +10,10 @@ public class SaveAndLoadManager
     public async Task Initialize()
     {
         Instance = this;
-        LoadGame();
+        await LoadGame();
     }
     
-    public async Task SaveGame()
+    public Task SaveGame()
     {
         gameSave = new GameSave();
         gameSave.playerStyle = Player.Instance.selectedStyle;
@@ -25,10 +25,11 @@ public class SaveAndLoadManager
         //gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
         gameSave.familiarNpc = Player.Instance.familiarNpc;
         string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
+        return Task.CompletedTask;
         // TODO: Сохранение
     }
 
-    public async Task LoadGame()
+    private Task LoadGame()
     {
         // TODO: Загрузка
         string json = "";
@@ -43,5 +44,7 @@ public class SaveAndLoadManager
             Player.Instance.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
             Player.Instance.familiarNpc = gameSave.familiarNpc;
         }
+
+        return Task.CompletedTask;
     }
 }

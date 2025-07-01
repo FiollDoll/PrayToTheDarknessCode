@@ -10,7 +10,7 @@ public class CutsceneManager
     private CinemachineVirtualCamera _virtualCamera;
     private readonly Dictionary<string, Cutscene> _allCutsceneDict = new Dictionary<string, Cutscene>();
 
-    public async Task Initialize()
+    public Task Initialize()
     {
         Instance = this;
         Cutscene[] allCutscenes = Resources.LoadAll<Cutscene>("Cutscenes/");
@@ -18,14 +18,16 @@ public class CutsceneManager
             _allCutsceneDict.Add(cutscene.cutsceneName, cutscene);
 
         _virtualCamera = Player.Instance.virtualCamera;
+        return Task.CompletedTask;
     }
 
-    public async Task ActivateCutscene(string cutsceneName)
+    public Task ActivateCutscene(string cutsceneName)
     {
-        if (string.IsNullOrEmpty(cutsceneName)) return;
+        if (string.IsNullOrEmpty(cutsceneName)) return Task.CompletedTask;
         TotalCutscene = _allCutsceneDict.GetValueOrDefault(cutsceneName);
         if (TotalCutscene)
             ActivateCutsceneStep(0);
+        return Task.CompletedTask;
     }
 
     public void ActivateCutsceneStep(int step)

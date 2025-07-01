@@ -9,12 +9,13 @@ public class ChapterManager
     private readonly Dictionary<string, Chapter> chaptersDict = new Dictionary<string, Chapter>();
     private Chapter _selectedChapter;
 
-    public async Task Initialize()
+    public Task Initialize()
     {
         Instance = this;
         _allChapters = Resources.LoadAll<Chapter>("Chapters/");
         foreach (Chapter chapter in _allChapters)
             chaptersDict.Add(chapter.gameName, chapter);
+        return Task.CompletedTask;
     }
 
     public Chapter GetChapterByName(string name) => chaptersDict.GetValueOrDefault(name);

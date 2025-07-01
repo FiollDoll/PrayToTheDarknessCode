@@ -7,9 +7,9 @@ public class AdaptiveScrollView : MonoBehaviour
 {
     public RectTransform content;
 
-    private void OnEnable() => UpdateContentSize();
+    private async void OnEnable() => await UpdateContentSize();
     
-    public async Task UpdateContentSize()
+    public Task UpdateContentSize()
     {
         float totalHeight = 0f;
 
@@ -17,5 +17,6 @@ public class AdaptiveScrollView : MonoBehaviour
             totalHeight += child.sizeDelta.y;
 
         content.sizeDelta = new Vector2(content.sizeDelta.x, totalHeight / 1.65f);
+        return Task.CompletedTask;
     }
 }

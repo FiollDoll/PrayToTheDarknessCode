@@ -10,6 +10,6 @@ public class LanguageText : MonoBehaviour
     {
         if (!_textMeshProUGUI)
             _textMeshProUGUI = GetComponent<TextMeshProUGUI>();
-        _textMeshProUGUI.text = language.text;
+        _textMeshProUGUI.text = language.Text;
     }
 }

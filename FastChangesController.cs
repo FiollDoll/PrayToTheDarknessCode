@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [CreateAssetMenu(fileName = "FastChangesController")]
-public class FastChangesController: ScriptableObject
+public class FastChangesController : ScriptableObject
 {
-    public string activateDialog;
-    public string activateCutscene;
-    public string activateQuest;
+    public Dialog activateDialog;
+    public Cutscene activateCutscene;
+    public Quest activateQuest;
 
-    [Header("-Locations")] public string moveToLocation;
+    [Header("-Locations")] public Location moveToLocation;
     public string moveToLocationSpawn;
     public bool moveWithFade = true;
 
@@ -21,8 +21,8 @@ public class FastChangesController: ScriptableObject
     public VolumeProfile newVolumeProfile;
 
     [Header("-ChangeAnything")] public AudioClip setMusic;
-    public List<string> addItem;
-    public List<string> addNote;
+    public List<Item> addItem;
+    public List<Note> addNote;
     public List<ChangeRelationship> changeRelationships;
     public List<ChangeVisual> changeVisuals;
     public List<ChangeTransform> changeTransforms;
@@ -37,15 +37,19 @@ public class FastChangesController: ScriptableObject
         CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         AudioManager.Instance.PlayMusic(setMusic);
 
-        await DialogsManager.Instance.ActivateDialog(activateDialog);
-        await CutsceneManager.Instance.ActivateCutscene(activateCutscene);
-        await QuestsManager.Instance.ActivateQuest(activateQuest);
-        await ManageLocation.Instance.ActivateLocation(moveToLocation, moveToLocationSpawn, moveWithFade);
+        if (activateDialog)
+            await DialogsManager.Instance.ActivateDialog(activateDialog.name);
+        if (activateCutscene)
+            await CutsceneManager.Instance.ActivateCutscene(activateCutscene.cutsceneName);
+        if (activateQuest)
+            await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
+        if (moveToLocation)
+            await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
 
-        foreach (string item in addItem)
-            InventoryManager.Instance.AddItem(item);
-        foreach (string note in addNote)
-            NotesManager.Instance.AddNote(note);
+        foreach (Item item in addItem)
+            InventoryManager.Instance.AddItem(item.nameInGame);
+        foreach (Note note in addNote)
+            NotesManager.Instance.AddNote(note.gameName);
 
         foreach (ChangeRelationship changer in changeRelationships)
         {
@@ -53,7 +57,7 @@ public class FastChangesController: ScriptableObject
                 changer.npc = NpcManager.Instance.GetNpcByName(changer.npcName);
             changer.npc.relationshipWithPlayer += changer.valueChange;
             if (changer.valueChange != 0)
-                NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.text,
+                NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.Text,
                     changer.valueChange);
         }
 

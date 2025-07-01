@@ -63,10 +63,10 @@ public class Inventory
     /// Использование предмета, который лежит по индексу slot
     /// </summary>
     /// <param name="slot">Индекс предмета</param>
-    public void UseItem(int slot)
+    public async void UseItem(int slot)
     {
         if (playerItems[slot].activateNameDialog != "")
-            DialogsManager.Instance.ActivateDialog(playerItems[slot].activateNameDialog);
+            await DialogsManager.Instance.ActivateDialog(playerItems[slot].activateNameDialog);
 
         if (playerItems[slot].removeAfterUse)
             playerItems.RemoveAt(slot);

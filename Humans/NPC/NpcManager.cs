@@ -6,7 +6,7 @@ public class NpcManager
     public static NpcManager Instance { get; private set; }
     public Npc[] AllNpc;
     
-    public async Task Initialize()
+    public Task Initialize()
     {
         Instance = this;
         AllNpc = Resources.LoadAll<Npc>("NPC");
@@ -19,6 +19,8 @@ public class NpcManager
             npc.NpcController = obj.GetComponent<IHumanable>();
             npc.NpcController.npcEntity = npc;
         }
+
+        return Task.CompletedTask;
     }
 
     public Npc GetNpcByName(string name)

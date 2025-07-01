@@ -46,7 +46,7 @@ public class NotifyManager : MonoBehaviour
     {
         TextMeshProUGUI newNotifyText =
             Instantiate(notifyPrefab, notifyContainer.transform).GetComponent<TextMeshProUGUI>();
-        newNotifyText.text = notifyText.text;
+        newNotifyText.text = notifyText.Text;
         await Task.Delay(5000);
         Destroy(newNotifyText.gameObject);
     }

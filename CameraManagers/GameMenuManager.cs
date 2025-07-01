@@ -15,7 +15,7 @@ public class GameMenuManager
     private Image _startViewMenuPanel;
     private TextMeshProUGUI _startViewMenuText;
 
-    public async Task Initialize(IMenuable[] allGameMenu, GameObject startView, GameObject noView, Sprite nullSprite)
+    public Task Initialize(IMenuable[] allGameMenu, GameObject startView, GameObject noView, Sprite nullSprite)
     {
         Instance = this;
         _allGameMenu = allGameMenu;
@@ -24,6 +24,7 @@ public class GameMenuManager
         NullSprite = nullSprite;
         _startViewMenuText = _startViewMenu.transform.Find("Text").GetComponent<TextMeshProUGUI>();
         _startViewMenuPanel = _startViewMenu.transform.Find("Panel").GetComponent<Image>();
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -83,8 +84,9 @@ public class GameMenuManager
         _startViewMenuText.color = Color.white;
         _startViewMenuPanel.color = Color.black;
         await Task.Delay(4000);
-        ChangeAlpha(_startViewMenuText, 0f, 3f);
-        ChangeAlpha(_startViewMenuPanel, 0f, 3f);
+        // Так и надо
+        _ = ChangeAlpha(_startViewMenuText, 0f, 3f);
+        _ = ChangeAlpha(_startViewMenuPanel, 0f, 3f);
         await Task.Delay(2000);
         _startViewMenu.SetActive(false);
     }

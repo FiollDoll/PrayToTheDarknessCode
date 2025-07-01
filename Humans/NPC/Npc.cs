@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NPC", menuName = "NPC")]
 public class Npc : ScriptableObject
 {
+#if UNITY_EDITOR
+    [ScriptableObjectIcon] public Sprite sprite; // спрайт для эдитора
+#endif
     [Header("Main information")] public string nameInWorld;
     [JsonIgnore] public LanguageSetting nameOfNpc;
     [JsonIgnore] public LanguageSetting description;
@@ -19,7 +22,7 @@ public class Npc : ScriptableObject
 
     // Назначаются при старте
     [JsonIgnore] [HideInInspector] public IHumanable NpcController;
-    
+
     public void OnEnable()
     {
         foreach (NpcStyle style in styles)

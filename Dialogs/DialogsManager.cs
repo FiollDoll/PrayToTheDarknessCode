@@ -12,12 +12,13 @@ public class DialogsManager
 
     public List<Npc> NpcInSelectedDialog = new List<Npc>();
 
-    public async Task Initialize()
+    public Task Initialize()
     {
         Instance = this;
         Dialog[] storyObjects = Resources.LoadAll<Dialog>("Dialogs");
         foreach (Dialog dialog in storyObjects)
             _dialogsDict.TryAdd(dialog.name, dialog);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -92,7 +93,7 @@ public class DialogsManager
     /// <summary>
     /// Обновить текст и выполнить иные действия
     /// </summary>
-    public void DialogUpdateAction()
+    private void DialogUpdateAction()
     {
         // Проверка на пустого нипа
         Npc npc = DialogUI.currentDialogStepNode.character
@@ -111,7 +112,7 @@ public class DialogsManager
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
             if (!totalNpc.canMeet) continue;
-            if (totalNpc.nameOfNpc.text != npc.nameOfNpc.text) continue;
+            if (totalNpc.nameOfNpc.Text != npc.nameOfNpc.Text) continue;
             if (Player.Instance.familiarNpc.Contains(totalNpc)) continue;
             Player.Instance.familiarNpc.Add(totalNpc);
             break;

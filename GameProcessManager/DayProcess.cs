@@ -8,10 +8,11 @@ public class DayProcess
     public int Hour, Minute;
     public bool StopTime;
 
-    public async Task Initialize()
+    public Task Initialize()
     {
         Instance = this;
         MoveTime();
+        return Task.CompletedTask;
     }
 
     private async void MoveTime()

@@ -10,12 +10,13 @@ public class NotesManager
     public Note[] Notes;
     private readonly Dictionary<string, Note> _gameNotesDict = new Dictionary<string, Note>();
 
-    public async Task Initialize()
+    public Task Initialize()
     {
         Instance = this;
         Notes = Resources.LoadAll<Note>("Notes/");
         foreach (Note note in Notes)
             _gameNotesDict.TryAdd(note.gameName, note);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -31,6 +32,6 @@ public class NotesManager
         if (!newNote) return; // Если пустой
 
         PlayerNotes.Add(newNote);
-        NotifyManager.Instance.StartNewNoteNotify(newNote.noteName.text);
+        NotifyManager.Instance.StartNewNoteNotify(newNote.noteName.Text);
     }
 }

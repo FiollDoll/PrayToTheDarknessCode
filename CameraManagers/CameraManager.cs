@@ -17,12 +17,13 @@ public class CameraManager
     private ColorAdjustments _colorAdjustments;
     private Task _currentZoom;
 
-    public async Task Initialize(Camera playerCamera)
+    public Task Initialize(Camera playerCamera)
     {
         Instance = this;
         StartCameraSize = Player.Instance.virtualCamera.GetComponent<CinemachineVirtualCamera>().m_Lens
             .FieldOfView;
         _volume = playerCamera.GetComponent<Volume>();
+        return Task.CompletedTask;
     }
 
     public async Task CameraZoom(float changeSize, bool smoothly = false)

@@ -30,10 +30,11 @@ public class Player : MonoBehaviour, IHumanable
 
     private void Awake() => Instance = this;
 
-    public async Task Initialize()
+    public Task Initialize()
     {
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
+        return Task.CompletedTask;
     }
 
     public void ChangeStyle(string newStyle)

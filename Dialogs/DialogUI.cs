@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class DialogUI : DisplayBase, IMenuable
 {
@@ -39,7 +41,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     private void Awake() => Instance = this;
 
-    public async Task Initialize(DialogsManager dialogsManager)
+    public Task Initialize(DialogsManager dialogsManager)
     {
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
@@ -48,6 +50,7 @@ public class DialogUI : DisplayBase, IMenuable
 
         _dialogsManager = dialogsManager;
         _dialogsManager.DialogUI = this;
+        return Task.CompletedTask;
     }
 
     public void ManagePlayerMenu()
@@ -64,7 +67,7 @@ public class DialogUI : DisplayBase, IMenuable
                 StopCoroutine(_textGenerate);
                 _textGenerate = null;
                 _selectedTextDialog.text =
-                    new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).text;
+                    new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).Text;
             }
             else
             {
@@ -152,12 +155,12 @@ public class DialogUI : DisplayBase, IMenuable
         _dialogsManager.DialogMoveNext(id);
     }
 
-    public async void UpdateDialogWindow(Npc npc)
+    public void UpdateDialogWindow(Npc npc)
     {
         switch (currentDialogStepNode.styleOfDialog)
         {
             case Enums.DialogStyle.Main:
-                textNameMain.text = npc.nameOfNpc.text;
+                textNameMain.text = npc.nameOfNpc.Text;
                 SetIcon(npc);
                 break;
             case Enums.DialogStyle.BigPicture:
@@ -185,7 +188,8 @@ public class DialogUI : DisplayBase, IMenuable
         {
             0 => firstTalkerIcon,
             1 => secondTalkerIcon,
-            2 => thirdTalkerIcon
+            2 => thirdTalkerIcon,
+            _ => throw new ArgumentOutOfRangeException()
         });
     }
 
@@ -220,7 +224,7 @@ public class DialogUI : DisplayBase, IMenuable
             await DoActionsToClose();
     }
 
-    private async Task DoActionsToClose()
+    private Task DoActionsToClose()
     {
         _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
         _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(async () =>
@@ -240,6 +244,7 @@ public class DialogUI : DisplayBase, IMenuable
         currentDialogStepNode = null;
         lastNode = false;
         _npcAndTalkerIcon = new Dictionary<Npc, Image>();
+        return Task.CompletedTask;
     }
 
     private async Task ActivateUIMainMenuWithDelay(float delay)
@@ -256,7 +261,7 @@ public class DialogUI : DisplayBase, IMenuable
     {
         _selectedTextDialog.text = "";
         string totalText =
-            new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).text;
+            new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).Text;
         char[] textChar = totalText.ToCharArray();
         foreach (char tChar in textChar)
         {

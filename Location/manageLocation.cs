@@ -13,7 +13,7 @@ public class ManageLocation
     private GameObject _player;
     private CinemachineConfiner _cinemachineConfiner;
 
-    public async Task Initialize()
+    public Task Initialize()
     {
         Instance = this;
         Location[] locations = Resources.LoadAll<Location>("Locations/");
@@ -25,11 +25,12 @@ public class ManageLocation
 
         _player = Player.Instance.gameObject;
         _cinemachineConfiner = Player.Instance.virtualCamera.GetComponent<CinemachineConfiner>();
+        return Task.CompletedTask;
     }
 
-    public void FastMoveToLocation(string locationName)
+    public async void FastMoveToLocation(string locationName)
     {
-        ActivateLocation(locationName, "fromStairs"); // Для кнопок лестницы
+        await ActivateLocation(locationName, "fromStairs"); // Для кнопок лестницы
         //Interactions.Instance.floorChangeMenu.gameObject.SetActive(false);
     }
 

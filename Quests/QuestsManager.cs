@@ -12,19 +12,20 @@ public class QuestsManager : MonoBehaviour
 
     private void Awake() => Instance = this;
     
-
-    public async Task Initialize()
+    public Task Initialize()
     {
-        foreach (Quest quest in allQuests)
-            _allQuestsDict.Add(quest.questName, quest);
+        //foreach (Quest quest in allQuests)
+            //_allQuestsDict.Add(quest.questName, quest);
+        return Task.CompletedTask;
     }
 
     public QuestStep GetTotalQuestStep() => _selectedQuest?.questSteps[_selectedStep];
 
-    public async Task ActivateQuest(string name)
+    public Task ActivateQuest(string name)
     {
-        if (string.IsNullOrEmpty(name)) return;
+        if (string.IsNullOrEmpty(name)) return Task.CompletedTask;
         _selectedQuest = _allQuestsDict[name];
+        return Task.CompletedTask;
     }
 
     public void NextStep()

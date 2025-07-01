@@ -6,7 +6,7 @@ public class LanguageSetting
 {
     [TextArea(0, 10)] [SerializeField] private string ru, en;
 
-    public string text
+    public string Text
     {
         get
         {
