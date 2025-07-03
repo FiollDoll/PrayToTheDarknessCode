@@ -31,7 +31,7 @@ public class FastChangesController : ScriptableObject
 
     private async Task SetChanges()
     {
-        Player.Instance.changeSpeed = editPlayerSpeed;
+        Player.Instance.PlayerStats.ChangeSpeed = editPlayerSpeed;
         Player.Instance.canMove = playerCanMove;
         Player.Instance.blockMoveZ = !playerCanMoveZ;
         CameraManager.Instance.SetVolumeProfile(newVolumeProfile);

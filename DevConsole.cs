@@ -33,7 +33,7 @@ public class DevConsole : MonoBehaviour
         foreach (Npc npc in NpcManager.Instance.AllNpc)
         {
             if (npc.canMeet)
-                Player.Instance.familiarNpc.Add(npc);
+                Player.Instance.PlayerStats.FamiliarNpc.Add(npc);
         }
     }
 
@@ -77,7 +77,7 @@ public class DevConsole : MonoBehaviour
             else
                 locationText.text = "";
 
-            playerText.text = "Style: " + Player.Instance.selectedStyle + "\n" +
+            playerText.text = "Style: " + Player.Instance.SelectedStyle + "\n" +
                               "CanMove: " + Player.Instance.canMove + "\n" +
                               "CanMoveZ: " + !Player.Instance.blockMoveZ + "\n" +
                               "Position: " + Player.Instance.transform.position + "\n";

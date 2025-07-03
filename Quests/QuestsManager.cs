@@ -2,20 +2,21 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class QuestsManager : MonoBehaviour
+public class QuestsManager
 {
     public static QuestsManager Instance { get; private set; }
+
+    private Quest[] _allQuests = new Quest[0];
+    private readonly Dictionary<string, Quest> _allQuestsDict = new Dictionary<string, Quest>();
     private Quest _selectedQuest;
     private int _selectedStep;
-    [SerializeField] private Quest[] allQuests = new Quest[0];
-    private Dictionary<string, Quest> _allQuestsDict = new Dictionary<string, Quest>();
 
-    private void Awake() => Instance = this;
-    
     public Task Initialize()
     {
-        //foreach (Quest quest in allQuests)
-            //_allQuestsDict.Add(quest.questName, quest);
+        Instance = this;
+        _allQuests = Resources.LoadAll<Quest>("Quests");
+        foreach (Quest quest in _allQuests)
+            _allQuestsDict.Add(quest.questName, quest);
         return Task.CompletedTask;
     }
 
@@ -28,10 +29,11 @@ public class QuestsManager : MonoBehaviour
         return Task.CompletedTask;
     }
 
-    public void NextStep()
+    public async void NextStep()
     {
-        GetTotalQuestStep().changesAfterEnd.ActivateChanges();
+        await GetTotalQuestStep().changesAfterEnd.ActivateChanges();
         _selectedStep++;
+
         if (_selectedStep == _selectedQuest.questSteps.Length)
         {
             _selectedQuest = null;

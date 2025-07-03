@@ -17,7 +17,7 @@ public class Bootstrapper : MonoBehaviour
         await InitializeComponent(new ManageLocation().Initialize());
         await InitializeComponent(new GameMenuManager().Initialize(
             GameObject.Find("Canvas").GetComponentsInChildren<IMenuable>(), startViewMenu, noViewPanel, nullSprite));
-        await InitializeComponent(QuestsManager.Instance.Initialize());
+        await InitializeComponent(new QuestsManager().Initialize());
         await InitializeComponent(new NotesManager().Initialize());
         await InitializeComponent(NotebookUI.Instance.Initialize(new NotesManager()));
         await InitializeComponent(InventoryManager.Instance.Initialize());

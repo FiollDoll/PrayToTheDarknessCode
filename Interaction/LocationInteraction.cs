@@ -34,8 +34,8 @@ public class LocationInteraction : MonoBehaviour, IInteractable
         if (questName == "")
             return true;
         return QuestsManager.Instance.GetTotalQuestStep() != null &&
-               QuestsManager.Instance.GetTotalQuestStep().actionToDo == QuestStep.ActionToDo.Move &&
-               QuestsManager.Instance.GetTotalQuestStep().target == locationName;
+               QuestsManager.Instance.GetTotalQuestStep().actionToDo == Enums.ActionToDo.Move &&
+               QuestsManager.Instance.GetTotalQuestStep().target.name == locationName;
     }
 
     public async Task DoInteraction()

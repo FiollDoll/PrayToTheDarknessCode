@@ -16,14 +16,14 @@ public class SaveAndLoadManager
     public Task SaveGame()
     {
         gameSave = new GameSave();
-        gameSave.playerStyle = Player.Instance.selectedStyle;
+        gameSave.playerStyle = Player.Instance.SelectedStyle;
         gameSave.x = Player.Instance.transform.position.x;
         gameSave.y = Player.Instance.transform.position.y;
         gameSave.z = Player.Instance.transform.position.z;
         gameSave.playerLocationName = ManageLocation.Instance.TotalLocation.gameName;
         //gameSave.playerNotes = Notebook.Instance.playerNotes;
         //gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
-        gameSave.familiarNpc = Player.Instance.familiarNpc;
+        gameSave.familiarNpc = Player.Instance.PlayerStats.FamiliarNpc;
         string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
         return Task.CompletedTask;
         // TODO: Сохранение
@@ -42,7 +42,7 @@ public class SaveAndLoadManager
             InventoryManager.Instance.inventory.playerItems = gameSave.playerItems;
             Player.Instance.ChangeStyle(gameSave.playerStyle);
             Player.Instance.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
-            Player.Instance.familiarNpc = gameSave.familiarNpc;
+            Player.Instance.PlayerStats.FamiliarNpc = gameSave.familiarNpc;
         }
 
         return Task.CompletedTask;

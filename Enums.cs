@@ -18,4 +18,12 @@
         Confusion, // Удивление
         Curse
     }
+    
+    public enum ActionToDo
+    {
+        Talk,
+        Press,
+        Take,
+        Move
+    }
 }

@@ -17,7 +17,7 @@ public class NpcManager
             GameObject obj = GameObject.Find(npc.nameInWorld);
             if (!obj) continue;
             npc.NpcController = obj.GetComponent<IHumanable>();
-            npc.NpcController.npcEntity = npc;
+            npc.NpcController.NpcEntity = npc;
         }
 
         return Task.CompletedTask;

@@ -7,16 +7,16 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 {
     [SerializeField] private GameObject playerMenu, notebookMenu;
     [SerializeField] private GameObject buttonsPage;
-    [SerializeField] private Slider addictionSlider, sanitySlider;
+    [SerializeField] private Slider hpSlider, hungerSlider, addictionSlider, sanitySlider;
 
     public GameObject menu => playerMenu;
-    
+
     public void OnManagePlayerMenu(InputAction.CallbackContext context)
     {
         if (context.action.WasPerformedThisFrame())
             ManagePlayerMenu();
     }
-    
+
     public async void ManagePlayerMenu()
     {
         if (!playerMenu.activeSelf)
@@ -63,34 +63,32 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
         playerMenu.SetActive(true);
         buttonsPage.SetActive(true);
+        UpdateHpSlider();
+        UpdateHungerSlider();
         UpdateAddictionSlider();
         UpdateSanitySlider();
     }
 
-    private async void UpdateAddictionSlider()
+    private async void UpdateAnySlider(Slider slider, float value)
     {
-        for (int i = 0; i < Player.Instance.addiction; i++)
+        while (Mathf.Abs(value - slider.value) > Mathf.Epsilon)
         {
-            addictionSlider.value++;
+            addictionSlider.value += Mathf.Clamp(slider.value + value, 0f, 1f);
             await Task.Delay(50);
         }
     }
+    
+    private void UpdateHpSlider() => UpdateAnySlider(hpSlider, Player.Instance.PlayerStats.Hp);
+    private void UpdateHungerSlider() => UpdateAnySlider(hungerSlider, Player.Instance.PlayerStats.Hunger);
 
-    private async void UpdateSanitySlider()
-    {
-        for (int i = 0; i < Player.Instance.sanity; i++)
-        {
-            sanitySlider.value++;
-            await Task.Delay(50);
-        }
-    }
+    private void UpdateAddictionSlider() => UpdateAnySlider(addictionSlider, Player.Instance.PlayerStats.Addiction);
+
+    private void UpdateSanitySlider() => UpdateAnySlider(sanitySlider, Player.Instance.PlayerStats.Sanity);
 
     private async void DisablePlayerMenu()
     {
         Player.Instance.canMove = true;
         await CameraManager.Instance.CameraZoom(10f, true);
-        addictionSlider.value = 0f;
-        sanitySlider.value = 0f;
         playerMenu.SetActive(false);
         notebookMenu.SetActive(false);
         NotebookUI.Instance.CloseNotes();

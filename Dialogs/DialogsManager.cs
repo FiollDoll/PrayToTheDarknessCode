@@ -113,8 +113,8 @@ public class DialogsManager
         {
             if (!totalNpc.canMeet) continue;
             if (totalNpc.nameOfNpc.Text != npc.nameOfNpc.Text) continue;
-            if (Player.Instance.familiarNpc.Contains(totalNpc)) continue;
-            Player.Instance.familiarNpc.Add(totalNpc);
+            if (Player.Instance.PlayerStats.FamiliarNpc.Contains(totalNpc)) continue;
+            Player.Instance.PlayerStats.FamiliarNpc.Add(totalNpc);
             break;
         }
 

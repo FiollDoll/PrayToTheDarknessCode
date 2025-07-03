@@ -56,14 +56,15 @@ public class NotebookUI : MonoBehaviour
             case 1:
                 pageNpc.SetActive(false);
                 pageReadHuman.gameObject.SetActive(true);
-                Npc selectedNpc = Player.Instance.familiarNpc[num];
+                Npc selectedNpc = Player.Instance.PlayerStats.FamiliarNpc[num];
                 headerHuman.text = selectedNpc.nameOfNpc.Text;
                 noteHuman.text = selectedNpc.description.Text;
                 iconHuman.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standard);
+                iconHuman.SetNativeSize();
                 relationshipTextHuman.text =
-                    new LanguageSetting($"Отношения({selectedNpc.NpcController.npcEntity.relationshipWithPlayer})",
-                        $"Relationships({selectedNpc.NpcController.npcEntity.relationshipWithPlayer})").Text;
-                sliderHuman.value = selectedNpc.NpcController.npcEntity.relationshipWithPlayer;
+                    new LanguageSetting($"Отношения({selectedNpc.NpcController.NpcEntity.relationshipWithPlayer})",
+                        $"Relationships({selectedNpc.NpcController.NpcEntity.relationshipWithPlayer})").Text;
+                sliderHuman.value = selectedNpc.NpcController.NpcEntity.relationshipWithPlayer;
                 break;
         }
     }
@@ -103,10 +104,10 @@ public class NotebookUI : MonoBehaviour
         
         yield return null;
 
-        for (int i = 0; i < Player.Instance.familiarNpc.Count; i++)
+        for (int i = 0; i < Player.Instance.PlayerStats.FamiliarNpc.Count; i++)
         {
             var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
-            Npc selectedNpc = Player.Instance.familiarNpc[i];
+            Npc selectedNpc = Player.Instance.PlayerStats.FamiliarNpc[i];
             obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
             obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standard);
             int number = i;

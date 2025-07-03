@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class NpcController : MonoBehaviour, IHumanable
 {
-    [Header("MainInfo")] public Npc npcEntity { get; set; }
-    public string selectedStyle { get; set; } = "standard";
+    [Header("MainInfo")] public Npc NpcEntity { get; set; }
+    public string SelectedStyle { get; set; } = "standard";
     public string totalLocation;
 
     [Header("Preference")] [SerializeField]
@@ -30,8 +30,8 @@ public class NpcController : MonoBehaviour, IHumanable
     
     public void ChangeStyle(string newStyle)
     {
-        selectedStyle = newStyle;
-        _animator.Play(npcEntity.GetNpcStyle(selectedStyle).animatorStyleName);
+        SelectedStyle = newStyle;
+        _animator.Play(NpcEntity.GetNpcStyle(SelectedStyle).animatorStyleName);
     }
 
     public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, model, _animator);

@@ -26,8 +26,8 @@ public class DialogInteraction : MonoBehaviour, IInteractable
         if (questName == "")
             return true;
         return QuestsManager.Instance.GetTotalQuestStep() != null &&
-               QuestsManager.Instance.GetTotalQuestStep().actionToDo == QuestStep.ActionToDo.Talk &&
-               QuestsManager.Instance.GetTotalQuestStep().target == gameObject.name;
+               QuestsManager.Instance.GetTotalQuestStep().actionToDo == Enums.ActionToDo.Talk &&
+               QuestsManager.Instance.GetTotalQuestStep().target == gameObject;
     }
 
     public async Task DoInteraction()

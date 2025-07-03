@@ -29,8 +29,8 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
         if (questName == "")
             return true;
         return QuestsManager.Instance.GetTotalQuestStep() != null &&
-               QuestsManager.Instance.GetTotalQuestStep().actionToDo == QuestStep.ActionToDo.Press &&
-               QuestsManager.Instance.GetTotalQuestStep().target == gameObject.name;
+               QuestsManager.Instance.GetTotalQuestStep().actionToDo == Enums.ActionToDo.Press &&
+               QuestsManager.Instance.GetTotalQuestStep().target == gameObject;
     }
 
     public async Task DoInteraction()

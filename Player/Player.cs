@@ -8,16 +8,14 @@ using UnityEngine.U2D.Animation;
 public class Player : MonoBehaviour, IHumanable
 {
     public static Player Instance { get; private set; }
-    public Npc npcEntity { get; set; }
-    public string selectedStyle { get; set; } = "standard";
 
-    [Header("Stats")] public bool canMove;
+    public Npc NpcEntity { get; set; }
+    public string SelectedStyle { get; set; } = "standard";
+
+    [Header("Stats")] public PlayerStats PlayerStats;
+    public bool canMove;
     public bool blockMoveZ;
     private bool _run;
-    public float addiction, sanity;
-    [SerializeField] private float moveSpeed;
-    [HideInInspector] public float changeSpeed;
-    [HideInInspector] public List<Npc> familiarNpc = new List<Npc>();
 
     [Header("Preferences")] [SerializeField]
     private GameObject model;
@@ -34,22 +32,23 @@ public class Player : MonoBehaviour, IHumanable
     {
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
+        PlayerStats = new PlayerStats(); // Временно, пока не работает система сохранений
         return Task.CompletedTask;
     }
 
     public void ChangeStyle(string newStyle)
     {
-        selectedStyle = newStyle;
+        SelectedStyle = newStyle;
         foreach (Transform child in model.transform)
         {
             SpriteResolver sr = child.GetComponent<SpriteResolver>();
             if (sr)
-                sr.SetCategoryAndLabel(selectedStyle, sr.GetLabel());
+                sr.SetCategoryAndLabel(SelectedStyle, sr.GetLabel());
         }
     }
 
     public void MoveTo(Transform target) =>
-        NpcManager.Instance.MoveTo(target, moveSpeed, transform, model, _animator);
+        NpcManager.Instance.MoveTo(target, PlayerStats.MoveSpeed, transform, model, _animator);
 
 
     public void OnMove(InputAction.CallbackContext context) => _moveDirection = context.ReadValue<Vector2>();
@@ -64,7 +63,7 @@ public class Player : MonoBehaviour, IHumanable
             if (_run)
                 runChange = 2.5f;
 
-            float totalChange = moveSpeed + changeSpeed + runChange;
+            float totalChange = PlayerStats.MoveSpeed + PlayerStats.ChangeSpeed + runChange;
             _rb.linearVelocity = new Vector3(direction.x * totalChange, 0, direction.y * totalChange);
             _animator.SetBool("walk", !_run && (direction.x != 0 || direction.y != 0));
             _animator.SetBool("run", _run && (direction.x != 0 || direction.y != 0));

@@ -2,8 +2,8 @@
 
 public interface IHumanable
 {
-    public Npc npcEntity { get; set; }
-    public string selectedStyle { get; set; }
+    public Npc NpcEntity { get; set; }
+    public string SelectedStyle { get; set; }
 
     public void ChangeStyle(string newStyle);
     public void MoveTo(Transform target);

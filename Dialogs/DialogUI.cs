@@ -122,7 +122,7 @@ public class DialogUI : DisplayBase, IMenuable
     {
         mainDialogMenu.SetActive(false);
         choiceDialogMenu.SetActive(true);
-        iconImageChoice.sprite = Player.Instance.npcEntity.GetStyleIcon(NpcIcon.IconMood.Standard);
+        iconImageChoice.sprite = Player.Instance.NpcEntity.GetStyleIcon(NpcIcon.IconMood.Standard);
 
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);

@@ -36,8 +36,8 @@ public class Npc : ScriptableObject
 
     public Sprite GetStyleIcon(NpcIcon.IconMood iconMood)
     {
-        if (NpcController != null && NpcController.selectedStyle != "")
-            return _stylesDict[NpcController.selectedStyle].styleIcon.ReturnIcon(iconMood);
+        if (NpcController != null && NpcController.SelectedStyle != "")
+            return _stylesDict[NpcController.SelectedStyle].styleIcon.ReturnIcon(iconMood);
         return _stylesDict["standard"].styleIcon.ReturnIcon(iconMood);
     }
 }
