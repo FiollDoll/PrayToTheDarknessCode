@@ -29,10 +29,9 @@ public class NotebookUI : MonoBehaviour
 
     private void Awake() => Instance = this;
     
-
-    public async Task Initialize(NotesManager notesManager)
+    private void Start()
     {
-        _notesManager = notesManager;
+        _notesManager = NotesManager.Instance;
         _notesAdaptiveScrollView = pageNotes.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
         _npcAdaptiveScrollView = pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
     }

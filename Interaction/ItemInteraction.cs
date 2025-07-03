@@ -36,7 +36,7 @@ public class ItemInteraction : MonoBehaviour, IInteractable
         if (DarkAfterUse)
             GameMenuManager.Instance.NoVisionForTime(1f);
 
-        InventoryManager.Instance.AddItem(gameObject.name);
+        Inventory.Instance.AddItem(gameObject.name);
         Destroy(gameObject);
 
         if (questName != "" && CanInteractByQuest())

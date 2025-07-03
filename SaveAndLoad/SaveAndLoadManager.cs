@@ -39,7 +39,7 @@ public class SaveAndLoadManager
         {
             ManageLocation.Instance.TotalLocation = ManageLocation.Instance.GetLocation(gameSave.playerLocationName);
             NotesManager.Instance.PlayerNotes = gameSave.playerNotes;
-            InventoryManager.Instance.inventory.playerItems = gameSave.playerItems;
+            Inventory.Instance.playerItems = gameSave.playerItems;
             Player.Instance.ChangeStyle(gameSave.playerStyle);
             Player.Instance.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
             Player.Instance.PlayerStats.FamiliarNpc = gameSave.familiarNpc;

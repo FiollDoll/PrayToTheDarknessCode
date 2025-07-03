@@ -3,10 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class InventoryManager : MonoBehaviour
+public class InventoryUI : MonoBehaviour
 {
-    public static InventoryManager Instance { get; private set; }
-    [Header("Inventory")] public Inventory inventory;
+    public static InventoryUI Instance { get; private set; }
 
     [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
 
@@ -22,12 +21,6 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
     }
 
-    public Task Initialize()
-    {
-        inventory.UpdateGameItemsDict();
-        return Task.CompletedTask;
-    }
-
     /// <summary>
     /// Открытие/закрытие инвентаря
     /// </summary>
@@ -41,16 +34,6 @@ public class InventoryManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Выдача предмета
-    /// </summary>
-    /// <param name="nameItem"></param>
-    public void AddItem(string nameItem)
-    {
-        Item newItem = inventory.AddItem(nameItem);
-        NotifyManager.Instance.StartNewItemNotify(newItem.name.Text);
-    }
-
-    /// <summary>
     /// Использование предмета из инвентаря
     /// </summary>
     /// <param name="slot">Индекс предмета</param>
@@ -58,7 +41,6 @@ public class InventoryManager : MonoBehaviour
     {
         itemInfoMenu.gameObject.SetActive(false);
         UpdateInvUI();
-        //Player.Instance.playerMenu.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -71,7 +53,7 @@ public class InventoryManager : MonoBehaviour
 
         if (!itemInfoMenu.gameObject.activeSelf) return; // Если меню закрылось
 
-        Item selectedItem = inventory.GetPlayerItem(id);
+        Item selectedItem = Inventory.Instance.GetPlayerItem(id);
 
         mainView.gameObject.SetActive(!selectedItem.watchIconOnly);
         onlyIconView.gameObject.SetActive(selectedItem.watchIconOnly);
@@ -113,9 +95,9 @@ public class InventoryManager : MonoBehaviour
         foreach (Transform child in invMenu.transform.Find("items"))
             Destroy(child.gameObject);
 
-        for (int i = 0; i < inventory.CountPlayerItems(); i++)
+        for (int i = 0; i < Inventory.Instance.CountPlayerItems(); i++)
         {
-            Item selectedItem = inventory.GetPlayerItem(i);
+            Item selectedItem = Inventory.Instance.GetPlayerItem(i);
             var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity,
                 invMenu.transform.Find("items"));
             // TODO: добавить еще название

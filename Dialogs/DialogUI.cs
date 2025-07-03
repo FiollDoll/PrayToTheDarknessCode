@@ -39,16 +39,15 @@ public class DialogUI : DisplayBase, IMenuable
 
     private void Awake() => Instance = this;
 
-    public Task Initialize(DialogsManager dialogsManager)
+    public void Start()
     {
         _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
         _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
         _mainDialogMenuTransform.DOPivotY(3f, 0.01f);
         _choiceDialogMenuTransform.DOPivotY(3f, 0.01f);
 
-        _dialogsManager = dialogsManager;
+        _dialogsManager = DialogsManager.Instance;
         _dialogsManager.DialogUI = this;
-        return Task.CompletedTask;
     }
 
     public void ManagePlayerMenu()

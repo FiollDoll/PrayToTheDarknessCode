@@ -1,13 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 [System.Serializable]
 public class Inventory
 {
+    public static Inventory Instance { get; private set; }
     [SerializeField] public List<Item> playerItems = new List<Item>();
     [SerializeField] private Item[] gameItems = new Item[0];
     private Dictionary<string, Item> _gameItemsDict = new Dictionary<string, Item>();
 
+    public Task Initialize()
+    {
+        Instance = this;
+        UpdateGameItemsDict();
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Инициализация словаря доступных предметов. Вызывается один раз!
@@ -17,36 +25,30 @@ public class Inventory
         foreach (Item item in gameItems)
             _gameItemsDict.TryAdd(item.nameInGame, item);
     }
-    
+
     /// <summary>
     /// Получить Item по имени
     /// </summary>
     /// <param name="nameItem">Название предмета</param>
     /// <returns></returns>
-    public Item GetGameItem(string nameItem)
-    {
-        return _gameItemsDict.GetValueOrDefault(nameItem);
-    }
+    public Item GetGameItem(string nameItem) => _gameItemsDict.GetValueOrDefault(nameItem);
+    
 
     /// <summary>
     /// Получить предмет в инвентаре игрока
     /// </summary>
     /// <param name="slot">Индекс слота</param>
     /// <returns></returns>
-    public Item GetPlayerItem(int slot)
-    {
-        return playerItems[slot];
-    }
+    public Item GetPlayerItem(int slot) => playerItems[slot];
+    
 
     /// <summary>
     /// Получить число предметов в инвентаре
     /// </summary>
     /// <returns></returns>
-    public int CountPlayerItems()
-    {
-        return playerItems.Count;
-    }
+    public int CountPlayerItems() => playerItems.Count;
     
+
     /// <summary>
     /// Выдача предмета
     /// </summary>

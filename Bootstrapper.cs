@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Bootstrapper : MonoBehaviour
 {
+    [SerializeField] private string chapterToLoad; // Начальная загрузка главы
     [SerializeField] private Sprite nullSprite;
     [SerializeField] private GameObject startViewMenu, noViewPanel;
 
@@ -19,23 +20,17 @@ public class Bootstrapper : MonoBehaviour
             GameObject.Find("Canvas").GetComponentsInChildren<IMenuable>(), startViewMenu, noViewPanel, nullSprite));
         await InitializeComponent(new QuestsManager().Initialize());
         await InitializeComponent(new NotesManager().Initialize());
-        await InitializeComponent(NotebookUI.Instance.Initialize(new NotesManager()));
-        await InitializeComponent(InventoryManager.Instance.Initialize());
+        await InitializeComponent(new Inventory().Initialize());
         await InitializeComponent(new CameraManager().Initialize(Camera.main));
         await InitializeComponent(new ChapterManager().Initialize());
         await InitializeComponent(new CutsceneManager().Initialize());
         await InitializeComponent(new DialogsManager().Initialize());
-        await InitializeComponent(DialogUI.Instance.Initialize(DialogsManager.Instance));
         await InitializeComponent(new DayProcess().Initialize());
         await InitializeComponent(new SaveAndLoadManager().Initialize());
 
         _ = GameMenuManager.Instance.DisableNoVision();
 
-# if UNITY_EDITOR
-        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("test"));
-#elif UNITY_STANDALONE
-        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory"));
-#endif
+        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName(chapterToLoad));
         Destroy(gameObject); // Самоуничтожение
     }
 

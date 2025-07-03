@@ -47,7 +47,7 @@ public class FastChangesController : ScriptableObject
             await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
 
         foreach (Item item in addItem)
-            InventoryManager.Instance.AddItem(item.nameInGame);
+            Inventory.Instance.AddItem(item.nameInGame);
         foreach (Note note in addNote)
             NotesManager.Instance.AddNote(note.gameName);
 
