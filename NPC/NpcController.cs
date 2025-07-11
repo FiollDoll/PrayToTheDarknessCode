@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.U2D.Animation;
 
 public class NpcController : MonoBehaviour, IHumanable
 {
     [Header("MainInfo")] public Npc NpcEntity { get; set; }
-    public string SelectedStyle { get; set; } = "standard";
+    public string SelectedStyle { get; set; }
     public string totalLocation;
 
     [Header("Preference")] [SerializeField]
@@ -22,16 +23,34 @@ public class NpcController : MonoBehaviour, IHumanable
     [HideInInspector] public Transform point;
     [HideInInspector] public string locationOfPointName;
 
-    private void Awake()
+    private void Start()
     {
         _animator = GetComponent<Animator>();
         _playerTransform = GameObject.Find("Mark").transform;
+        SelectedStyle = NpcEntity.styles[0].nameOfStyle;
+        ChangeStyle(SelectedStyle); // На всякий случай
     }
-    
+
+#if UNITY_EDITOR
+
+    [ContextMenu("FirstStyle")]
+    public void ChangeFirstStyle() => ChangeStyle(NpcEntity.styles[0].nameOfStyle);
+
+    [ContextMenu("SecondStyle")]
+    public void ChangeSecondStyle() => ChangeStyle(NpcEntity.styles[1].nameOfStyle);
+#endif
+
     public void ChangeStyle(string newStyle)
     {
         SelectedStyle = newStyle;
-        _animator.Play(NpcEntity.GetNpcStyle(SelectedStyle).animatorStyleName);
+        foreach (Transform child in model.transform)
+        {
+            SpriteResolver sr = child.GetComponent<SpriteResolver>();
+            if (sr)
+                sr.SetCategoryAndLabel(SelectedStyle, sr.GetLabel());
+        }
+
+        _animator?.Play(NpcEntity.GetNpcStyle(SelectedStyle).animatorStyleName);
     }
 
     public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, model, _animator);
@@ -51,7 +70,7 @@ public class NpcController : MonoBehaviour, IHumanable
                 break;
             default:
             {
-                if (point != null & other.gameObject.name == point.gameObject.name)
+                if (point != null && other.gameObject.name == point.gameObject.name)
                     moveToPoint = false;
                 break;
             }

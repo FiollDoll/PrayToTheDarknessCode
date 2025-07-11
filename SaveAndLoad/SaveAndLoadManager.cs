@@ -24,7 +24,7 @@ public class SaveAndLoadManager
         //gameSave.playerNotes = Notebook.Instance.playerNotes;
         //gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
         gameSave.familiarNpc = Player.Instance.PlayerStats.FamiliarNpc;
-        string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
+        //string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
         return Task.CompletedTask;
         // TODO: Сохранение
     }

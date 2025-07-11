@@ -12,7 +12,7 @@ public class Npc : ScriptableObject
     [JsonIgnore] public LanguageSetting nameOfNpc;
     [JsonIgnore] public LanguageSetting description;
 
-    [JsonIgnore] public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
+    [JsonIgnore] public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("Standard") };
     private readonly Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
 
     [Header("TempInfo")] public float relationshipWithPlayer;
@@ -34,6 +34,6 @@ public class Npc : ScriptableObject
     {
         if (NpcController != null && NpcController.SelectedStyle != "")
             return _stylesDict[NpcController.SelectedStyle].styleIcon.ReturnIcon(iconMood);
-        return _stylesDict["standard"].styleIcon.ReturnIcon(iconMood);
+        return _stylesDict["Standard"].styleIcon.ReturnIcon(iconMood);
     }
 }
