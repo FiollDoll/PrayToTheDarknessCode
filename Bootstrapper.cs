@@ -22,11 +22,11 @@ public class Bootstrapper : MonoBehaviour
         await InitializeComponent(new NotesManager().Initialize());
         await InitializeComponent(new Inventory().Initialize());
         await InitializeComponent(new CameraManager().Initialize(Camera.main));
-        await InitializeComponent(new ChapterManager().Initialize());
         await InitializeComponent(new CutsceneManager().Initialize());
-        await InitializeComponent(new DialogsManager().Initialize());
+        await InitializeComponent(DialogUI.Instance.Initialize()); // 2 в 1
         await InitializeComponent(new DayProcess().Initialize());
         await InitializeComponent(new SaveAndLoadManager().Initialize());
+        await InitializeComponent(new ChapterManager().Initialize());
 
         _ = GameMenuManager.Instance.DisableNoVision();
 

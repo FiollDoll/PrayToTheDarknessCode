@@ -5,31 +5,19 @@ using UnityEngine.Serialization;
 public class NpcIcon
 {
     public Sprite standardIcon, happyIcon, angryIcon, sadIcon, scaryIcon, wonderIcon, confusionIcon, curseIcon;
-
-    public enum IconMood
-    {
-        Standard,
-        Happy,
-        Angry,
-        Sad,
-        Scary,
-        Wonder, // Непонимание
-        Confusion, // Удивление
-        Curse
-    }
     
-    public Sprite ReturnIcon(IconMood iconMoodSelected)
+    public Sprite ReturnIcon(Enums.IconMood iconMoodSelected)
     {
         return iconMoodSelected switch
         {
-            IconMood.Standard => standardIcon,
-            IconMood.Happy => happyIcon,
-            IconMood.Sad => sadIcon,
-            IconMood.Scary => scaryIcon,
-            IconMood.Wonder => wonderIcon,
-            IconMood.Confusion => confusionIcon,
-            IconMood.Angry => angryIcon,
-            IconMood.Curse => curseIcon
+            Enums.IconMood.Standard => standardIcon,
+            Enums.IconMood.Happy => happyIcon,
+            Enums.IconMood.Sad => sadIcon,
+            Enums.IconMood.Scary => scaryIcon,
+            Enums.IconMood.Wonder => wonderIcon,
+            Enums.IconMood.Confusion => confusionIcon,
+            Enums.IconMood.Angry => angryIcon,
+            Enums.IconMood.Curse => curseIcon
         };
     }
 }

@@ -37,14 +37,14 @@ public class FastChangesController : ScriptableObject
         CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         AudioManager.Instance.PlayMusic(setMusic);
 
+        if (moveToLocation)
+            await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
         if (activateDialog)
             await DialogsManager.Instance.ActivateDialog(activateDialog.name);
         if (activateCutscene)
             await CutsceneManager.Instance.ActivateCutscene(activateCutscene.cutsceneName);
         if (activateQuest)
             await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
-        if (moveToLocation)
-            await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
 
         foreach (Item item in addItem)
             Inventory.Instance.AddItem(item.nameInGame);

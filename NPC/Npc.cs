@@ -11,7 +11,6 @@ public class Npc : ScriptableObject
     [Header("Main information")] public string nameInWorld;
     [JsonIgnore] public LanguageSetting nameOfNpc;
     [JsonIgnore] public LanguageSetting description;
-    [JsonIgnore] public Color nameColor;
 
     [JsonIgnore] public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("standard") };
     private readonly Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
@@ -29,12 +28,9 @@ public class Npc : ScriptableObject
             _stylesDict.TryAdd(style.nameOfStyle, style);
     }
 
-    public NpcStyle GetNpcStyle(string styleName)
-    {
-        return _stylesDict.GetValueOrDefault(styleName);
-    }
-
-    public Sprite GetStyleIcon(NpcIcon.IconMood iconMood)
+    public NpcStyle GetNpcStyle(string styleName) => _stylesDict.GetValueOrDefault(styleName);
+    
+    public Sprite GetStyleIcon(Enums.IconMood iconMood)
     {
         if (NpcController != null && NpcController.SelectedStyle != "")
             return _stylesDict[NpcController.SelectedStyle].styleIcon.ReturnIcon(iconMood);

@@ -35,12 +35,13 @@ public class ExtendedGraphView : GraphView
     public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, bool _startNode,
         bool _endNode)
     {
-        return CreateNode(_nodeName, _mousePos, choiceAmount, new string[choiceAmount].ToList(), _startNode,
+        return CreateNode(_nodeName, _mousePos, choiceAmount, new string[choiceAmount].ToList(),
+            new string[choiceAmount].ToList(), _startNode,
             _endNode, new DialogStepNode());
     }
 
-    public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, List<string> _choices,
-        bool _startNode, bool _endNode, DialogStepNode _data)
+    public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, List<string> _choicesRu,
+        List<string> _choicesEn, bool _startNode, bool _endNode, DialogStepNode _data)
     {
         BaseNode _node = new BaseNode(_data, _startNode);
 
@@ -51,7 +52,8 @@ public class ExtendedGraphView : GraphView
         _node.DialogStepNode.startNode = _startNode;
         _node.DialogStepNode.endNode = _endNode;
         _node.DialogStepNode.choices = choiceAmount;
-        _node.DialogStepNode.choiceOptions = _choices;
+        _node.DialogStepNode.choiceOptionsRu = _choicesRu;
+        _node.DialogStepNode.choiceOptionsEn = _choicesEn;
 
         if (!_startNode)
         {
@@ -70,17 +72,32 @@ public class ExtendedGraphView : GraphView
                     _outputPort.portName = "Choice " + (i + 1);
 
                     //_node.nodeData.choiceOptions.Add(_node.nodeData.choiceOptions[i]);
-
-                    string _value = _data.choiceOptions.Count == 0
-                        ? "Choice " + (i + 1)
-                        : _node.DialogStepNode.choiceOptions[i];
                     int _idx = i;
 
+                    string _value = _data.choiceOptionsRu.Count == 0
+                        ? "Выбор " + (i + 1)
+                        : _node.DialogStepNode.choiceOptionsRu[i];
+
                     TextField _field = new TextField { value = _value };
-                    _field.RegisterValueChangedCallback(e => { _node.DialogStepNode.choiceOptions[_idx] = _field.value; }
+                    _field.RegisterValueChangedCallback(e =>
+                        {
+                            _node.DialogStepNode.choiceOptionsRu[_idx] = _field.value;
+                        }
+                    );
+
+                    _value = _data.choiceOptionsEn.Count == 0
+                        ? "Choice " + (i + 1)
+                        : _node.DialogStepNode.choiceOptionsEn[i];
+
+                    TextField _field1 = new TextField { value = _value };
+                    _field1.RegisterValueChangedCallback(e =>
+                        {
+                            _node.DialogStepNode.choiceOptionsEn[_idx] = _field1.value;
+                        }
                     );
 
                     _node.outputContainer.Add(_field);
+                    _node.outputContainer.Add(_field1);
                     _node.outputContainer.Add(_outputPort);
                 }
             }

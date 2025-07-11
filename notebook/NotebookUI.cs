@@ -58,7 +58,7 @@ public class NotebookUI : MonoBehaviour
                 Npc selectedNpc = Player.Instance.PlayerStats.FamiliarNpc[num];
                 headerHuman.text = selectedNpc.nameOfNpc.Text;
                 noteHuman.text = selectedNpc.description.Text;
-                iconHuman.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standard);
+                iconHuman.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
                 iconHuman.SetNativeSize();
                 relationshipTextHuman.text =
                     new LanguageSetting($"Отношения({selectedNpc.NpcController.NpcEntity.relationshipWithPlayer})",
@@ -108,7 +108,7 @@ public class NotebookUI : MonoBehaviour
             var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
             Npc selectedNpc = Player.Instance.PlayerStats.FamiliarNpc[i];
             obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
-            obj.prefabImage.sprite = selectedNpc.GetStyleIcon(NpcIcon.IconMood.Standard);
+            obj.prefabImage.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
             int number = i;
             obj.prefabButton.onClick.AddListener(delegate{ReadNote(number, 1);});
             yield return null;

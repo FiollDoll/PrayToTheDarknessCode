@@ -101,10 +101,10 @@ public class DialogsManager
             : NpcManager.Instance.GetNpcByName(".");
 
         // Проверяем - был нип в диалоге или нет
-        if (npc && !NpcInSelectedDialog.Contains(npc))
+        if (npc && !NpcInSelectedDialog.Contains(npc) && npc != NpcManager.Instance.GetNpcByName("."))
         {
             NpcInSelectedDialog.Add(npc);
-            DialogUI.UpdateTalkersDict(npc);
+            DialogUI.AddTalkerToDict(npc);
         }
 
         DialogUI.UpdateDialogWindow(npc);

@@ -3,8 +3,9 @@
         <engine:VisualElement name="VisualElement">
             <editor:ObjectField label="Character" name="Character" data-source-type="Npc, Assembly-CSharp" type="Npc, Assembly-CSharp" class="sound_selector" />
             <engine:DropdownField label="Mood" name="Char_Mood" />
-            <engine:TextField name="Dialogue_Field_Ru" label="Ru text" class="dialogue_field" />
-            <engine:TextField name="Dialogue_Field_En" label="En text" class="dialogue_field" />
+            <engine:Button name="npcIcon" style="background-color: rgb(255, 255, 255); guid=f547bb91b03328841afda3e9dc993d09&amp;type=3#иконки игнат_4&quot;); background-size: 100% 100%; height: 200px; width: 180px; align-items: auto; align-self: center;" />
+            <engine:TextField name="Dialogue_Field_Ru" label="Ru text" multiline="true" class="dialogue_field" />
+            <engine:TextField name="Dialogue_Field_En" label="En text" multiline="true" class="dialogue_field" />
             <engine:Foldout text="DialogSettings" name="Dialog_Settings" enabled="true" style="visibility: visible; display: flex;">
                 <engine:DropdownField label="Style Dialog" name="Style_Dialogs" />
                 <engine:Toggle label="MoreRead" name="More_Read" />

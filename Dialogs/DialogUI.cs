@@ -20,17 +20,15 @@ public class DialogUI : DisplayBase, IMenuable
 
     [SerializeField] private GameObject choicesContainer;
 
-    [SerializeField] private TextMeshProUGUI textNameMain, textDialogMain, textDialogSub, textDialogBigPicture;
+    [SerializeField] private TextMeshProUGUI textDialogMain, textDialogSub, textDialogBigPicture;
     private TextMeshProUGUI _selectedTextDialog;
     [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu, bigPictureMenu;
-    [SerializeField] private Image firstTalkerIcon, secondTalkerIcon, thirdTalkerIcon, iconImageChoice;
+    [SerializeField] private Image[] talkerIcons = new Image[3];
     private Dictionary<Npc, Image> _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     [SerializeField] private Image bigPicture;
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
-    private RectTransform _mainDialogMenuTransform, _choiceDialogMenuTransform;
 
     [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
-    public FastChangesController[] fastChangesInDialogs = new FastChangesController[0];
 
     [Header("Preferences")] [SerializeField]
     private Color dontSelectedColor;
@@ -39,14 +37,10 @@ public class DialogUI : DisplayBase, IMenuable
 
     private void Awake() => Instance = this;
 
-    public void Start()
+    public async Task Initialize()
     {
-        _mainDialogMenuTransform = mainDialogMenu.GetComponent<RectTransform>();
-        _choiceDialogMenuTransform = choiceDialogMenu.GetComponent<RectTransform>();
-        _mainDialogMenuTransform.DOPivotY(3f, 0.01f);
-        _choiceDialogMenuTransform.DOPivotY(3f, 0.01f);
-
-        _dialogsManager = DialogsManager.Instance;
+        _dialogsManager = new DialogsManager();
+        await _dialogsManager.Initialize();
         _dialogsManager.DialogUI = this;
     }
 
@@ -105,23 +99,12 @@ public class DialogUI : DisplayBase, IMenuable
     }
 
     /// <summary>
-    /// Включение анимаций появления менюшек
-    /// </summary>
-    private void OpenPanels()
-    {
-        // TODO: переделать
-        _mainDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart);
-        _choiceDialogMenuTransform.DOPivotY(0.5f, 0.3f).SetEase(Ease.InQuart);
-    }
-
-    /// <summary>
     /// Активация + генерация меню с выборами
     /// </summary>
     public async void ActivateChoiceMenu()
     {
         mainDialogMenu.SetActive(false);
         choiceDialogMenu.SetActive(true);
-        iconImageChoice.sprite = Player.Instance.NpcEntity.GetStyleIcon(NpcIcon.IconMood.Standard);
 
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
@@ -132,10 +115,11 @@ public class DialogUI : DisplayBase, IMenuable
                 choicesContainer.transform);
 
             obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
-                currentDialogStepNode.choiceOptions[i];
+                new LanguageSetting(currentDialogStepNode.choiceOptionsRu[i], currentDialogStepNode.choiceOptionsEn[i])
+                    .Text;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(() => { ActivateChoiceStep(num); });
-            obj.transform.localPosition = Vector3.zero; // Хз почему, но по Z слетает
+            obj.transform.localPosition = Vector3.zero;
         }
 
         await adaptiveScrollViewChoice.UpdateContentSize();
@@ -156,7 +140,6 @@ public class DialogUI : DisplayBase, IMenuable
         switch (currentDialogStepNode.styleOfDialog)
         {
             case Enums.DialogStyle.Main:
-                textNameMain.text = npc.nameOfNpc.Text;
                 SetIcon(npc);
                 break;
             case Enums.DialogStyle.BigPicture:
@@ -173,16 +156,7 @@ public class DialogUI : DisplayBase, IMenuable
             ActivateChoiceMenu();
     }
 
-    public void UpdateTalkersDict(Npc npc)
-    {
-        _npcAndTalkerIcon.Add(npc, _npcAndTalkerIcon.Count switch
-        {
-            0 => firstTalkerIcon,
-            1 => secondTalkerIcon,
-            2 => thirdTalkerIcon,
-            _ => throw new ArgumentOutOfRangeException()
-        });
-    }
+    public void AddTalkerToDict(Npc npc) => _npcAndTalkerIcon.Add(npc, talkerIcons[_npcAndTalkerIcon.Count]);
 
     private void SetIcon(Npc npc)
     {
@@ -194,7 +168,7 @@ public class DialogUI : DisplayBase, IMenuable
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {
             if (npc != talker.Key) continue;
-            talker.Value.sprite = npc.GetStyleIcon((NpcIcon.IconMood)currentDialogStepNode.mood);
+            talker.Value.sprite = npc.GetStyleIcon(currentDialogStepNode.mood);
             talker.Value.rectTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
             talker.Value.color = Color.white;
         }
@@ -215,32 +189,27 @@ public class DialogUI : DisplayBase, IMenuable
             await DoActionsToClose();
     }
 
-    private Task DoActionsToClose()
+    private async Task DoActionsToClose()
     {
-        _choiceDialogMenuTransform.DOPivotY(3f, 0.3f);
-        _mainDialogMenuTransform.DOPivotY(3f, 0.3f).OnComplete(async () =>
-        {
-            await CameraManager.Instance.CameraZoom(0, true);
-            dialogMenu.gameObject.SetActive(false);
-            mainDialogMenu.gameObject.SetActive(false);
-            subDialogMenu.gameObject.SetActive(false);
-            bigPictureMenu.gameObject.SetActive(false);
-            foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
-                talker.Value.sprite = GameMenuManager.Instance.NullSprite;
+        await CameraManager.Instance.CameraZoom(0, true);
+        dialogMenu.gameObject.SetActive(false);
+        mainDialogMenu.gameObject.SetActive(false);
+        subDialogMenu.gameObject.SetActive(false);
+        bigPictureMenu.gameObject.SetActive(false);
+        foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
+            talker.Value.sprite = GameMenuManager.Instance.NullSprite;
 
-            _dialogsManager.DoActionsToClose();
-        });
+        _dialogsManager.DoActionsToClose();
+
         story = null;
         currentDialogStepNode = null;
         lastNode = false;
         _npcAndTalkerIcon = new Dictionary<Npc, Image>();
-        return Task.CompletedTask;
     }
 
     private async Task ActivateUIMainMenuWithDelay(float delay)
     {
         await Task.Delay(Mathf.RoundToInt(delay * 1000));
-        OpenPanels();
     }
 
     /// <summary>

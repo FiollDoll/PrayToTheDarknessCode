@@ -33,7 +33,7 @@ public class NodeViewer : VisualElement
         node = _node;
 
         VisualTreeAsset tree =
-            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/VNCreator/Dialogs/BaseNodeTemplate.uxml");
+            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/Dialogs/VNCreator/BaseNodeTemplate.uxml");
         tree.CloneTree(this);
 
         styleSheets.Add(
@@ -92,9 +92,16 @@ public class NodeViewer : VisualElement
             dialogSettingFoldout.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
         }
 
+        Button npcIcon = this.Query<Button>("npcIcon");
         ObjectField charNameField = this.Query<ObjectField>("Character");
         charNameField.value = (Npc)_node.DialogStepNode.character;
-        charNameField.RegisterValueChangedCallback(e => { node.DialogStepNode.character = (Npc)charNameField.value; }
+        charNameField.RegisterValueChangedCallback(e =>
+            {
+                node.DialogStepNode.character = (Npc)charNameField.value;
+                var image = npcIcon.iconImage;
+                image.sprite = node.DialogStepNode.character.GetStyleIcon(Enums.IconMood.Standard);
+                npcIcon.iconImage = image;
+            }
         );
 
         DropdownField moodDropdownMenu = this.Query<DropdownField>("Char_Mood");
@@ -105,7 +112,21 @@ public class NodeViewer : VisualElement
         {
             moodDropdownMenu.value = Enum.Parse(typeof(Enums.IconMood), evt.newValue).ToString();
             _node.DialogStepNode.mood = (Enums.IconMood)Enum.Parse(typeof(Enums.IconMood), evt.newValue);
+            if (node.DialogStepNode.character)
+            {
+                var image = npcIcon.iconImage;
+                image.sprite = node.DialogStepNode.character.GetStyleIcon(_node.DialogStepNode.mood);
+                npcIcon.iconImage = image;
+            }
         });
+
+        // Ставим иконку чисто по приколу
+        if (node.DialogStepNode.character)
+        {
+            var image = npcIcon.iconImage;
+            image.sprite = node.DialogStepNode.character.GetStyleIcon(_node.DialogStepNode.mood);
+            npcIcon.iconImage = image;
+        }
 
         TextField dialogueFieldRu = this.Query<TextField>("Dialogue_Field_Ru");
         dialogueFieldRu.multiline = true;

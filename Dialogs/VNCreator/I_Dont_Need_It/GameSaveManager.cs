@@ -30,9 +30,7 @@ public static class GameSaveManager
     public static List<string> Load()
     {
         if (currentLoadName == string.Empty)
-        {
             return null;
-        }
 
         if (!PlayerPrefs.HasKey(currentLoadName))
         {

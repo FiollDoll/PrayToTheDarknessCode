@@ -10,7 +10,8 @@ public class DialogStepNode
     public bool startNode;
     public bool endNode;
     public int choices = 1;
-    public List<string> choiceOptions;
+    public List<string> choiceOptionsRu;
+    public List<string> choiceOptionsEn;
     public Rect nodePosition;
 
     // Dialog step settings
