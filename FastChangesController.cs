@@ -31,20 +31,11 @@ public class FastChangesController : ScriptableObject
 
     private async Task SetChanges()
     {
-        Player.Instance.PlayerStats.ChangeSpeed = editPlayerSpeed;
+        PlayerStats.ChangeSpeed = editPlayerSpeed;
         Player.Instance.canMove = playerCanMove;
         Player.Instance.blockMoveZ = !playerCanMoveZ;
         CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         AudioManager.Instance.PlayMusic(setMusic);
-
-        if (moveToLocation)
-            await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
-        if (activateDialog)
-            await DialogsManager.Instance.ActivateDialog(activateDialog.name);
-        if (activateCutscene)
-            await CutsceneManager.Instance.ActivateCutscene(activateCutscene.cutsceneName);
-        if (activateQuest)
-            await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
 
         foreach (Item item in addItem)
             Inventory.Instance.AddItem(item.nameInGame);
@@ -66,6 +57,15 @@ public class FastChangesController : ScriptableObject
 
         foreach (ChangeTransform changer in changeTransforms)
             changer.objToChange.transform.position = changer.newTransform.position;
+
+        if (moveToLocation)
+            await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
+        if (activateDialog)
+            await DialogsManager.Instance.ActivateDialog(activateDialog.name);
+        if (activateCutscene)
+            await CutsceneManager.Instance.ActivateCutscene(activateCutscene.cutsceneName);
+        if (activateQuest)
+            await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
     }
 }
 

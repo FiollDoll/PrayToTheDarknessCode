@@ -2,9 +2,9 @@
 
 public class PlayerStats
 {
-    private float _hp, _hunger, _addiction, _sanity;
+    private static float _hp, _hunger, _addiction, _sanity;
 
-    public float Hp
+    public static float Hp
     {
         get => _hp;
         set
@@ -14,7 +14,7 @@ public class PlayerStats
         }
     }
 
-    public float Hunger
+    public static float Hunger
     {
         get => _hunger;
         set
@@ -24,7 +24,7 @@ public class PlayerStats
         }
     }
 
-    public float Addiction
+    public static float Addiction
     {
         get => _addiction;
         set
@@ -34,7 +34,7 @@ public class PlayerStats
         }
     }
 
-    public float Sanity
+    public static float Sanity
     {
         get => _sanity;
         set
@@ -45,8 +45,8 @@ public class PlayerStats
     }
 
     public const float MoveSpeed = 4f;
-    public float ChangeSpeed;
-    public List<Npc> FamiliarNpc = new List<Npc>();
+    public static float ChangeSpeed;
+    public static List<Npc> FamiliarNpc = new List<Npc>();
 
     public PlayerStats()
     {

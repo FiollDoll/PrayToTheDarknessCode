@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
 
@@ -23,12 +24,15 @@ public class NpcController : MonoBehaviour, IHumanable
     [HideInInspector] public Transform point;
     [HideInInspector] public string locationOfPointName;
 
-    private void Start()
+    public Task Initialize()
     {
+        if (!model) return Task.CompletedTask; // Если модели нет - нахуй
         _animator = GetComponent<Animator>();
         _playerTransform = GameObject.Find("Mark").transform;
+
         SelectedStyle = NpcEntity.styles[0].nameOfStyle;
-        ChangeStyle(SelectedStyle); // На всякий случай
+        ChangeStyle(SelectedStyle);
+        return Task.CompletedTask;
     }
 
 #if UNITY_EDITOR
@@ -86,6 +90,8 @@ public class NpcController : MonoBehaviour, IHumanable
     // Переделать под корутины
     private void FixedUpdate()
     {
+        if (!_animator || !model) return;
+
         if (!_playerInCollider && moveToPlayer)
             MoveTo(_playerTransform);
         else if (moveToPoint)

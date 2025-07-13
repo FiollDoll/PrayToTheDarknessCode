@@ -10,11 +10,11 @@ public class Player : MonoBehaviour, IHumanable
     public static Player Instance { get; private set; }
 
     public Npc NpcEntity { get; set; }
-    public string SelectedStyle { get; set; } = "standard";
+    public string SelectedStyle { get; set; }
 
-    [Header("Stats")] public PlayerStats PlayerStats;
-    public bool canMove;
+    [Header("Stats")] public bool canMove;
     public bool blockMoveZ;
+    private PlayerStats _playerStats;
     private bool _run;
 
     [Header("Preferences")] [SerializeField]
@@ -32,7 +32,8 @@ public class Player : MonoBehaviour, IHumanable
     {
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
-        PlayerStats = new PlayerStats(); // Временно, пока не работает система сохранений
+        _playerStats = new PlayerStats(); // Временно, пока не работает система сохранений
+        ChangeStyle("Standard"); // На всякий случай
         return Task.CompletedTask;
     }
 

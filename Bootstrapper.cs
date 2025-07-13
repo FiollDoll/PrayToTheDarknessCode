@@ -13,7 +13,6 @@ public class Bootstrapper : MonoBehaviour
     {
         noViewPanel.GetComponent<UnityEngine.UI.Image>().color = Color.black;
 
-        await InitializeComponent(Player.Instance.Initialize());
         await InitializeComponent(new NpcManager().Initialize());
         await InitializeComponent(new ManageLocation().Initialize());
         await InitializeComponent(new GameMenuManager().Initialize(

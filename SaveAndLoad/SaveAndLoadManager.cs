@@ -23,7 +23,7 @@ public class SaveAndLoadManager
         gameSave.playerLocationName = ManageLocation.Instance.TotalLocation.gameName;
         //gameSave.playerNotes = Notebook.Instance.playerNotes;
         //gameSave.playerItems = InventoryManager.Instance.inventory.playerItems;
-        gameSave.familiarNpc = Player.Instance.PlayerStats.FamiliarNpc;
+        gameSave.familiarNpc = PlayerStats.FamiliarNpc;
         //string json = JsonConvert.SerializeObject(gameSave, Formatting.Indented);
         return Task.CompletedTask;
         // TODO: Сохранение
@@ -42,7 +42,7 @@ public class SaveAndLoadManager
             Inventory.Instance.playerItems = gameSave.playerItems;
             Player.Instance.ChangeStyle(gameSave.playerStyle);
             Player.Instance.transform.position = new Vector3(gameSave.x, gameSave.y, gameSave.z);
-            Player.Instance.PlayerStats.FamiliarNpc = gameSave.familiarNpc;
+            PlayerStats.FamiliarNpc = gameSave.familiarNpc;
         }
 
         return Task.CompletedTask;

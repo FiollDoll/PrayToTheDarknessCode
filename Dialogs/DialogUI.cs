@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -169,7 +167,6 @@ public class DialogUI : DisplayBase, IMenuable
         {
             if (npc != talker.Key) continue;
             talker.Value.sprite = npc.GetStyleIcon(currentDialogStepNode.mood);
-            talker.Value.rectTransform.DOPunchAnchorPos(new Vector3(1, 1, 1), 5f, 3);
             talker.Value.color = Color.white;
         }
     }

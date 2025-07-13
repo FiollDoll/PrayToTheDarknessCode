@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -5,12 +6,12 @@ public class NpcManager
 {
     public static NpcManager Instance { get; private set; }
     public Npc[] AllNpc;
-    
-    public Task Initialize()
+
+    public async Task Initialize()
     {
         Instance = this;
         AllNpc = Resources.LoadAll<Npc>("NPC");
-        
+
         // Инициализация информации об НПС
         foreach (Npc npc in AllNpc)
         {
@@ -18,9 +19,15 @@ public class NpcManager
             if (!obj) continue;
             npc.NpcController = obj.GetComponent<IHumanable>();
             npc.NpcController.NpcEntity = npc;
+            try
+            {
+                await npc.NpcController.Initialize();
+            }
+            catch (Exception e)
+            {
+                Debug.Log(npc.nameInWorld + " error " + e);
+            }
         }
-
-        return Task.CompletedTask;
     }
 
     public Npc GetNpcByName(string name)
@@ -33,7 +40,7 @@ public class NpcManager
 
         return null;
     }
-    
+
     /// <summary>
     /// Насильное пермещение кого-либо или чего-либо
     /// </summary>

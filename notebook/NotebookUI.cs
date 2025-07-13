@@ -55,7 +55,7 @@ public class NotebookUI : MonoBehaviour
             case 1:
                 pageNpc.SetActive(false);
                 pageReadHuman.gameObject.SetActive(true);
-                Npc selectedNpc = Player.Instance.PlayerStats.FamiliarNpc[num];
+                Npc selectedNpc = PlayerStats.FamiliarNpc[num];
                 headerHuman.text = selectedNpc.nameOfNpc.Text;
                 noteHuman.text = selectedNpc.description.Text;
                 iconHuman.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
@@ -103,10 +103,10 @@ public class NotebookUI : MonoBehaviour
         
         yield return null;
 
-        for (int i = 0; i < Player.Instance.PlayerStats.FamiliarNpc.Count; i++)
+        for (int i = 0; i < PlayerStats.FamiliarNpc.Count; i++)
         {
             var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
-            Npc selectedNpc = Player.Instance.PlayerStats.FamiliarNpc[i];
+            Npc selectedNpc = PlayerStats.FamiliarNpc[i];
             obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
             obj.prefabImage.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
             int number = i;

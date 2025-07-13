@@ -98,8 +98,8 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         }
     }
 
-    public void UpdateHpSlider() => UpdateAnySlider(hpSlider, Player.Instance.PlayerStats.Hp);
-    public void UpdateHungerSlider() => UpdateAnySlider(hungerSlider, Player.Instance.PlayerStats.Hunger);
-    public void UpdateAddictionSlider() => UpdateAnySlider(addictionSlider, Player.Instance.PlayerStats.Addiction);
-    public void UpdateSanitySlider() => UpdateAnySlider(sanitySlider, Player.Instance.PlayerStats.Sanity);
+    public void UpdateHpSlider() => UpdateAnySlider(hpSlider, PlayerStats.Hp);
+    public void UpdateHungerSlider() => UpdateAnySlider(hungerSlider, PlayerStats.Hunger);
+    public void UpdateAddictionSlider() => UpdateAnySlider(addictionSlider, PlayerStats.Addiction);
+    public void UpdateSanitySlider() => UpdateAnySlider(sanitySlider, PlayerStats.Sanity);
 }
