@@ -11,7 +11,8 @@ public class DialogUI : DisplayBase, IMenuable
     public static DialogUI Instance { get; private set; }
     private DialogsManager _dialogsManager;
 
-    [Header("GameObjects")] [SerializeField]
+    [Header("GameObjects")]
+    [SerializeField]
     private GameObject dialogMenu;
 
     public GameObject menu => dialogMenu;
@@ -26,9 +27,10 @@ public class DialogUI : DisplayBase, IMenuable
     [SerializeField] private Image bigPicture;
     [SerializeField] private AdaptiveScrollView adaptiveScrollViewChoice;
 
-    [Header("Prefabs")] [SerializeField] private GameObject buttonChoicePrefab;
+    [Header("Prefabs")][SerializeField] private GameObject buttonChoicePrefab;
 
-    [Header("Preferences")] [SerializeField]
+    [Header("Preferences")]
+    [SerializeField]
     private Color dontSelectedColor;
 
     private Coroutine _textGenerate;
@@ -51,49 +53,59 @@ public class DialogUI : DisplayBase, IMenuable
         if (context.action.WasPerformedThisFrame())
         {
             if (!story) return;
+
             if (_textGenerate != null)
-            {
-                StopCoroutine(_textGenerate);
-                _textGenerate = null;
-                _selectedTextDialog.text =
-                    new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).Text;
-            }
-            else
-            {
-                if (!_dialogsManager.CanChoice())
-                    _dialogsManager.DialogMoveNext();
-            }
+                {
+                    StopCoroutine(_textGenerate);
+                    _textGenerate = null;
+                    _selectedTextDialog.text =
+                        new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).Text;
+                }
+                else
+                {
+                    if (!_dialogsManager.CanChoice())
+                        _dialogsManager.DialogMoveNext();
+                }
         }
     }
 
     /// <summary>
     /// Активация диалоговых меню
     /// </summary>
-    public async void ActivateDialogWindow()
+    public async Task ActivateDialogWindow()
     {
         dialogMenu.gameObject.SetActive(true);
-        await ActivateUIMainMenuWithDelay(currentDialogStepNode.mainPanelStartDelay);
-        if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
+        dialogMenu.GetComponent<RectTransform>().localScale = Vector3.zero;
+
+        await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.mainPanelStartDelay * 1000));
+
+        for (float i = 0; i < 1.1f; i += 0.1f) // Плавно поднимаем
         {
-            switch (currentDialogStepNode.styleOfDialog)
-            {
-                case Enums.DialogStyle.Main:
-                    mainDialogMenu.gameObject.SetActive(true);
-                    _selectedTextDialog = textDialogMain;
-                    break;
-                case Enums.DialogStyle.BigPicture:
-                    _selectedTextDialog = textDialogBigPicture;
-                    GameMenuManager.Instance.NoVisionForTime(1.2f,
-                        new Task(() => { bigPictureMenu.gameObject.SetActive(true); }));
-                    break;
-                case Enums.DialogStyle.SubMain:
-                    _selectedTextDialog = textDialogSub;
-                    subDialogMenu.gameObject.SetActive(true);
-                    break;
-            }
+            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
+            await Task.Delay(10);
         }
-        else
-            choiceDialogMenu.gameObject.SetActive(true);
+
+        if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
+            {
+                switch (currentDialogStepNode.styleOfDialog)
+                {
+                    case Enums.DialogStyle.Main:
+                        mainDialogMenu.gameObject.SetActive(true);
+                        _selectedTextDialog = textDialogMain;
+                        break;
+                    case Enums.DialogStyle.BigPicture:
+                        _selectedTextDialog = textDialogBigPicture;
+                        GameMenuManager.Instance.NoVisionForTime(1.2f,
+                            new Task(() => { bigPictureMenu.gameObject.SetActive(true); }));
+                        break;
+                    case Enums.DialogStyle.SubMain:
+                        _selectedTextDialog = textDialogSub;
+                        subDialogMenu.gameObject.SetActive(true);
+                        break;
+                }
+            }
+            else
+                choiceDialogMenu.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -141,11 +153,11 @@ public class DialogUI : DisplayBase, IMenuable
                 SetIcon(npc);
                 break;
             case Enums.DialogStyle.BigPicture:
-            {
-                if (currentDialogStepNode.bigPicture) // Меняем
-                    bigPicture.sprite = currentDialogStepNode.bigPicture;
-                break;
-            }
+                {
+                    if (currentDialogStepNode.bigPicture) // Меняем
+                        bigPicture.sprite = currentDialogStepNode.bigPicture;
+                    break;
+                }
         }
 
         if (!_dialogsManager.CanChoice())
@@ -156,18 +168,22 @@ public class DialogUI : DisplayBase, IMenuable
 
     public void AddTalkerToDict(Npc npc) => _npcAndTalkerIcon.Add(npc, talkerIcons[_npcAndTalkerIcon.Count]);
 
-    private void SetIcon(Npc npc)
+    private async void SetIcon(Npc npc)
     {
         if (!currentDialogStepNode.character) return;
 
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
+        {
             talker.Value.color = dontSelectedColor;
+            talker.Value.rectTransform.sizeDelta = new Vector2(406, 564);
+        }
 
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {
             if (npc != talker.Key) continue;
             talker.Value.sprite = npc.GetStyleIcon(currentDialogStepNode.mood);
             talker.Value.color = Color.white;
+            talker.Value.rectTransform.sizeDelta = new Vector2(talker.Value.rectTransform.sizeDelta.x + 35, talker.Value.rectTransform.sizeDelta.y + 35);
         }
     }
 
@@ -188,7 +204,11 @@ public class DialogUI : DisplayBase, IMenuable
 
     private async Task DoActionsToClose()
     {
-        await CameraManager.Instance.CameraZoom(0, true);
+        for (float i = 1; i > 0f; i -= 0.1f) // Плавно поднимаем
+        {
+            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
+            await Task.Delay(10);
+        }
         dialogMenu.gameObject.SetActive(false);
         mainDialogMenu.gameObject.SetActive(false);
         subDialogMenu.gameObject.SetActive(false);
@@ -202,11 +222,7 @@ public class DialogUI : DisplayBase, IMenuable
         currentDialogStepNode = null;
         lastNode = false;
         _npcAndTalkerIcon = new Dictionary<Npc, Image>();
-    }
-
-    private async Task ActivateUIMainMenuWithDelay(float delay)
-    {
-        await Task.Delay(Mathf.RoundToInt(delay * 1000));
+        await CameraManager.Instance.CameraZoom(0, true);
     }
 
     /// <summary>
@@ -234,4 +250,5 @@ public class DialogUI : DisplayBase, IMenuable
 
         _textGenerate = null;
     }
+    
 }

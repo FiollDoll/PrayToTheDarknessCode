@@ -48,7 +48,7 @@ public class DialogsManager
         //if (!SelectedDialog.moreRead)
         //SelectedDialog.read = true;
 
-        DialogUI.ActivateDialogWindow();
+        await DialogUI.ActivateDialogWindow();
         await CameraManager.Instance.CameraZoom(-5f, true);
 
         if (!CanChoice())
