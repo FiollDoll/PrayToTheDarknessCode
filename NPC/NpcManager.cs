@@ -15,6 +15,7 @@ public class NpcManager
         // Инициализация информации об НПС
         foreach (Npc npc in AllNpc)
         {
+            if (npc.nameInWorld == "") continue;
             GameObject obj = GameObject.Find(npc.nameInWorld);
             if (!obj) continue;
             npc.NpcController = obj.GetComponent<IHumanable>();

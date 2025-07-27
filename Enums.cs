@@ -6,7 +6,7 @@
         SubMain,
         BigPicture
     }
-    
+
     public enum IconMood
     {
         Standard,
@@ -18,12 +18,22 @@
         Confusion, // Удивление
         Curse
     }
-    
+
     public enum ActionToDo
     {
         Talk,
         Press,
         Take,
         Move
+    }
+
+    public enum Persons
+    {
+        Standard,
+        Family,
+        Freedom,
+        Career,
+        Weak,
+        Psiho
     }
 }

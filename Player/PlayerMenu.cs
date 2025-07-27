@@ -9,6 +9,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     [SerializeField] private GameObject playerMenu, notebookMenu;
     [SerializeField] private GameObject buttonsPage;
     [SerializeField] private Slider hpSlider, hungerSlider, addictionSlider, sanitySlider;
+    [SerializeField] private Image personImage;
 
     private bool _isZooming; // Антиспам
     public GameObject menu => playerMenu;
@@ -74,6 +75,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         _isZooming = false;
         playerMenu.SetActive(true);
         buttonsPage.SetActive(true);
+        personImage.sprite = Player.Instance.selectedPerson.npcEntity.GetStyleIcon();
     }
 
     private async void DisablePlayerMenu()
@@ -82,9 +84,12 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         Player.Instance.canMove = true;
         _isZooming = true;
         await CameraManager.Instance.CameraZoom(10f, true);
+        playerMenu.GetComponent<Animator>().Play("Disable");
         _isZooming = false;
+        await Task.Delay(1000);
         playerMenu.SetActive(false);
         notebookMenu.SetActive(false);
+        CameraManager.Instance.CameraZoom(0f, true); // Чтобы камера не улетала
         NotebookUI.Instance.CloseNotes();
     }
 

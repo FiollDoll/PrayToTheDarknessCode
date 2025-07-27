@@ -14,11 +14,14 @@ public class Player : MonoBehaviour, IHumanable
 
     [Header("Stats")] public bool canMove;
     public bool blockMoveZ;
+    [HideInInspector] public PlayerPerson selectedPerson;
     private PlayerStats _playerStats;
     private bool _run;
 
     [Header("Preferences")] [SerializeField]
     private GameObject model;
+    [SerializeField] private PlayerPerson[] _playerPersons = new PlayerPerson[6];
+    private Dictionary<Enums.Persons, PlayerPerson> _playerPersonsDict = new Dictionary<Enums.Persons, PlayerPerson>();
 
     public CinemachineVirtualCamera virtualCamera;
 
@@ -26,13 +29,19 @@ public class Player : MonoBehaviour, IHumanable
     private Animator _animator;
     private Vector2 _moveDirection;
 
-    private void Awake() => Instance = this;
+    private void Awake()
+    {
+        Instance = this;
+        for (int i = 0; i < _playerPersons.Length; i++)
+            _playerPersonsDict.Add((Enums.Persons)i, _playerPersons[i]);
+    }
 
     public Task Initialize()
     {
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _playerStats = new PlayerStats(); // Временно, пока не работает система сохранений
+        selectedPerson = _playerPersons[0];
         ChangeStyle("Standard"); // На всякий случай
         return Task.CompletedTask;
     }
@@ -46,6 +55,13 @@ public class Player : MonoBehaviour, IHumanable
             if (sr)
                 sr.SetCategoryAndLabel(SelectedStyle, sr.GetLabel());
         }
+    }
+
+    public void ChangePerson(Enums.Persons newPerson)
+    {
+        selectedPerson = _playerPersonsDict[newPerson];
+        if (selectedPerson.npcVibe)
+            CameraManager.Instance.SetVolumeProfile(selectedPerson.npcVibe);
     }
 
     public void MoveTo(Transform target) =>
