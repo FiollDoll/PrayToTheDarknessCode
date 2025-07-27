@@ -8,8 +8,10 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     public static PlayerMenu Instance { get; private set; }
     [SerializeField] private GameObject playerMenu, notebookMenu;
     [SerializeField] private GameObject buttonsPage;
+    [SerializeField] private Button buttonPersons, buttonInventory, buttonHumans;
     [SerializeField] private Slider hpSlider, hungerSlider, addictionSlider, sanitySlider;
     [SerializeField] private Image personImage;
+    public bool personCan, inventoryCan, humansCan;
 
     private bool _isZooming; // Антиспам
     public GameObject menu => playerMenu;
@@ -73,8 +75,17 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         _isZooming = true;
         await CameraManager.Instance.CameraZoom(-10f, true);
         _isZooming = false;
+
         playerMenu.SetActive(true);
         buttonsPage.SetActive(true);
+        // Включаем кнопочки и их текст
+        buttonHumans.interactable = humansCan;
+        buttonHumans.transform.Find("Text").gameObject.SetActive(buttonHumans.interactable);
+        buttonInventory.interactable = inventoryCan;
+        buttonInventory.transform.Find("Text").gameObject.SetActive(buttonInventory.interactable);
+        buttonPersons.interactable = personCan;
+        buttonPersons.transform.Find("Text").gameObject.SetActive(buttonPersons.interactable);
+
         personImage.sprite = Player.Instance.selectedPerson.npcEntity.GetStyleIcon();
     }
 
@@ -87,8 +98,10 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         playerMenu.GetComponent<Animator>().Play("Disable");
         _isZooming = false;
         await Task.Delay(1000);
+
         playerMenu.SetActive(false);
         notebookMenu.SetActive(false);
+
         CameraManager.Instance.CameraZoom(0f, true); // Чтобы камера не улетала
         NotebookUI.Instance.CloseNotes();
     }

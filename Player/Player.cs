@@ -9,12 +9,12 @@ public class Player : MonoBehaviour, IHumanable
 {
     public static Player Instance { get; private set; }
 
-    public Npc NpcEntity { get; set; }
+    public Npc NpcEntity { get => selectedPerson?.npcEntity; set {}}
     public string SelectedStyle { get; set; }
 
     [Header("Stats")] public bool canMove;
     public bool blockMoveZ;
-    [HideInInspector] public PlayerPerson selectedPerson;
+    public PlayerPerson selectedPerson;
     private PlayerStats _playerStats;
     private bool _run;
 

@@ -170,7 +170,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     private async void SetIcon(Npc npc)
     {
-        if (!currentDialogStepNode.character) return;
+        if (!currentDialogStepNode.character || !npc) return;
 
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {

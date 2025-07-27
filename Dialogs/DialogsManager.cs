@@ -95,13 +95,15 @@ public class DialogsManager
     /// </summary>
     private void DialogUpdateAction()
     {
-        // Проверка на пустого нипа
-        Npc npc = DialogUI.currentDialogStepNode.character
-            ? DialogUI.currentDialogStepNode.character
-            : NpcManager.Instance.GetNpcByName(".");
+        // Проверка на нпс/личность игрока
+        Npc npc = new Npc();
+        if (DialogUI.currentDialogStepNode.character && DialogUI.currentDialogStepNode.character.nameInWorld != "Mark")
+            npc = DialogUI.currentDialogStepNode.character;
+        else
+            npc = Player.Instance.NpcEntity;
 
         // Проверяем - был нип в диалоге или нет
-        if (npc && !NpcInSelectedDialog.Contains(npc) && npc != NpcManager.Instance.GetNpcByName("."))
+        if (npc && !NpcInSelectedDialog.Contains(npc))
         {
             NpcInSelectedDialog.Add(npc);
             DialogUI.AddTalkerToDict(npc);

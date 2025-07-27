@@ -15,6 +15,7 @@ public class FastChangesController : ScriptableObject
     public bool moveWithFade = true;
 
     [Header("-Locks")] public bool lockAllMenu;
+    public bool changeLockInventory, changeLockHumansPage, changeLockPersonPage;
 
     [Header("-Player")] public float editPlayerSpeed;
     public bool playerCanMove = true, playerCanMoveZ = true;
@@ -37,11 +38,21 @@ public class FastChangesController : ScriptableObject
         CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         AudioManager.Instance.PlayMusic(setMusic);
 
+        // Если галочка стоит, то меняем значение на противоположное
+        if (changeLockInventory)
+            PlayerMenu.Instance.inventoryCan = !PlayerMenu.Instance.inventoryCan;
+        if (changeLockHumansPage)
+            PlayerMenu.Instance.humansCan = !PlayerMenu.Instance.humansCan;
+        if (changeLockPersonPage)
+            PlayerMenu.Instance.personCan = !PlayerMenu.Instance.personCan;
+
+        // Выдаём хуйню
         foreach (Item item in addItem)
             Inventory.Instance.AddItem(item.nameInGame);
         foreach (Note note in addNote)
             NotesManager.Instance.AddNote(note.gameName);
 
+        // Разные изменения
         foreach (ChangeRelationship changer in changeRelationships)
         {
             if (!changer.npc)
