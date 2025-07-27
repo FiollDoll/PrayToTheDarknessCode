@@ -7,20 +7,15 @@ public class InventoryUI : MonoBehaviour
 {
     public static InventoryUI Instance { get; private set; }
 
-    [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
+    [SerializeField] private GameObject invMenu, itemInfoMenu, itemsContainer;
+    [SerializeField] private TextMeshProUGUI textItemName, textItemDescription;
+    [SerializeField] private Image iconImage;
 
+    [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
     [SerializeField] private Button buttonItemActivate;
 
-    [SerializeField] private GameObject invMenu, itemInfoMenu;
-    [SerializeField] private GameObject mainView, onlyIconView;
-    [SerializeField] private TextMeshProUGUI textItemName, textItemDescription;
-    [SerializeField] private Image iconInMain, iconInOnly;
-
-    private void Awake()
-    {
-        Instance = this;
-    }
-
+    private void Awake() => Instance = this;
+    
     /// <summary>
     /// Открытие/закрытие инвентаря
     /// </summary>
@@ -39,8 +34,10 @@ public class InventoryUI : MonoBehaviour
     /// <param name="slot">Индекс предмета</param>
     public void UseItem(int slot)
     {
-        itemInfoMenu.gameObject.SetActive(false);
-        UpdateInvUI();
+        itemInfoMenu.SetActive(false);
+        Inventory.Instance.UseItem(slot);
+        ManageInventoryPanel(false);
+        PlayerMenu.Instance.DisablePlayerMenu();
     }
 
     /// <summary>
@@ -49,38 +46,15 @@ public class InventoryUI : MonoBehaviour
     /// <param name="id"></param>
     private void WatchItem(int id)
     {
-        itemInfoMenu.gameObject.SetActive(!itemInfoMenu.gameObject.activeSelf);
-
-        if (!itemInfoMenu.gameObject.activeSelf) return; // Если меню закрылось
-
+        invMenu.SetActive(false);
+        itemInfoMenu.SetActive(true);
         Item selectedItem = Inventory.Instance.GetPlayerItem(id);
 
-        mainView.gameObject.SetActive(!selectedItem.watchIconOnly);
-        onlyIconView.gameObject.SetActive(selectedItem.watchIconOnly);
+        textItemName.text = selectedItem.name.Text;
+        textItemDescription.text = selectedItem.description.Text;
+        iconImage.sprite = selectedItem.icon;
 
-        if (selectedItem.watchIconOnly)
-            iconInOnly.sprite = selectedItem.icon;
-        else
-        {
-            textItemName.text = selectedItem.name.Text;
-            textItemDescription.text =
-                selectedItem.description.Text;
-            iconInMain.sprite = selectedItem.icon;
-        }
-
-        buttonItemActivate.gameObject.SetActive(true);
-        if (selectedItem.canUse && (selectedItem.useInInventory || selectedItem.useInCollider))
-        {
-            if (selectedItem.useInCollider) // Только для enteredColliders
-            {
-                /*if (Interactions.Instance.EnteredInteractions == null ||
-                    (Interactions.Instance.EnteredInteractions != null &&
-                     Interactions.Instance.EnteredInteractions.itemNameUse != selectedItem.nameInGame))
-                    buttonItemActivate.gameObject.SetActive(false);*/
-            }
-        }
-        else
-            buttonItemActivate.gameObject.SetActive(false);
+        buttonItemActivate.gameObject.SetActive(selectedItem.canUse);
 
         if (buttonItemActivate.gameObject.activeSelf)
         {
@@ -90,17 +64,23 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
+    public void DisableInfoMenu()
+    {
+        invMenu.SetActive(true);
+        itemInfoMenu.SetActive(false);
+    }
+
     private void UpdateInvUI()
     {
-        foreach (Transform child in invMenu.transform.Find("items"))
+        foreach (Transform child in itemsContainer.transform)
             Destroy(child.gameObject);
 
         for (int i = 0; i < Inventory.Instance.CountPlayerItems(); i++)
         {
             Item selectedItem = Inventory.Instance.GetPlayerItem(i);
-            var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), Quaternion.identity,
-                invMenu.transform.Find("items"));
-            // TODO: добавить еще название
+            var obj = Instantiate(inventorySlotPrefab, new Vector3(0, 0, 0), new Quaternion(), itemsContainer.transform);
+            obj.transform.localPosition = Vector3.zero;
+            obj.GetComponentInChildren<TextMeshProUGUI>().text = selectedItem.name.Text;
             obj.GetComponent<Image>().sprite = selectedItem.icon;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(delegate { WatchItem(num); });

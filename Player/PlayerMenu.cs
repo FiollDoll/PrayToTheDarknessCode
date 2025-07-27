@@ -6,23 +6,23 @@ using UnityEngine.UI;
 public class PlayerMenu : MonoBehaviour, IMenuable
 {
     public static PlayerMenu Instance { get; private set; }
-    [SerializeField] private GameObject playerMenu, notebookMenu;
-    [SerializeField] private GameObject buttonsPage;
-    [SerializeField] private Button buttonPersons, buttonInventory, buttonHumans;
-    [SerializeField] private Slider hpSlider, hungerSlider, addictionSlider, sanitySlider;
-    [SerializeField] private Image personImage;
-    public bool personCan, inventoryCan, humansCan;
-
-    private bool _isZooming; // Антиспам
     public GameObject menu => playerMenu;
 
-    private void Start()
-    {
-        UpdateHpSlider();
-        UpdateHungerSlider();
-        UpdateAddictionSlider();
-        UpdateSanitySlider();
-    }
+    [Header("Menu")]
+    [SerializeField] private GameObject playerMenu;
+    [SerializeField] private GameObject notebookMenu;
+    [SerializeField] private GameObject buttonsPage;
+
+    [Header("PlayerMenuElements")]
+    [SerializeField] private Image personImage;
+    [SerializeField] private Button buttonPersons, buttonInventory, buttonHumans;
+    [SerializeField] private Slider hpSlider, hungerSlider, addictionSlider, sanitySlider;
+
+    [HideInInspector] public bool personCan, inventoryCan, humansCan;
+
+    private bool _isZooming; // Антиспам
+
+    private void Awake() => Instance = this;
 
     public void OnManagePlayerMenu(InputAction.CallbackContext context)
     {
@@ -61,14 +61,15 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         }
     }
 
-    public void CloseNotebookMenu()
+    public void CloseAllSubMenu()
     {
         notebookMenu.SetActive(false);
         NotebookUI.Instance.CloseNotes();
+        InventoryUI.Instance.ManageInventoryPanel(false);
         buttonsPage.SetActive(true);
     }
 
-    private async Task ActivatePlayerMenu()
+    public async Task ActivatePlayerMenu()
     {
         if (_isZooming) return;
         Player.Instance.canMove = false;
@@ -89,7 +90,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         personImage.sprite = Player.Instance.selectedPerson.npcEntity.GetStyleIcon();
     }
 
-    private async void DisablePlayerMenu()
+    public async void DisablePlayerMenu()
     {
         if (_isZooming) return;
         Player.Instance.canMove = true;
@@ -100,24 +101,14 @@ public class PlayerMenu : MonoBehaviour, IMenuable
         await Task.Delay(1000);
 
         playerMenu.SetActive(false);
-        notebookMenu.SetActive(false);
+        CloseAllSubMenu();
 
         CameraManager.Instance.CameraZoom(0f, true); // Чтобы камера не улетала
         NotebookUI.Instance.CloseNotes();
     }
 
-    private async void UpdateAnySlider(Slider slider, float value)
-    {
-        float step = 0.01f * Mathf.Sign(value - slider.value);
-        while (Mathf.Abs(value - slider.value) > Mathf.Epsilon)
-        {
-            slider.value += Mathf.Clamp(slider.value + step, 0f, 1f);
-            await Task.Delay(50);
-        }
-    }
-
-    public void UpdateHpSlider() => UpdateAnySlider(hpSlider, PlayerStats.Hp);
-    public void UpdateHungerSlider() => UpdateAnySlider(hungerSlider, PlayerStats.Hunger);
-    public void UpdateAddictionSlider() => UpdateAnySlider(addictionSlider, PlayerStats.Addiction);
-    public void UpdateSanitySlider() => UpdateAnySlider(sanitySlider, PlayerStats.Sanity);
+    public void UpdateHpSlider() => hpSlider.value = PlayerStats.Hp;
+    public void UpdateHungerSlider() => hungerSlider.value = PlayerStats.Hunger;
+    public void UpdateAddictionSlider() => addictionSlider.value = PlayerStats.Addiction;
+    public void UpdateSanitySlider() => sanitySlider.value = PlayerStats.Sanity;
 }

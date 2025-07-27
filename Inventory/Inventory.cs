@@ -6,24 +6,16 @@ using System.Threading.Tasks;
 public class Inventory
 {
     public static Inventory Instance { get; private set; }
-    [SerializeField] public List<Item> playerItems = new List<Item>();
-    [SerializeField] private Item[] gameItems = new Item[0];
+    public List<Item> playerItems = new List<Item>();
     private Dictionary<string, Item> _gameItemsDict = new Dictionary<string, Item>();
 
     public Task Initialize()
     {
         Instance = this;
-        UpdateGameItemsDict();
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Инициализация словаря доступных предметов. Вызывается один раз!
-    /// </summary>
-    public void UpdateGameItemsDict()
-    {
+        Item[] gameItems = Resources.LoadAll<Item>("Items/");
         foreach (Item item in gameItems)
             _gameItemsDict.TryAdd(item.nameInGame, item);
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -58,6 +50,7 @@ public class Inventory
         Item newItem = GetGameItem(nameItem);
         if (newItem != null)
             playerItems.Add(newItem);
+        NotifyManager.Instance.StartNewItemNotify(newItem.name.Text);
         return newItem;
     }
 
