@@ -18,10 +18,10 @@ public class NpcManager
             if (npc.nameInWorld == "") continue;
             GameObject obj = GameObject.Find(npc.nameInWorld);
             if (!obj) continue;
-            npc.NpcController = obj.GetComponent<IHumanable>();
-            npc.NpcController.NpcEntity = npc;
             try
             {
+                npc.NpcController = obj.GetComponent<IHumanable>();
+                npc.NpcController.NpcEntity = npc;
                 await npc.NpcController.Initialize();
             }
             catch (Exception e)

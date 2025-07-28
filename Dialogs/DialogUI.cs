@@ -21,7 +21,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     [SerializeField] private TextMeshProUGUI textDialogMain, textDialogSub, textDialogBigPicture;
     private TextMeshProUGUI _selectedTextDialog;
-    [SerializeField] private GameObject mainDialogMenu, choiceDialogMenu, subDialogMenu, bigPictureMenu;
+    [SerializeField] private GameObject mainMenu, mainDialogMenu, choiceDialogMenu, subDialogMenu, bigPictureMenu;
     [SerializeField] private Image[] talkerIcons = new Image[3];
     private Dictionary<Npc, Image> _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     [SerializeField] private Image bigPicture;
@@ -74,7 +74,7 @@ public class DialogUI : DisplayBase, IMenuable
     /// </summary>
     public async Task ActivateDialogWindow()
     {
-        dialogMenu.gameObject.SetActive(true);
+        dialogMenu.SetActive(true);
         dialogMenu.GetComponent<RectTransform>().localScale = Vector3.zero;
 
         await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.mainPanelStartDelay * 1000));
@@ -90,22 +90,24 @@ public class DialogUI : DisplayBase, IMenuable
                 switch (currentDialogStepNode.styleOfDialog)
                 {
                     case Enums.DialogStyle.Main:
-                        mainDialogMenu.gameObject.SetActive(true);
+                        await CameraManager.Instance.CameraZoom(-5f, true);
+                        mainMenu.SetActive(true);
+                        mainDialogMenu.SetActive(true);
                         _selectedTextDialog = textDialogMain;
                         break;
                     case Enums.DialogStyle.BigPicture:
                         _selectedTextDialog = textDialogBigPicture;
                         GameMenuManager.Instance.NoVisionForTime(1.2f,
-                            new Task(() => { bigPictureMenu.gameObject.SetActive(true); }));
+                            new Task(() => { bigPictureMenu.SetActive(true); }));
                         break;
                     case Enums.DialogStyle.SubMain:
                         _selectedTextDialog = textDialogSub;
-                        subDialogMenu.gameObject.SetActive(true);
+                        subDialogMenu.SetActive(true);
                         break;
                 }
             }
             else
-                choiceDialogMenu.gameObject.SetActive(true);
+                choiceDialogMenu.SetActive(true);
     }
 
     /// <summary>
@@ -140,7 +142,7 @@ public class DialogUI : DisplayBase, IMenuable
     /// </summary>
     private void ActivateChoiceStep(int id)
     {
-        choiceDialogMenu.gameObject.SetActive(false);
+        choiceDialogMenu.SetActive(false);
         mainDialogMenu.SetActive(true);
         _dialogsManager.DialogMoveNext(id);
     }
@@ -170,13 +172,13 @@ public class DialogUI : DisplayBase, IMenuable
 
     private async void SetIcon(Npc npc)
     {
-        if (!currentDialogStepNode.character || !npc) return;
-
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {
             talker.Value.color = dontSelectedColor;
             talker.Value.rectTransform.sizeDelta = new Vector2(406, 564);
         }
+
+        if (!currentDialogStepNode.character || !npc) return;
 
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
         {
@@ -209,10 +211,11 @@ public class DialogUI : DisplayBase, IMenuable
             dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
             await Task.Delay(10);
         }
-        dialogMenu.gameObject.SetActive(false);
-        mainDialogMenu.gameObject.SetActive(false);
-        subDialogMenu.gameObject.SetActive(false);
-        bigPictureMenu.gameObject.SetActive(false);
+        dialogMenu.SetActive(false);
+        mainMenu.SetActive(false);
+        mainDialogMenu.SetActive(false);
+        subDialogMenu.SetActive(false);
+        bigPictureMenu.SetActive(false);
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)
             talker.Value.sprite = GameMenuManager.Instance.NullSprite;
 

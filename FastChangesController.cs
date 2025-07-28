@@ -26,7 +26,6 @@ public class FastChangesController : ScriptableObject
     public List<Note> addNote;
     public List<ChangeRelationship> changeRelationships;
     public List<ChangeVisual> changeVisuals;
-    public List<ChangeTransform> changeTransforms;
 
     public Task ActivateChanges() => SetChanges();
 
@@ -47,27 +46,12 @@ public class FastChangesController : ScriptableObject
             PlayerMenu.Instance.personCan = !PlayerMenu.Instance.personCan;
 
         // Выдаём хуйню
-        foreach (Item item in addItem)
-            Inventory.Instance.AddItem(item.nameInGame);
-        foreach (Note note in addNote)
-            NotesManager.Instance.AddNote(note.gameName);
+        await AddItems();
+        await AddNotes();
 
         // Разные изменения
-        foreach (ChangeRelationship changer in changeRelationships)
-        {
-            if (!changer.npc)
-                changer.npc = NpcManager.Instance.GetNpcByName(changer.npcName);
-            changer.npc.relationshipWithPlayer += changer.valueChange;
-            if (changer.valueChange != 0)
-                NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.Text,
-                    changer.valueChange);
-        }
-
-        foreach (ChangeVisual changer in changeVisuals)
-            changer.npcToChange.NpcController.ChangeStyle(changer.newVisual);
-
-        foreach (ChangeTransform changer in changeTransforms)
-            changer.objToChange.transform.position = changer.newTransform.position;
+        await ChangeRelations();
+        await ChangeVisuals();
 
         if (moveToLocation)
             await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
@@ -78,13 +62,74 @@ public class FastChangesController : ScriptableObject
         if (activateQuest)
             await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
     }
+
+    private async Task AddItems()
+    {
+        foreach (Item item in addItem)
+        {
+            try
+            {
+                Inventory.Instance.AddItem(item.nameInGame);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("Item add error");
+            }
+        }
+    }
+
+    private async Task AddNotes()
+    {
+        foreach (Note note in addNote)
+        {
+            try
+            {
+                NotesManager.Instance.AddNote(note.gameName);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("Note add error");
+            }
+        }
+    }
+
+    private async Task ChangeRelations()
+    {
+        foreach (ChangeRelationship changer in changeRelationships)
+        {
+            try
+            {
+                changer.npc.relationshipWithPlayer += changer.valueChange;
+                if (changer.valueChange != 0)
+                    NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.Text, changer.valueChange);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("ChangeRelation error");
+            }
+        }
+    }
+
+    private async Task ChangeVisuals()
+    {
+        foreach (ChangeVisual changer in changeVisuals)
+        {
+            try
+            {
+                changer.npcToChange.NpcController.ChangeStyle(changer.newVisual);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("VisualChange error");
+            }
+        }
+    }
 }
 
 [System.Serializable]
 public class ChangeRelationship
 {
     public Npc npc;
-    [HideInInspector] public string npcName; // Для json
     public float valueChange;
 }
 
@@ -93,11 +138,4 @@ public class ChangeVisual
 {
     public Npc npcToChange;
     public string newVisual;
-}
-
-[System.Serializable]
-public class ChangeTransform
-{
-    public GameObject objToChange;
-    public Transform newTransform;
 }

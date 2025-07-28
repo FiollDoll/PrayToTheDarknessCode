@@ -34,12 +34,12 @@ public class Player : MonoBehaviour, IHumanable
         Instance = this;
         for (int i = 0; i < _playerPersons.Length; i++)
             _playerPersonsDict.Add((Enums.Persons)i, _playerPersons[i]);
+        _rb = GetComponent<Rigidbody>();
+        _animator = GetComponent<Animator>();
     }
 
     public Task Initialize()
     {
-        _rb = GetComponent<Rigidbody>();
-        _animator = GetComponent<Animator>();
         _playerStats = new PlayerStats(); // Временно, пока не работает система сохранений
         selectedPerson = _playerPersons[0];
         ChangeStyle("Standard"); // На всякий случай

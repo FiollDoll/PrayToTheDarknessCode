@@ -49,7 +49,6 @@ public class DialogsManager
         //SelectedDialog.read = true;
 
         await DialogUI.ActivateDialogWindow();
-        await CameraManager.Instance.CameraZoom(-5f, true);
 
         if (!CanChoice())
             DialogUpdateAction();
@@ -96,7 +95,7 @@ public class DialogsManager
     private void DialogUpdateAction()
     {
         // Проверка на нпс/личность игрока
-        Npc npc = new Npc();
+        Npc npc;
         if (DialogUI.currentDialogStepNode.character && DialogUI.currentDialogStepNode.character.nameInWorld != "Mark")
             npc = DialogUI.currentDialogStepNode.character;
         else
