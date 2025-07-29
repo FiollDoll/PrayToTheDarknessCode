@@ -53,6 +53,7 @@ public class GameMenuManager
     public async void NoVisionForTime(float duration, Task actionAfterFade = null, Task actionAfterEnd = null)
     {
         await ChangeAlpha(_noViewPanel, 1f);
+        await Task.Delay(10);
         if (actionAfterFade != null)
             await actionAfterFade;
 
@@ -68,8 +69,9 @@ public class GameMenuManager
     public async Task ChangeAlpha(Graphic graphic, float alphaValue, float speed = 1f)
     {
         float step = 0.05f * Mathf.Sign(alphaValue - graphic.color.a);
+        float targetAlpha = Mathf.Clamp(alphaValue, 0f, 1f);
 
-        while (Mathf.Abs(alphaValue - graphic.color.a) > Mathf.Epsilon)
+        while (!Mathf.Approximately(graphic.color.a, targetAlpha))
         {
             float newAlpha = Mathf.Clamp(graphic.color.a + step, 0f, 1f);
             graphic.color = new Color(_noViewPanel.color.r, _noViewPanel.color.g, _noViewPanel.color.b, newAlpha);

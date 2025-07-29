@@ -97,8 +97,7 @@ public class DialogUI : DisplayBase, IMenuable
                     break;
                 case Enums.DialogStyle.BigPicture:
                     _selectedTextDialog = textDialogBigPicture;
-                    GameMenuManager.Instance.NoVisionForTime(1.2f,
-                        new Task(() => { bigPictureMenu.SetActive(true); }));
+                    GameMenuManager.Instance.NoVisionForTime(1.2f, BigPictureActivate());
                     break;
                 case Enums.DialogStyle.SubMain:
                     _selectedTextDialog = textDialogSub;
@@ -109,6 +108,9 @@ public class DialogUI : DisplayBase, IMenuable
         else
             choiceDialogMenu.SetActive(true);
     }
+
+    // Сучий костыль
+    private async Task BigPictureActivate() => bigPictureMenu.SetActive(true);
 
     /// <summary>
     /// Активация + генерация меню с выборами
@@ -149,7 +151,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     public void UpdateDialogWindow(Npc npc)
     {
-        switch (currentDialogStepNode.styleOfDialog)
+        switch (story.GetFirstNode().styleOfDialog)
         {
             case Enums.DialogStyle.Main:
                 SetIcon(npc);
@@ -196,9 +198,9 @@ public class DialogUI : DisplayBase, IMenuable
     {
         Interactions.Instance.lockInter = false;
 
-        if (currentDialogStepNode.styleOfDialog == Enums.DialogStyle.BigPicture)
+        if (story.GetFirstNode().styleOfDialog == Enums.DialogStyle.BigPicture)
             GameMenuManager.Instance.NoVisionForTime(1.5f, DoActionsToClose());
-        else if (currentDialogStepNode.darkAfterEnd)
+        else if (story.GetFirstNode().darkAfterEnd)
             GameMenuManager.Instance.NoVisionForTime(1.2f, DoActionsToClose());
         else
             await DoActionsToClose();

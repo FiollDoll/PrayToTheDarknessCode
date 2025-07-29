@@ -9,10 +9,11 @@ public class LocationInteraction : MonoBehaviour, IInteractable
 
     [Header("Requires")] public bool autoUse;
     public bool AutoUse => autoUse;
+    public bool destroyAfterUse;
+    public bool DestroyAfterUse => destroyAfterUse;
 
     [Header("Preferences")] public string locationName;
     public string spawnName;
-    public bool destroyAfterInter;
     public string itemNameToUse;
     public string ItemNameUse => itemNameToUse;
     public string questName;
@@ -21,7 +22,7 @@ public class LocationInteraction : MonoBehaviour, IInteractable
     private Location _location;
 
     private void OnEnable() => Initialize();
-    
+
     public void Initialize()
     {
         _location = ManageLocation.Instance?.GetLocation(locationName);

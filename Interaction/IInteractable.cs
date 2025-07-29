@@ -8,6 +8,7 @@ public interface IInteractable
 
     // Общие настройки
     public bool AutoUse { get; } // Автоматическое использование
+    public bool DestroyAfterUse {get;}
     public string ItemNameUse { get; } // Возможность использовать определенный предмет
     public string QuestName { get; }
     public void Initialize();

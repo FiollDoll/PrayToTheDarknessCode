@@ -9,6 +9,7 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
     [Header("Requires")] public bool autoUse;
     public bool AutoUse => autoUse;
     public bool destroyAfterUse;
+    public bool DestroyAfterUse => destroyAfterUse;
 
     [Header("Preferences")] public FastChangesController changesController;
 
@@ -39,7 +40,7 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
         await changesController.ActivateChanges();
         if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();
-        if (destroyAfterUse)
+        if (DestroyAfterUse)
             Destroy(gameObject);
     }
 }

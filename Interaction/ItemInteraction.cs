@@ -8,6 +8,7 @@ public class ItemInteraction : MonoBehaviour, IInteractable
 
     [Header("Requires")] public bool autoUse;
     public bool AutoUse => autoUse;
+    public bool DestroyAfterUse => true;
 
     [Header("Preferences")] public bool DarkAfterUse { get; set; }
     public string itemNameToUse;

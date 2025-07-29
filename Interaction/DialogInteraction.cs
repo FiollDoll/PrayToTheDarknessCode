@@ -8,9 +8,12 @@ public class DialogInteraction : MonoBehaviour, IInteractable
 
     [Header("Requires")] public bool autoUse;
     public bool AutoUse => autoUse;
+    public bool destroyAfterUse;
+    public bool DestroyAfterUse => destroyAfterUse;
 
     [Header("Preferences")] public string itemNameToUse;
     public string ItemNameUse => itemNameToUse;
+    public string giveItem;
     public string questName;
     public string QuestName => questName;
 
@@ -33,7 +36,11 @@ public class DialogInteraction : MonoBehaviour, IInteractable
     public async Task DoInteraction()
     {
         await DialogsManager.Instance.ActivateDialog(gameObject.name);
+        if (giveItem != "")
+            Inventory.Instance.AddItem(giveItem);
         if (questName != "" && CanInteractByQuest())
-            QuestsManager.Instance.NextStep();
+                QuestsManager.Instance.NextStep();
+        if (DestroyAfterUse)
+            Destroy(gameObject);
     }
 }
