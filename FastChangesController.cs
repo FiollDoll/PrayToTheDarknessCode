@@ -7,7 +7,6 @@ using UnityEngine.Rendering;
 public class FastChangesController : ScriptableObject
 {
     public Dialog activateDialog;
-    public Cutscene activateCutscene;
     public Quest activateQuest;
 
     [Header("-Locations")] public Location moveToLocation;
@@ -24,8 +23,9 @@ public class FastChangesController : ScriptableObject
     [Header("-ChangeAnything")] public AudioClip setMusic;
     public List<Item> addItem;
     public List<Note> addNote;
-    public List<ChangeRelationship> changeRelationships;
-    public List<ChangeVisual> changeVisuals;
+    public ChangeRelationship[] changeRelationships = new ChangeRelationship[0];
+    public ChangeVisual[] changeVisuals = new ChangeVisual[0];
+    public MoveToPlayer[] changeMoveToPlayer = new MoveToPlayer[0];
 
     public Task ActivateChanges() => SetChanges();
 
@@ -52,13 +52,12 @@ public class FastChangesController : ScriptableObject
         // Разные изменения
         await ChangeRelations();
         await ChangeVisuals();
+        await ChangeMoveToPlayer();
 
         if (moveToLocation)
             await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
         if (activateDialog)
             await DialogsManager.Instance.ActivateDialog(activateDialog.name);
-        if (activateCutscene)
-            await CutsceneManager.Instance.ActivateCutscene(activateCutscene.cutsceneName);
         if (activateQuest)
             await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
     }
@@ -116,11 +115,27 @@ public class FastChangesController : ScriptableObject
         {
             try
             {
-                changer.npcToChange.NpcController.ChangeStyle(changer.newVisual);
+                changer.npcToChange.IHumanable.ChangeStyle(changer.newVisual);
             }
             catch (System.Exception ex)
             {
                 Debug.Log("VisualChange error");
+            }
+        }
+    }
+
+    private async Task ChangeMoveToPlayer()
+    {
+        foreach (MoveToPlayer changer in changeMoveToPlayer)
+        {
+            try
+            {
+                if (changer.npc.IHumanable is NpcController npcController)
+                    npcController.moveToPlayer = changer.newState;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("MoveToPlayer error");
             }
         }
     }
@@ -138,4 +153,11 @@ public class ChangeVisual
 {
     public Npc npcToChange;
     public string newVisual;
+}
+
+[System.Serializable]
+public class MoveToPlayer
+{
+    public Npc npc;
+    public bool newState;
 }

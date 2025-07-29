@@ -72,7 +72,7 @@ public class ManageLocation
         NpcAtTotalLocation = new List<NpcController>();
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
-            if (totalNpc.NpcController is NpcController npcController)
+            if (totalNpc.IHumanable is NpcController npcController)
             {
                 if (npcController.totalLocation == TotalLocation.gameName)
                     NpcAtTotalLocation.Add(npcController);

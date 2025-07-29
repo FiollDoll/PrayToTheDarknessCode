@@ -55,17 +55,17 @@ public class DialogUI : DisplayBase, IMenuable
             if (!story) return;
 
             if (_textGenerate != null)
-                {
-                    StopCoroutine(_textGenerate);
-                    _textGenerate = null;
-                    _selectedTextDialog.text =
-                        new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).Text;
-                }
-                else
-                {
-                    if (!_dialogsManager.CanChoice())
-                        _dialogsManager.DialogMoveNext();
-                }
+            {
+                StopCoroutine(_textGenerate);
+                _textGenerate = null;
+                _selectedTextDialog.text =
+                    new LanguageSetting(currentDialogStepNode.dialogTextRu, currentDialogStepNode.dialogTextEn).Text;
+            }
+            else
+            {
+                if (!_dialogsManager.CanChoice())
+                    _dialogsManager.DialogMoveNext();
+            }
         }
     }
 
@@ -86,28 +86,28 @@ public class DialogUI : DisplayBase, IMenuable
         }
 
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
+        {
+            switch (currentDialogStepNode.styleOfDialog)
             {
-                switch (currentDialogStepNode.styleOfDialog)
-                {
-                    case Enums.DialogStyle.Main:
-                        await CameraManager.Instance.CameraZoom(-5f, true);
-                        mainMenu.SetActive(true);
-                        mainDialogMenu.SetActive(true);
-                        _selectedTextDialog = textDialogMain;
-                        break;
-                    case Enums.DialogStyle.BigPicture:
-                        _selectedTextDialog = textDialogBigPicture;
-                        GameMenuManager.Instance.NoVisionForTime(1.2f,
-                            new Task(() => { bigPictureMenu.SetActive(true); }));
-                        break;
-                    case Enums.DialogStyle.SubMain:
-                        _selectedTextDialog = textDialogSub;
-                        subDialogMenu.SetActive(true);
-                        break;
-                }
+                case Enums.DialogStyle.Main:
+                    await CameraManager.Instance.CameraZoom(-5f, true);
+                    mainMenu.SetActive(true);
+                    mainDialogMenu.SetActive(true);
+                    _selectedTextDialog = textDialogMain;
+                    break;
+                case Enums.DialogStyle.BigPicture:
+                    _selectedTextDialog = textDialogBigPicture;
+                    GameMenuManager.Instance.NoVisionForTime(1.2f,
+                        new Task(() => { bigPictureMenu.SetActive(true); }));
+                    break;
+                case Enums.DialogStyle.SubMain:
+                    _selectedTextDialog = textDialogSub;
+                    subDialogMenu.SetActive(true);
+                    break;
             }
-            else
-                choiceDialogMenu.SetActive(true);
+        }
+        else
+            choiceDialogMenu.SetActive(true);
     }
 
     /// <summary>
@@ -253,5 +253,5 @@ public class DialogUI : DisplayBase, IMenuable
 
         _textGenerate = null;
     }
-    
+
 }

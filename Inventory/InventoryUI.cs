@@ -11,11 +11,11 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textItemName, textItemDescription;
     [SerializeField] private Image iconImage;
 
-    [Header("Prefabs")] [SerializeField] private GameObject inventorySlotPrefab;
+    [Header("Prefabs")][SerializeField] private GameObject inventorySlotPrefab;
     [SerializeField] private Button buttonItemActivate;
 
     private void Awake() => Instance = this;
-    
+
     /// <summary>
     /// Открытие/закрытие инвентаря
     /// </summary>

@@ -9,18 +9,18 @@ public class NotebookUI : MonoBehaviour
     public static NotebookUI Instance { get; private set; }
     private NotesManager _notesManager;
     [SerializeField] private GameObject buttonNpc;
-    [Header("NotesPage")] [SerializeField] private GameObject pageNotes;
+    [Header("NotesPage")][SerializeField] private GameObject pageNotes;
     [SerializeField] private GameObject notesContainer;
     private AdaptiveScrollView _notesAdaptiveScrollView;
 
-    [Header("NpcPage")] [SerializeField] private GameObject pageNpc;
+    [Header("NpcPage")][SerializeField] private GameObject pageNpc;
     [SerializeField] private GameObject npcContainer;
     private AdaptiveScrollView _npcAdaptiveScrollView;
 
-    [Header("Prefabs")] [SerializeField] private GameObject buttonNotePrefab;
+    [Header("Prefabs")][SerializeField] private GameObject buttonNotePrefab;
     [SerializeField] private GameObject buttonNpcPrefab;
 
-    [Header("Other")] [SerializeField] private GameObject pageReadNote;
+    [Header("Other")][SerializeField] private GameObject pageReadNote;
     [SerializeField] private GameObject pageReadHuman;
     [SerializeField] private TextMeshProUGUI headerMain, noteMain;
     [SerializeField] private TextMeshProUGUI headerHuman, noteHuman, relationshipTextHuman;
@@ -28,7 +28,7 @@ public class NotebookUI : MonoBehaviour
     [SerializeField] private Image iconHuman;
 
     private void Awake() => Instance = this;
-    
+
     private void Start()
     {
         _notesManager = NotesManager.Instance;
@@ -45,13 +45,13 @@ public class NotebookUI : MonoBehaviour
         switch (mode)
         {
             case 0:
-            {
-                pageNotes.SetActive(false);
-                pageReadNote.gameObject.SetActive(true);
-                headerMain.text = _notesManager.PlayerNotes[num].noteName.Text;
-                noteMain.text = _notesManager.PlayerNotes[num].description.Text;
-                break;
-            }
+                {
+                    pageNotes.SetActive(false);
+                    pageReadNote.gameObject.SetActive(true);
+                    headerMain.text = _notesManager.PlayerNotes[num].noteName.Text;
+                    noteMain.text = _notesManager.PlayerNotes[num].description.Text;
+                    break;
+                }
             case 1:
                 pageNpc.SetActive(false);
                 pageReadHuman.gameObject.SetActive(true);
@@ -61,9 +61,9 @@ public class NotebookUI : MonoBehaviour
                 iconHuman.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
                 iconHuman.SetNativeSize();
                 relationshipTextHuman.text =
-                    new LanguageSetting($"Отношения({selectedNpc.NpcController.NpcEntity.relationshipWithPlayer})",
-                        $"Relationships({selectedNpc.NpcController.NpcEntity.relationshipWithPlayer})").Text;
-                sliderHuman.value = selectedNpc.NpcController.NpcEntity.relationshipWithPlayer;
+                    new LanguageSetting($"Отношения({selectedNpc.IHumanable.NpcEntity.relationshipWithPlayer})",
+                        $"Relationships({selectedNpc.IHumanable.NpcEntity.relationshipWithPlayer})").Text;
+                sliderHuman.value = selectedNpc.IHumanable.NpcEntity.relationshipWithPlayer;
                 break;
         }
     }
@@ -83,7 +83,7 @@ public class NotebookUI : MonoBehaviour
             Destroy(child.gameObject);
 
         yield return null;
-        
+
         for (int i = 0; i < _notesManager.PlayerNotes.Count; i++)
         {
             var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
@@ -100,7 +100,7 @@ public class NotebookUI : MonoBehaviour
         pageNpc.SetActive(true);
         foreach (Transform child in npcContainer.transform)
             Destroy(child.gameObject);
-        
+
         yield return null;
 
         for (int i = 0; i < PlayerStats.FamiliarNpc.Count; i++)
@@ -110,7 +110,7 @@ public class NotebookUI : MonoBehaviour
             obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
             obj.prefabImage.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
             int number = i;
-            obj.prefabButton.onClick.AddListener(delegate{ReadNote(number, 1);});
+            obj.prefabButton.onClick.AddListener(delegate { ReadNote(number, 1); });
             yield return null;
         }
         yield return null;

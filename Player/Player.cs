@@ -9,7 +9,7 @@ public class Player : MonoBehaviour, IHumanable
 {
     public static Player Instance { get; private set; }
 
-    public Npc NpcEntity { get => selectedPerson?.npcEntity; set {}}
+    public Npc NpcEntity { get => selectedPerson?.npcEntity; set { } }
     public string SelectedStyle { get; set; }
 
     [Header("Stats")] public bool canMove;
@@ -18,7 +18,8 @@ public class Player : MonoBehaviour, IHumanable
     private PlayerStats _playerStats;
     private bool _run;
 
-    [Header("Preferences")] [SerializeField]
+    [Header("Preferences")]
+    [SerializeField]
     private GameObject model;
     [SerializeField] private PlayerPerson[] _playerPersons = new PlayerPerson[6];
     private Dictionary<Enums.Persons, PlayerPerson> _playerPersonsDict = new Dictionary<Enums.Persons, PlayerPerson>();

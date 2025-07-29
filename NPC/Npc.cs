@@ -17,10 +17,10 @@ public class Npc : ScriptableObject
 
     [Header("TempInfo")] public float relationshipWithPlayer;
 
-    [Header("Preference")] [JsonIgnore] public bool canMeet;
+    [Header("Preference")][JsonIgnore] public bool canMeet;
 
     // Назначаются при старте
-    [JsonIgnore] [HideInInspector] public IHumanable NpcController;
+    [JsonIgnore][HideInInspector] public IHumanable IHumanable;
 
     public void OnEnable()
     {
@@ -29,13 +29,13 @@ public class Npc : ScriptableObject
     }
 
     public NpcStyle GetNpcStyle(string styleName) => _stylesDict.GetValueOrDefault(styleName);
-    
+
     public Sprite GetStyleIcon() => _stylesDict["Standard"].styleIcon.ReturnIcon(Enums.IconMood.Standard);
 
     public Sprite GetStyleIcon(Enums.IconMood iconMood)
     {
-        if (NpcController != null && NpcController.SelectedStyle != "")
-            return _stylesDict[NpcController.SelectedStyle].styleIcon.ReturnIcon(iconMood);
+        if (IHumanable != null && IHumanable.SelectedStyle != "")
+            return _stylesDict[IHumanable.SelectedStyle].styleIcon.ReturnIcon(iconMood);
         return _stylesDict["Standard"].styleIcon.ReturnIcon(iconMood);
     }
 }

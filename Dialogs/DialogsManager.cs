@@ -122,8 +122,6 @@ public class DialogsManager
         if (DialogUI.currentDialogStepNode.fastChanges)
             DialogUI.currentDialogStepNode.fastChanges.ActivateChanges();
 
-        CutsceneManager.Instance.ActivateCutsceneStep(DialogUI.currentDialogStepNode.activateCutsceneStep);
-
         if (DialogUI.currentDialogStepNode.stepSpeech)
             AudioManager.Instance.PlaySpeech(DialogUI.currentDialogStepNode.stepSpeech);
         else

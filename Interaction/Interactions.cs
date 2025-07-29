@@ -9,7 +9,8 @@ public class Interactions : MonoBehaviour
     private List<IInteractable> EnteredInteractions = new List<IInteractable>();
     public bool lockInter;
 
-    [Header("Preferences")] [SerializeField]
+    [Header("Preferences")]
+    [SerializeField]
     private Transform rayStart;
 
     [SerializeField] private LayerMask layerMaskInteract;
@@ -31,25 +32,26 @@ public class Interactions : MonoBehaviour
         return true;
     }
 
-    public void OnInteractFirst(InputAction.CallbackContext context)
+    private void InteractButton(int slot, InputAction.CallbackContext context)
     {
-        if (!lockInter && EnteredInteractions.Count == 1 && context.action.WasPerformedThisFrame())
-            EnteredInteractions[0]?.DoInteraction();
+        try
+        {
+            if (!lockInter && EnteredInteractions.Count >= slot + 1 && context.action.WasPerformedThisFrame())
+                EnteredInteractions[slot].DoInteraction();
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log("Interact button slot " + slot + " error: " + ex);
+        }
     }
-    
-    public void OnInteractSecond(InputAction.CallbackContext context)
-    {
-        if (!lockInter && EnteredInteractions.Count == 2 && context.action.WasPerformedThisFrame())
-            EnteredInteractions[1]?.DoInteraction();
-    }
-    
-    public void OnInteractThird(InputAction.CallbackContext context)
-    {
-        if (!lockInter && EnteredInteractions.Count == 3 && context.action.WasPerformedThisFrame())
-            EnteredInteractions[2]?.DoInteraction();
-    }
-    
-    private void Update()
+
+    public void OnInteractFirst(InputAction.CallbackContext context) => InteractButton(0, context);
+
+    public void OnInteractSecond(InputAction.CallbackContext context) => InteractButton(1, context);
+
+    public void OnInteractThird(InputAction.CallbackContext context) => InteractButton(2, context);
+
+    private void FixedUpdate()
     {
         if (!GameMenuManager.Instance.CanMenuOpen()) // Т.е открыто какое-либо меню
             return;

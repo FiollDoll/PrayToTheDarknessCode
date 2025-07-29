@@ -14,17 +14,17 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
 
     public string itemNameToUse;
     public string ItemNameUse => itemNameToUse;
-    
+
     public string questName;
     public string QuestName => questName;
 
     private void OnEnable() => Initialize();
-    
+
     public void Initialize()
     {
-        
+
     }
-    
+
     public bool CanInteractByQuest()
     {
         if (questName == "")

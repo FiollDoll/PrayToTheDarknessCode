@@ -20,13 +20,13 @@ public class NpcManager
             if (!obj) continue;
             try
             {
-                npc.NpcController = obj.GetComponent<IHumanable>();
-                npc.NpcController.NpcEntity = npc;
-                await npc.NpcController.Initialize();
+                npc.IHumanable = obj.GetComponent<IHumanable>();
+                npc.IHumanable.NpcEntity = npc;
+                await npc.IHumanable.Initialize();
             }
             catch (Exception e)
             {
-                Debug.Log(npc.nameInWorld + " error " + e);
+                Debug.Log("npc init " + npc.nameInWorld + " error ");
             }
         }
     }

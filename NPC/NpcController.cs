@@ -8,7 +8,8 @@ public class NpcController : MonoBehaviour, IHumanable
     public string SelectedStyle { get; set; }
     public string totalLocation;
 
-    [Header("Preference")] [SerializeField]
+    [Header("Preference")]
+    [SerializeField]
     private float speed;
 
     [SerializeField] private GameObject model;
@@ -59,38 +60,37 @@ public class NpcController : MonoBehaviour, IHumanable
 
     public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, model, _animator);
 
-    private void OnTriggerEnter(Collider other)
-    {
-        switch (other.gameObject.tag)
-        {
-            case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
-                ManageLocation.Instance.NpcAtTotalLocation.Remove(this);
-                transform.position = ManageLocation.Instance.GetLocation(locationOfPointName).spawns[0].spawn.position;
-                totalLocation = locationOfPointName;
-                ManageLocation.Instance.NpcAtTotalLocation.Add(this);
-                break;
-            case "Player":
-                _playerInCollider = true;
-                break;
-            default:
-            {
-                if (point != null && other.gameObject.name == point.gameObject.name)
-                    moveToPoint = false;
-                break;
-            }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.tag == "Player")
-            _playerInCollider = false;
-    }
-
     // Переделать под корутины
     private void FixedUpdate()
     {
         if (!_animator || !model) return;
+
+        Collider[] colliders = Physics.OverlapSphere(model.transform.position, 5f);
+
+        _playerInCollider = false;
+
+        foreach (Collider collider in colliders)
+        {
+            switch (collider.gameObject.tag)
+            {
+                case "floorChange" when totalLocation != locationOfPointName && moveToPoint:
+                    ManageLocation.Instance.NpcAtTotalLocation.Remove(this);
+                    transform.position = ManageLocation.Instance.GetLocation(locationOfPointName).spawns[0].spawn.position;
+                    totalLocation = locationOfPointName;
+                    ManageLocation.Instance.NpcAtTotalLocation.Add(this);
+                    break;
+                case "Player":
+                    _playerInCollider = true;
+                    break;
+                default:
+                    {
+                        if (point != null && collider.gameObject.name == point.gameObject.name)
+                            moveToPoint = false;
+                        break;
+                    }
+            }
+        }
+
 
         if (!_playerInCollider && moveToPlayer)
             MoveTo(_playerTransform);
