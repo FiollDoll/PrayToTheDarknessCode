@@ -21,7 +21,7 @@ public class DialogUI : DisplayBase, IMenuable
 
     [SerializeField] private TextMeshProUGUI textDialogMain, textDialogSub, textDialogBigPicture;
     private TextMeshProUGUI _selectedTextDialog;
-    [SerializeField] private GameObject mainMenu, mainDialogMenu, choiceDialogMenu, subDialogMenu, bigPictureMenu;
+    [SerializeField] private GameObject mainMenu, choiceMenu, subDialogMenu, bigPictureMenu;
     [SerializeField] private Image[] talkerIcons = new Image[3];
     private Dictionary<Npc, Image> _npcAndTalkerIcon = new Dictionary<Npc, Image>();
     [SerializeField] private Image bigPicture;
@@ -92,7 +92,6 @@ public class DialogUI : DisplayBase, IMenuable
                 case Enums.DialogStyle.Main:
                     await CameraManager.Instance.CameraZoom(-5f, true);
                     mainMenu.SetActive(true);
-                    mainDialogMenu.SetActive(true);
                     _selectedTextDialog = textDialogMain;
                     break;
                 case Enums.DialogStyle.BigPicture:
@@ -106,7 +105,7 @@ public class DialogUI : DisplayBase, IMenuable
             }
         }
         else
-            choiceDialogMenu.SetActive(true);
+            choiceMenu.SetActive(true);
     }
 
     // Сучий костыль
@@ -117,8 +116,8 @@ public class DialogUI : DisplayBase, IMenuable
     /// </summary>
     public async void ActivateChoiceMenu()
     {
-        mainDialogMenu.SetActive(false);
-        choiceDialogMenu.SetActive(true);
+        _selectedTextDialog.text = "";
+        choiceMenu.SetActive(true);
 
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
@@ -144,8 +143,7 @@ public class DialogUI : DisplayBase, IMenuable
     /// </summary>
     private void ActivateChoiceStep(int id)
     {
-        choiceDialogMenu.SetActive(false);
-        mainDialogMenu.SetActive(true);
+        choiceMenu.SetActive(false);
         _dialogsManager.DialogMoveNext(id);
     }
 
@@ -215,7 +213,6 @@ public class DialogUI : DisplayBase, IMenuable
         }
         dialogMenu.SetActive(false);
         mainMenu.SetActive(false);
-        mainDialogMenu.SetActive(false);
         subDialogMenu.SetActive(false);
         bigPictureMenu.SetActive(false);
         foreach (KeyValuePair<Npc, Image> talker in _npcAndTalkerIcon)

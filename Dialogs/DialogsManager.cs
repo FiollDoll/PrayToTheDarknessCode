@@ -9,6 +9,8 @@ public class DialogsManager
 
     // Все диалоги
     private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
+    private List<string> _dialogsHasRead = new List<string>();
+
 
     public List<Npc> NpcInSelectedDialog = new List<Npc>();
 
@@ -39,14 +41,14 @@ public class DialogsManager
     {
         Dialog newDialog = GetDialog(nameDialog);
         if (!newDialog) return;
-        //if (newDialog.read) return;
+        if (_dialogsHasRead.Contains(newDialog.name)) return;
 
         DialogUI.story = newDialog;
         DialogUI.currentDialogStepNode = DialogUI.story.GetFirstNode();
         Player.Instance.canMove = DialogUI.currentDialogStepNode.canMove;
         Interactions.Instance.lockInter = !DialogUI.currentDialogStepNode.canInter;
-        //if (!SelectedDialog.moreRead)
-        //SelectedDialog.read = true;
+        if (!newDialog.GetFirstNode().moreRead)
+            _dialogsHasRead.Add(newDialog.name);
 
         await DialogUI.ActivateDialogWindow();
 
@@ -125,9 +127,12 @@ public class DialogsManager
 
         if (totalStep.npcChangeRelation != null)
             totalStep.npcChangeRelation.relationshipWithPlayer += totalStep.changeRelation;
-        
-        //if (DialogUI.currentDialogStepNode.npcChangeMoveToPlayer != null)
-            //DialogUI.currentDialogStepNode.npcChangeRelation.moveToPlayer += DialogUI.currentDialogStepNode.changeRelation;
+
+        if (totalStep.npcChangeMoveToPlayer != null)
+        {
+            if (totalStep.npcChangeMoveToPlayer.IHumanable is NpcController npcController)
+                npcController.moveToPlayer = totalStep.newStateMoveToPlayer;
+        }
 
         totalStep.fastChanges?.ActivateChanges();
 
