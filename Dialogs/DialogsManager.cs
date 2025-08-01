@@ -117,7 +117,11 @@ public class DialogsManager
         {
             if (!totalNpc.canMeet) continue;
             if (totalNpc.nameOfNpc.Text != npc.nameOfNpc.Text) continue;
-            if (PlayerStats.FamiliarNpc.Contains(totalNpc)) continue;
+
+            NpcManager.Instance.npcTempInfo[totalNpc].meetWithPlayer = true;
+
+            if (PlayerStats.FamiliarNpc.Contains(totalNpc))
+                continue;
             PlayerStats.FamiliarNpc.Add(totalNpc);
             break;
         }
@@ -126,7 +130,7 @@ public class DialogsManager
         PlayerStats.Karma += totalStep.changeKarma;
 
         if (totalStep.npcChangeRelation != null)
-            totalStep.npcChangeRelation.relationshipWithPlayer += totalStep.changeRelation;
+            NpcManager.Instance.npcTempInfo[totalStep.npcChangeRelation].relationshipWithPlayer += totalStep.changeRelation;
 
         if (totalStep.npcChangeMoveToPlayer != null)
         {

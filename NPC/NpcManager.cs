@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -6,6 +6,7 @@ public class NpcManager
 {
     public static NpcManager Instance { get; private set; }
     public Npc[] AllNpc;
+    public Dictionary<Npc, NpcTempInfo> npcTempInfo = new Dictionary<Npc, NpcTempInfo>();
 
     public async Task Initialize()
     {
@@ -22,9 +23,10 @@ public class NpcManager
             {
                 npc.IHumanable = obj.GetComponent<IHumanable>();
                 npc.IHumanable.NpcEntity = npc;
+                npcTempInfo.Add(npc, new NpcTempInfo());
                 await npc.IHumanable.Initialize();
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Debug.Log("npc init " + npc.nameInWorld + " error ");
             }

@@ -60,10 +60,10 @@ public class NotebookUI : MonoBehaviour
                 noteHuman.text = selectedNpc.description.Text;
                 iconHuman.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
                 iconHuman.SetNativeSize();
+                NpcTempInfo npcInfo = NpcManager.Instance.npcTempInfo[selectedNpc.IHumanable.NpcEntity];
                 relationshipTextHuman.text =
-                    new LanguageSetting($"Отношения({selectedNpc.IHumanable.NpcEntity.relationshipWithPlayer})",
-                        $"Relationships({selectedNpc.IHumanable.NpcEntity.relationshipWithPlayer})").Text;
-                sliderHuman.value = selectedNpc.IHumanable.NpcEntity.relationshipWithPlayer;
+                    new LanguageSetting($"Отношения({npcInfo.relationshipWithPlayer})", $"Relationships({npcInfo.relationshipWithPlayer})").Text;
+                sliderHuman.value = npcInfo.relationshipWithPlayer;
                 break;
         }
     }
@@ -109,8 +109,12 @@ public class NotebookUI : MonoBehaviour
             Npc selectedNpc = PlayerStats.FamiliarNpc[i];
             obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
             obj.prefabImage.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
+
+            if (!NpcManager.Instance.npcTempInfo[selectedNpc].meetWithPlayer)
+                obj.prefabImage.color = Color.black;
             int number = i;
             obj.prefabButton.onClick.AddListener(delegate { ReadNote(number, 1); });
+
             yield return null;
         }
         yield return null;

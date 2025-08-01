@@ -19,6 +19,12 @@ public class LanguageSetting
         }
     }
 
+    public LanguageSetting(string anyText)
+    {
+        ru = anyText;
+        en = anyText;
+    }
+
     public LanguageSetting(string russianText, string englishText)
     {
         ru = russianText;

@@ -39,6 +39,7 @@ public class PlayerStats
         get => _sanity;
         set
         {
+            NotifyManager.Instance?.StartSanityChangeNotify(value - _sanity);
             _sanity = value;
             PlayerMenu.Instance?.UpdateSanitySlider();
         }
@@ -47,7 +48,11 @@ public class PlayerStats
     public static float Karma
     {
         get => _karma;
-        set =>_karma = value;
+        set
+        {
+            NotifyManager.Instance?.StartKarmaChangeNotify(value - _karma);
+            _karma = value;
+        }
     }
 
     public const float MoveSpeed = 4f;

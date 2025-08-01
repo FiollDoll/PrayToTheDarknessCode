@@ -15,8 +15,6 @@ public class Npc : ScriptableObject
     [JsonIgnore] public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("Standard") };
     private readonly Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
 
-    [Header("TempInfo")] public float relationshipWithPlayer;
-
     [Header("Preference")][JsonIgnore] public bool canMeet;
 
     // Назначаются при старте

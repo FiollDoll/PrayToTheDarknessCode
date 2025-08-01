@@ -19,25 +19,29 @@ public class NotifyManager : MonoBehaviour
     public void StartNewNoteNotify(string noteName) =>
         ActivateNotify(new LanguageSetting($"Новая записка: {noteName}", $"New note: {noteName}"));
 
-    public void StartNewRelationshipNotify(string npc, float changeRelationship)
+    public void StartNewRelationshipNotify(string npc, float changeRelationship) => NotifyArrowsPreset(npc, changeRelationship);
+
+    public void StartSanityChangeNotify(float changeSanity) => NotifyArrowsPreset(new LanguageSetting("Рассудок изменился", "Sanity has changed").Text, changeSanity);
+
+    public void StartKarmaChangeNotify(float changeKarma) => NotifyArrowsPreset(new LanguageSetting("Карма изменилась", "Karma has changed").Text, changeKarma);
+
+    private void NotifyArrowsPreset(string paramName, float paramValue)
     {
-        switch (changeRelationship)
+        switch (paramValue)
         {
             case > 0 and < 1:
-                ActivateNotify(new LanguageSetting($"{npc} <color=green>></color>",
-                    $"{npc} <color=green>></color>"));
+                ActivateNotify(new LanguageSetting($"{paramName} <color=green> > </color>"));
                 break;
             case >= 1:
-                ActivateNotify(new LanguageSetting($"{npc} <color=green>>></color>",
-                    $"{npc} <color=green>>></color>"));
+                ActivateNotify(new LanguageSetting($"{paramName} <color=green> >> </color>"));
                 break;
             case < 0 and > -1:
-                ActivateNotify(new LanguageSetting($"{npc} <color=green><</color>",
-                    $"{npc} <color=green><</color>"));
+                ActivateNotify(new LanguageSetting($"{paramName} <color=red> < </color>"));
                 break;
-            case >= -1:
-                ActivateNotify(new LanguageSetting($"{npc} <color=red><<</color>",
-                    $"{npc} <color=red><<</color>"));
+            case <= -1:
+                ActivateNotify(new LanguageSetting($"{paramName} <color=red> << </color>"));
+                break;
+            default:
                 break;
         }
     }

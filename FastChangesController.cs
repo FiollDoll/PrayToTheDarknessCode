@@ -23,6 +23,7 @@ public class FastChangesController : ScriptableObject
     [Header("-ChangeAnything")] public AudioClip setMusic;
     public List<Item> addItem;
     public List<Note> addNote;
+    public Npc[] addFamiliar = new Npc[0];
     public ChangeRelationship[] changeRelationships = new ChangeRelationship[0];
     public ChangeVisual[] changeVisuals = new ChangeVisual[0];
     public MoveToPlayer[] changeMoveToPlayer = new MoveToPlayer[0];
@@ -50,6 +51,7 @@ public class FastChangesController : ScriptableObject
         await AddNotes();
 
         // Разные изменения
+        await AddFamiliar();
         await ChangeRelations();
         await ChangeVisuals();
         await ChangeMoveToPlayer();
@@ -60,6 +62,23 @@ public class FastChangesController : ScriptableObject
             await DialogsManager.Instance.ActivateDialog(activateDialog.name);
         if (activateQuest)
             await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
+    }
+
+    private async Task AddFamiliar()
+    {
+        foreach (Npc totalNpc in addFamiliar)
+        {
+            try
+            {
+                if (!totalNpc.canMeet) continue;
+                if (PlayerStats.FamiliarNpc.Contains(totalNpc)) continue;
+                PlayerStats.FamiliarNpc.Add(totalNpc);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("Pisdec familiar ne dobavilsya");
+            }
+        }
     }
 
     private async Task AddItems()
@@ -98,7 +117,7 @@ public class FastChangesController : ScriptableObject
         {
             try
             {
-                changer.npc.relationshipWithPlayer += changer.valueChange;
+                NpcManager.Instance.npcTempInfo[changer.npc].relationshipWithPlayer += changer.valueChange;
                 if (changer.valueChange != 0)
                     NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.Text, changer.valueChange);
             }
@@ -140,6 +159,7 @@ public class FastChangesController : ScriptableObject
         }
     }
 }
+
 
 [System.Serializable]
 public class ChangeRelationship
