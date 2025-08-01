@@ -25,11 +25,14 @@ public class DialogStepNode
 
     public Sprite bigPicture;
     public AudioClip stepSpeech;
-    public bool cursedText;
     public float delayAfterNext;
-    public int activateCutsceneStep = -1;
     public float mainPanelStartDelay;
+    
+    // Changes
     public FastChangesController fastChanges;
+    public Npc npcChangeRelation, npcChangeMoveToPlayer;
+    public float changeRelation, changeKarma, changeSanity;
+    public bool newStateMoveToPlayer;
 
     public DialogStepNode()
     {

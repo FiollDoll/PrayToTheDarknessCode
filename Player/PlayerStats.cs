@@ -2,7 +2,7 @@
 
 public class PlayerStats
 {
-    private static float _hp, _hunger, _addiction, _sanity;
+    private static float _hp, _hunger, _addiction, _sanity, _karma;
 
     public static float Hp
     {
@@ -42,6 +42,12 @@ public class PlayerStats
             _sanity = value;
             PlayerMenu.Instance?.UpdateSanitySlider();
         }
+    }
+
+    public static float Karma
+    {
+        get => _karma;
+        set =>_karma = value;
     }
 
     public const float MoveSpeed = 4f;

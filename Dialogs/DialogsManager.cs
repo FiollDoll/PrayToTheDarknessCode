@@ -94,10 +94,11 @@ public class DialogsManager
     /// </summary>
     private void DialogUpdateAction()
     {
+        DialogStepNode totalStep = DialogUI.currentDialogStepNode;
         // Проверка на нпс/личность игрока
         Npc npc;
-        if (DialogUI.currentDialogStepNode.character && DialogUI.currentDialogStepNode.character.nameInWorld != "Mark")
-            npc = DialogUI.currentDialogStepNode.character;
+        if (totalStep.character && totalStep.character.nameInWorld != "Mark")
+            npc = totalStep.character;
         else
             npc = Player.Instance.NpcEntity;
 
@@ -119,11 +120,19 @@ public class DialogsManager
             break;
         }
 
-        if (DialogUI.currentDialogStepNode.fastChanges)
-            DialogUI.currentDialogStepNode.fastChanges.ActivateChanges();
+        PlayerStats.Sanity += totalStep.changeSanity;
+        PlayerStats.Karma += totalStep.changeKarma;
 
-        if (DialogUI.currentDialogStepNode.stepSpeech)
-            AudioManager.Instance.PlaySpeech(DialogUI.currentDialogStepNode.stepSpeech);
+        if (totalStep.npcChangeRelation != null)
+            totalStep.npcChangeRelation.relationshipWithPlayer += totalStep.changeRelation;
+        
+        //if (DialogUI.currentDialogStepNode.npcChangeMoveToPlayer != null)
+            //DialogUI.currentDialogStepNode.npcChangeRelation.moveToPlayer += DialogUI.currentDialogStepNode.changeRelation;
+
+        totalStep.fastChanges?.ActivateChanges();
+
+        if (totalStep.stepSpeech)
+            AudioManager.Instance.PlaySpeech(totalStep.stepSpeech);
         else
             AudioManager.Instance.StopSpeech();
     }

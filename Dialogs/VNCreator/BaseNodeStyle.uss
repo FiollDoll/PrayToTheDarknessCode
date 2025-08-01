@@ -35,12 +35,12 @@
 }
 
 .dialogue_field {
-    height: 100px;
     width: 400px;
     max-width: 600px;
 }
 
 Button {
+    min-height: 0px;
     max-height: 200px;
     max-width: 150px;
 }

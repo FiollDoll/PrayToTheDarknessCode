@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using System.Globalization;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
@@ -85,7 +86,7 @@ public class NodeViewer : VisualElement
 
                 mainPanelDelayTextField.RegisterValueChangedCallback(evt =>
                 {
-                    _node.DialogStepNode.mainPanelStartDelay = float.Parse(mainPanelDelayTextField.value);
+                    _node.DialogStepNode.mainPanelStartDelay = float.Parse(mainPanelDelayTextField.value, CultureInfo.InvariantCulture);
                 });
             }
             else
@@ -142,13 +143,6 @@ public class NodeViewer : VisualElement
             dialogueFieldEn.RegisterValueChangedCallback(e => { node.DialogStepNode.dialogTextEn = dialogueFieldEn.value; }
             );
 
-            Toggle cursedTextToggle = this.Query<Toggle>("Cursed_Text");
-            cursedTextToggle.value = _node.DialogStepNode.cursedText;
-            cursedTextToggle.RegisterValueChangedCallback(evt =>
-            {
-                _node.DialogStepNode.cursedText = cursedTextToggle.value;
-            });
-
             ObjectField speechField = this.Query<ObjectField>("Speech");
             speechField.value = _node.DialogStepNode.stepSpeech;
             speechField.RegisterValueChangedCallback(evt =>
@@ -163,20 +157,12 @@ public class NodeViewer : VisualElement
                 node.DialogStepNode.bigPicture = (Sprite)bigPictureField.value;
             });
 
-            TextField activateCutsceneStepTextField = this.Query<TextField>("Activate_Cutscene_Step");
-            activateCutsceneStepTextField.value = _node.DialogStepNode.activateCutsceneStep.ToString();
-
-            activateCutsceneStepTextField.RegisterValueChangedCallback(evt =>
-            {
-                _node.DialogStepNode.activateCutsceneStep = int.Parse(activateCutsceneStepTextField.value);
-            });
-
             TextField delayAfterNextTextField = this.Query<TextField>("Delay_After_Step");
             delayAfterNextTextField.value = _node.DialogStepNode.delayAfterNext.ToString();
 
             delayAfterNextTextField.RegisterValueChangedCallback(evt =>
             {
-                _node.DialogStepNode.delayAfterNext = float.Parse(delayAfterNextTextField.value);
+                _node.DialogStepNode.delayAfterNext = float.Parse(delayAfterNextTextField.value, CultureInfo.InvariantCulture);
             });
 
             ObjectField fastChangesTextField = this.Query<ObjectField>("Fast_Changes");
@@ -185,6 +171,53 @@ public class NodeViewer : VisualElement
             fastChangesTextField.RegisterValueChangedCallback(evt =>
             {
                 _node.DialogStepNode.fastChanges = (FastChangesController)fastChangesTextField.value;
+            });
+
+            ObjectField changeRelationNpc = this.Query<ObjectField>("Npc_Relation");
+            changeRelationNpc.value = (Npc)_node.DialogStepNode.npcChangeRelation;
+            changeRelationNpc.RegisterValueChangedCallback(e =>
+                {
+                    node.DialogStepNode.npcChangeRelation = (Npc)changeRelationNpc.value;
+                }
+            );
+
+            TextField changeRelationValue = this.Query<TextField>("Npc_Change_Relation");
+            changeRelationValue.value = _node.DialogStepNode.changeRelation.ToString();
+
+            changeRelationValue.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.changeRelation = float.Parse(changeRelationValue.value);
+            });
+
+            ObjectField changeMoveToPlayerNpc = this.Query<ObjectField>("Npc_Move_Player");
+            changeMoveToPlayerNpc.value = (Npc)_node.DialogStepNode.npcChangeMoveToPlayer;
+            changeMoveToPlayerNpc.RegisterValueChangedCallback(e =>
+                {
+                    node.DialogStepNode.npcChangeMoveToPlayer = (Npc)changeMoveToPlayerNpc.value;
+                }
+            );
+
+            Toggle moveToPlayerToggle = this.Query<Toggle>("Npc_Move_Player_Toggle");
+            moveToPlayerToggle.value = _node.DialogStepNode.newStateMoveToPlayer;
+            moveToPlayerToggle.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.newStateMoveToPlayer = moveToPlayerToggle.value;
+            });
+
+            TextField karmaValue = this.Query<TextField>("Change_Karma");
+            karmaValue.value = _node.DialogStepNode.changeKarma.ToString();
+
+            karmaValue.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.changeKarma = float.Parse(karmaValue.value, CultureInfo.InvariantCulture);
+            });
+
+            TextField sanityValue = this.Query<TextField>("Change_Sanity");
+            sanityValue.value = _node.DialogStepNode.changeSanity.ToString();
+
+            sanityValue.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.changeSanity = float.Parse(sanityValue.value, CultureInfo.InvariantCulture);
             });
         }
     }
