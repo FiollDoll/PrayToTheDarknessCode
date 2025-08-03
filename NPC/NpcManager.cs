@@ -16,6 +16,7 @@ public class NpcManager
         // Инициализация информации об НПС
         foreach (Npc npc in AllNpc)
         {
+            npcTempInfo.Add(npc, new NpcTempInfo());
             if (npc.nameInWorld == "") continue;
             GameObject obj = GameObject.Find(npc.nameInWorld);
             if (!obj) continue;
@@ -23,7 +24,6 @@ public class NpcManager
             {
                 npc.IHumanable = obj.GetComponent<IHumanable>();
                 npc.IHumanable.NpcEntity = npc;
-                npcTempInfo.Add(npc, new NpcTempInfo());
                 await npc.IHumanable.Initialize();
             }
             catch (System.Exception e)

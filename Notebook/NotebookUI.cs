@@ -17,6 +17,9 @@ public class NotebookUI : MonoBehaviour
     [SerializeField] private GameObject npcContainer;
     private AdaptiveScrollView _npcAdaptiveScrollView;
 
+    [Header("PersonsPage")][SerializeField] private GameObject pagePerson;
+    [SerializeField] private GameObject personsContainer;
+
     [Header("Prefabs")][SerializeField] private GameObject buttonNotePrefab;
     [SerializeField] private GameObject buttonNpcPrefab;
 
@@ -35,9 +38,66 @@ public class NotebookUI : MonoBehaviour
         _npcAdaptiveScrollView = pageNpc.transform.Find("Scroll View").GetComponent<AdaptiveScrollView>();
     }
 
-    public void OpenNotes() => StartCoroutine(OpenNoteMenu());
+    public async void OpenNoteMenu()
+    {
+        pageNotes.SetActive(true);
+        foreach (Transform child in notesContainer.transform)
+            Destroy(child.gameObject);
 
-    public void OpenRelation() => StartCoroutine(OpenNpcMenu());
+        await Task.Delay(10);
+
+        for (int i = 0; i < _notesManager.PlayerNotes.Count; i++)
+        {
+            var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
+            int number = i;
+            obj.prefabButton.onClick.AddListener(delegate { ReadNote(number); });
+            await Task.Delay(1);
+        }
+
+        await Task.Delay(10);
+        _notesAdaptiveScrollView.UpdateContentSize();
+    }
+
+    public async Task OpenNpcMenu()
+    {
+        pageNpc.SetActive(true);
+        foreach (Transform child in npcContainer.transform)
+            Destroy(child.gameObject);
+
+        await Task.Delay(10);
+
+        for (int i = 0; i < PlayerStats.FamiliarNpc.Count; i++)
+        {
+            var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
+            Npc selectedNpc = PlayerStats.FamiliarNpc[i];
+            obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
+            obj.prefabImage.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
+
+            if (!NpcManager.Instance.npcTempInfo[selectedNpc].meetWithPlayer)
+                obj.prefabImage.color = Color.black;
+            int number = i;
+            obj.prefabButton.onClick.AddListener(delegate { ReadNote(number, 1); });
+
+            await Task.Delay(1);
+        }
+        await Task.Delay(10);
+        _npcAdaptiveScrollView.UpdateContentSize();
+    }
+
+    public async Task OpenPersonMenu()
+    {
+        pagePerson.SetActive(true);
+        await Task.Delay(10);
+        int totalPerson = 1;
+
+        foreach (Transform child in personsContainer.transform)
+        {
+            PlayerPerson person = Player.Instance.playerPersons[totalPerson];
+            child.transform.Find("TextName").GetComponent<TextMeshProUGUI>().text = person.npcEntity.nameOfNpc.Text;
+            child.transform.Find("TextInfo").GetComponent<TextMeshProUGUI>().text = new LanguageSetting("Влияние: ", "Influence: ").Text + NpcManager.Instance.npcTempInfo[person.npcEntity].influenceToPlayer + "%" + new LanguageSetting("\nУважение: ", "\nRespect: ").Text + NpcManager.Instance.npcTempInfo[person.npcEntity].respectToPlayer + "%";
+            totalPerson++;
+        }
+    }
 
     private void ReadNote(int num, int mode = 0)
     {
@@ -78,52 +138,8 @@ public class NotebookUI : MonoBehaviour
     {
         pageNotes.SetActive(false);
         pageNpc.SetActive(false);
-        pageReadHuman.gameObject.SetActive(false);
-        pageReadNote.gameObject.SetActive(false);
-    }
-
-    private IEnumerator OpenNoteMenu()
-    {
-        pageNotes.SetActive(true);
-        foreach (Transform child in notesContainer.transform)
-            Destroy(child.gameObject);
-
-        yield return null;
-
-        for (int i = 0; i < _notesManager.PlayerNotes.Count; i++)
-        {
-            var obj = Instantiate(buttonNotePrefab, notesContainer.transform).GetComponent<PrefabInfo>();
-            int number = i;
-            obj.prefabButton.onClick.AddListener(delegate { ReadNote(number); });
-            yield return null;
-        }
-        yield return null;
-        _notesAdaptiveScrollView.UpdateContentSize();
-    }
-
-    private IEnumerator OpenNpcMenu()
-    {
-        pageNpc.SetActive(true);
-        foreach (Transform child in npcContainer.transform)
-            Destroy(child.gameObject);
-
-        yield return null;
-
-        for (int i = 0; i < PlayerStats.FamiliarNpc.Count; i++)
-        {
-            var obj = Instantiate(buttonNpcPrefab, npcContainer.transform).GetComponent<PrefabInfo>();
-            Npc selectedNpc = PlayerStats.FamiliarNpc[i];
-            obj.prefabNameTextMeshProUGUI.text = selectedNpc.nameOfNpc.Text;
-            obj.prefabImage.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
-
-            if (!NpcManager.Instance.npcTempInfo[selectedNpc].meetWithPlayer)
-                obj.prefabImage.color = Color.black;
-            int number = i;
-            obj.prefabButton.onClick.AddListener(delegate { ReadNote(number, 1); });
-
-            yield return null;
-        }
-        yield return null;
-        _npcAdaptiveScrollView.UpdateContentSize();
+        pageReadHuman.SetActive(false);
+        pageReadNote.SetActive(false);
+        pagePerson.SetActive(false);
     }
 }

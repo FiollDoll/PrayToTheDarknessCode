@@ -21,7 +21,7 @@ public class Player : MonoBehaviour, IHumanable
     [Header("Preferences")]
     [SerializeField]
     private GameObject model;
-    [SerializeField] private PlayerPerson[] _playerPersons = new PlayerPerson[6];
+    public PlayerPerson[] playerPersons = new PlayerPerson[6];
     private Dictionary<Enums.Persons, PlayerPerson> _playerPersonsDict = new Dictionary<Enums.Persons, PlayerPerson>();
 
     public CinemachineVirtualCamera virtualCamera;
@@ -33,8 +33,8 @@ public class Player : MonoBehaviour, IHumanable
     private void Awake()
     {
         Instance = this;
-        for (int i = 0; i < _playerPersons.Length; i++)
-            _playerPersonsDict.Add((Enums.Persons)i, _playerPersons[i]);
+        for (int i = 0; i < playerPersons.Length; i++)
+            _playerPersonsDict.Add((Enums.Persons)i, playerPersons[i]);
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
     }
@@ -42,7 +42,7 @@ public class Player : MonoBehaviour, IHumanable
     public Task Initialize()
     {
         _playerStats = new PlayerStats(); // Временно, пока не работает система сохранений
-        selectedPerson = _playerPersons[0];
+        selectedPerson = playerPersons[0];
         ChangeStyle("Standard"); // На всякий случай
         return Task.CompletedTask;
     }

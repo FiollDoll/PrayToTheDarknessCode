@@ -52,11 +52,15 @@ public class PlayerMenu : MonoBehaviour, IMenuable
                 break;
             case 1: // Записки
                 notebookMenu.SetActive(true);
-                NotebookUI.Instance.OpenNotes();
+                NotebookUI.Instance.OpenNoteMenu();
                 break;
             case 2: // НПС
                 notebookMenu.SetActive(true);
-                NotebookUI.Instance.OpenRelation();
+                NotebookUI.Instance.OpenNpcMenu();
+                break;
+            case 3: // ЛИЧНОСТИ
+                notebookMenu.SetActive(true);
+                NotebookUI.Instance.OpenPersonMenu();
                 break;
         }
     }
