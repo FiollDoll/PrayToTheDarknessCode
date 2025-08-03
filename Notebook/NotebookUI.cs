@@ -24,7 +24,6 @@ public class NotebookUI : MonoBehaviour
     [SerializeField] private GameObject pageReadHuman;
     [SerializeField] private TextMeshProUGUI headerMain, noteMain;
     [SerializeField] private TextMeshProUGUI headerHuman, noteHuman, relationshipTextHuman;
-    [SerializeField] private Slider sliderHuman;
     [SerializeField] private Image iconHuman;
 
     private void Awake() => Instance = this;
@@ -57,13 +56,20 @@ public class NotebookUI : MonoBehaviour
                 pageReadHuman.gameObject.SetActive(true);
                 Npc selectedNpc = PlayerStats.FamiliarNpc[num];
                 headerHuman.text = selectedNpc.nameOfNpc.Text;
-                noteHuman.text = selectedNpc.description.Text;
                 iconHuman.sprite = selectedNpc.GetStyleIcon(Enums.IconMood.Standard);
-                iconHuman.SetNativeSize();
-                NpcTempInfo npcInfo = NpcManager.Instance.npcTempInfo[selectedNpc.IHumanable.NpcEntity];
-                relationshipTextHuman.text =
-                    new LanguageSetting($"Отношения({npcInfo.relationshipWithPlayer})", $"Relationships({npcInfo.relationshipWithPlayer})").Text;
-                sliderHuman.value = npcInfo.relationshipWithPlayer;
+                noteHuman.text = NpcManager.Instance.GetDescriptionOfNpc(selectedNpc);
+
+                if (NpcManager.Instance.npcTempInfo[selectedNpc].meetWithPlayer)
+                {
+                    iconHuman.color = Color.white;
+                    NpcTempInfo npcInfo = NpcManager.Instance.npcTempInfo[selectedNpc];
+                    relationshipTextHuman.text = NpcManager.Instance.GetNpcRelationName(selectedNpc);
+                }
+                else
+                {
+                    iconHuman.color = Color.black;
+                    relationshipTextHuman.text = "???";
+                }
                 break;
         }
     }

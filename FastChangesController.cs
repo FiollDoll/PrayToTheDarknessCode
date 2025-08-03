@@ -20,11 +20,13 @@ public class FastChangesController : ScriptableObject
     public bool playerCanMove = true, playerCanMoveZ = true;
     public VolumeProfile newVolumeProfile;
 
+    [Header("-Npc")]
+    public ChangeTempInfoNpc[] changeTempInfoNpc = new ChangeTempInfoNpc[0];
+
     [Header("-ChangeAnything")] public AudioClip setMusic;
     public List<Item> addItem;
     public List<Note> addNote;
     public Npc[] addFamiliar = new Npc[0];
-    public ChangeRelationship[] changeRelationships = new ChangeRelationship[0];
     public ChangeVisual[] changeVisuals = new ChangeVisual[0];
     public MoveToPlayer[] changeMoveToPlayer = new MoveToPlayer[0];
 
@@ -52,7 +54,7 @@ public class FastChangesController : ScriptableObject
 
         // Разные изменения
         await AddFamiliar();
-        await ChangeRelations();
+        await ChangeNpcTemp();
         await ChangeVisuals();
         await ChangeMoveToPlayer();
 
@@ -111,19 +113,25 @@ public class FastChangesController : ScriptableObject
         }
     }
 
-    private async Task ChangeRelations()
+    private async Task ChangeNpcTemp()
     {
-        foreach (ChangeRelationship changer in changeRelationships)
+        foreach (ChangeTempInfoNpc changer in changeTempInfoNpc)
         {
             try
             {
-                NpcManager.Instance.npcTempInfo[changer.npc].relationshipWithPlayer += changer.valueChange;
-                if (changer.valueChange != 0)
-                    NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.Text, changer.valueChange);
+                NpcTempInfo npcTemp = NpcManager.Instance.npcTempInfo[changer.npc];
+                npcTemp.relationshipWithPlayer += changer.relationshipChange;
+                if (changer.relationshipChange != 0)
+                    NotifyManager.Instance.StartNewRelationshipNotify(changer.npc.nameOfNpc.Text, changer.relationshipChange);
+                npcTemp.knowAge = changer.unlockAge;
+                npcTemp.knowCharacter = changer.unlockCharacter;
+                npcTemp.knowHobby = changer.unlockHobby;
+                npcTemp.knowHouse = changer.unlockHouse;
+                npcTemp.knowProfession = changer.unlockProfession;
             }
             catch (System.Exception ex)
             {
-                Debug.Log("ChangeRelation error");
+                Debug.Log("ChangeNpcTemp error");
             }
         }
     }
@@ -160,12 +168,12 @@ public class FastChangesController : ScriptableObject
     }
 }
 
-
 [System.Serializable]
-public class ChangeRelationship
+public class ChangeTempInfoNpc
 {
     public Npc npc;
-    public float valueChange;
+    public float relationshipChange;
+    public bool unlockProfession, unlockHobby, unlockAge, unlockCharacter, unlockHouse;
 }
 
 [System.Serializable]

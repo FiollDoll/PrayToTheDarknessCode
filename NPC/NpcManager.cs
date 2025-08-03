@@ -44,6 +44,49 @@ public class NpcManager
         return null;
     }
 
+    public string GetDescriptionOfNpc(Npc npc)
+    {
+        string newDescription = "";
+        NpcTempInfo npcTemp = npcTempInfo[npc];
+
+        newDescription += new LanguageSetting("\nХарактер: ", "\nCharacter: ").Text + (npcTemp.knowCharacter ? npc.character.Text : "???");
+        newDescription += new LanguageSetting("\nВозвраст: ", "\nAge: ").Text + (npcTemp.knowAge ? npc.age : "???");
+        newDescription += new LanguageSetting("\nПрофессия: ", "\nProfession: ").Text + (npcTemp.knowProfession ? npc.profession.Text : "???");
+        newDescription += new LanguageSetting("\nХобби: ", "\nHobby: ").Text + (npcTemp.knowHobby ? npc.hobby.Text : "???");
+
+        return newDescription;
+    }
+
+    public string GetNpcRelationName(Npc npc)
+    {
+        if (npc.specialRelationName.Text != "") // Специальное имя
+            return npc.specialRelationName.Text;
+
+        switch (npcTempInfo[npc].relationshipWithPlayer)
+        {
+            case >= -10 and < -8:
+                return new LanguageSetting("Ненависть", "Hate").Text;
+            case >= -8 and < -5:
+                return new LanguageSetting("Враждебность", "Hostile").Text;
+            case >= -5 and < -2:
+                return new LanguageSetting("Недоверие", "Mistrust").Text;
+            case >= -2 and < -1:
+                return new LanguageSetting("Сомнение", "Doubt").Text;
+            case >= -1 and < 1:
+                return new LanguageSetting("Пустота", "Nothing").Text;
+            case >= 1 and < 3:
+                return new LanguageSetting("Дружелюбие", "Friendliness").Text;
+            case >= 3 and < 5:
+                return new LanguageSetting("Доверие", "Trust").Text;
+            case >= 5 and < 8:
+                return new LanguageSetting("Симпатия", "Sympathy").Text;
+            case >= 8:
+                return new LanguageSetting("Привязанность", "Attachment").Text;
+        }
+
+        return "";
+    }
+
     /// <summary>
     /// Насильное пермещение кого-либо или чего-либо
     /// </summary>

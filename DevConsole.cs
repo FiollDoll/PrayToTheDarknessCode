@@ -33,7 +33,10 @@ public class DevConsole : MonoBehaviour
         foreach (Npc npc in NpcManager.Instance.AllNpc)
         {
             if (npc.canMeet)
+            {
                 PlayerStats.FamiliarNpc.Add(npc);
+                NpcManager.Instance.npcTempInfo[npc].meetWithPlayer = true;
+            }
         }
     }
 

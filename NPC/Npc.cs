@@ -8,17 +8,26 @@ public class Npc : ScriptableObject
 #if UNITY_EDITOR
     [ScriptableObjectIcon] public Sprite sprite; // спрайт для эдитора
 #endif
-    [Header("Main information")] public string nameInWorld;
-    [JsonIgnore] public LanguageSetting nameOfNpc;
-    [JsonIgnore] public LanguageSetting description;
 
-    [JsonIgnore] public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("Standard") };
+    [Header("Main information")]
+    public string nameInWorld;
+    public LanguageSetting nameOfNpc;
+    public LanguageSetting specialRelationName;
+
+    [Header("Other information")]
+    public LanguageSetting profession;
+    public LanguageSetting hobby;
+    public int age;
+    public LanguageSetting house;
+    public LanguageSetting character;
+
+    public List<NpcStyle> styles = new List<NpcStyle>() { new NpcStyle("Standard") };
     private readonly Dictionary<string, NpcStyle> _stylesDict = new Dictionary<string, NpcStyle>();
 
-    [Header("Preference")][JsonIgnore] public bool canMeet;
+    [Header("Preference")] public bool canMeet;
 
     // Назначаются при старте
-    [JsonIgnore][HideInInspector] public IHumanable IHumanable;
+    [HideInInspector] public IHumanable IHumanable;
 
     public void OnEnable()
     {

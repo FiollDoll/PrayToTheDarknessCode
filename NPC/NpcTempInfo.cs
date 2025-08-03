@@ -1,5 +1,5 @@
 public class NpcTempInfo
 {
     public float relationshipWithPlayer;
-    public bool meetWithPlayer;
+    public bool meetWithPlayer, knowProfession, knowAge, knowHobby, knowHouse, knowCharacter;
 }
