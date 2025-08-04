@@ -40,6 +40,7 @@ public class DialogStepNode
     public bool newStateMoveToPlayer, changeDialogLock;
     
     public Dialog dialogLock;
+    public bool dialogLockState;
     public Dialog dialogChoiceLock;
     public string choiceNameToChange;
     public bool choiceNewState;

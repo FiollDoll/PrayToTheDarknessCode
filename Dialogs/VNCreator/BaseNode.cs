@@ -131,18 +131,21 @@ public class NodeViewer : VisualElement
                 npcIcon.iconImage = image;
             }
 
+            // Текстовый фиелд ру
             TextField dialogueFieldRu = this.Query<TextField>("Dialogue_Field_Ru");
             dialogueFieldRu.multiline = true;
             dialogueFieldRu.value = node.DialogStepNode.dialogTextRu;
             dialogueFieldRu.RegisterValueChangedCallback(e => { node.DialogStepNode.dialogTextRu = dialogueFieldRu.value; }
             );
 
+            // Текстовый фиелд ен
             TextField dialogueFieldEn = this.Query<TextField>("Dialogue_Field_En");
             dialogueFieldEn.multiline = true;
             dialogueFieldEn.value = node.DialogStepNode.dialogTextEn;
             dialogueFieldEn.RegisterValueChangedCallback(e => { node.DialogStepNode.dialogTextEn = dialogueFieldEn.value; }
             );
 
+            // Проиграть звук
             ObjectField speechField = this.Query<ObjectField>("Speech");
             speechField.value = _node.DialogStepNode.stepSpeech;
             speechField.RegisterValueChangedCallback(evt =>
@@ -150,6 +153,7 @@ public class NodeViewer : VisualElement
                 _node.DialogStepNode.stepSpeech = (AudioClip)speechField.value;
             });
 
+            // Большая картинка
             ObjectField bigPictureField = this.Query<ObjectField>("Big_Picture");
             bigPictureField.value = _node.DialogStepNode.bigPicture;
             bigPictureField.RegisterValueChangedCallback(evt =>
@@ -157,6 +161,7 @@ public class NodeViewer : VisualElement
                 node.DialogStepNode.bigPicture = (Sprite)bigPictureField.value;
             });
 
+            // Секунд до перехода дальше
             TextField delayAfterNextTextField = this.Query<TextField>("Delay_After_Step");
             delayAfterNextTextField.value = _node.DialogStepNode.delayAfterNext.ToString();
 
@@ -165,14 +170,59 @@ public class NodeViewer : VisualElement
                 _node.DialogStepNode.delayAfterNext = float.Parse(delayAfterNextTextField.value, CultureInfo.InvariantCulture);
             });
 
-            ObjectField fastChangesTextField = this.Query<ObjectField>("Fast_Changes");
-            fastChangesTextField.value = _node.DialogStepNode.fastChanges;
+            // Изменения(не встроенные)
+            ObjectField fastChangesField = this.Query<ObjectField>("Fast_Changes");
+            fastChangesField.value = _node.DialogStepNode.fastChanges;
 
-            fastChangesTextField.RegisterValueChangedCallback(evt =>
+            fastChangesField.RegisterValueChangedCallback(evt =>
             {
-                _node.DialogStepNode.fastChanges = (FastChangesController)fastChangesTextField.value;
+                _node.DialogStepNode.fastChanges = (FastChangesController)fastChangesField.value;
             });
 
+            // Какой диалог блокировать/разблокировать
+            ObjectField dialogLockField = this.Query<ObjectField>("Dialog_Change_Lock");
+            dialogLockField.value = _node.DialogStepNode.dialogLock;
+
+            dialogLockField.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.dialogLock = (Dialog)dialogLockField.value;
+            });
+
+            Toggle dialogLockToggle = this.Query<Toggle>("Dialog_Lock_Toggle");
+            dialogLockToggle.value = _node.DialogStepNode.dialogLockState;
+            dialogLockToggle.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.dialogLockState = dialogLockToggle.value;
+            });
+
+            
+            // В каком диалоге менять choice lock
+            ObjectField dialogChoiceLockField = this.Query<ObjectField>("Dialog_Change_Choice_Lock");
+            dialogChoiceLockField.value = _node.DialogStepNode.dialogChoiceLock;
+
+            dialogChoiceLockField.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.dialogChoiceLock = (Dialog)dialogChoiceLockField.value;
+            });
+
+            // Секунд до перехода дальше
+            TextField choiceNameToChangeTextField = this.Query<TextField>("Choice_Name_To_Change");
+            choiceNameToChangeTextField.value = _node.DialogStepNode.choiceNameToChange;
+
+            choiceNameToChangeTextField.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.choiceNameToChange = choiceNameToChangeTextField.value;
+            });
+
+            // Новое значение для choiceLock
+            Toggle choiceNewStateToggle = this.Query<Toggle>("New_State_Choice_Toggle");
+            choiceNewStateToggle.value = _node.DialogStepNode.choiceNewState;
+            choiceNewStateToggle.RegisterValueChangedCallback(evt =>
+            {
+                _node.DialogStepNode.choiceNewState = choiceNewStateToggle.value;
+            });
+
+            // Какому нпс поменять отношение(САМ НПС)
             ObjectField changeRelationNpc = this.Query<ObjectField>("Npc_Relation");
             changeRelationNpc.value = (Npc)_node.DialogStepNode.npcChangeRelation;
             changeRelationNpc.RegisterValueChangedCallback(e =>
@@ -181,6 +231,7 @@ public class NodeViewer : VisualElement
                 }
             );
 
+            // Изменить отношения с одним нпс (ЗНАЧЕНИЕ)
             TextField changeRelationValue = this.Query<TextField>("Npc_Change_Relation");
             changeRelationValue.value = _node.DialogStepNode.changeRelation.ToString();
 
@@ -189,6 +240,7 @@ public class NodeViewer : VisualElement
                 _node.DialogStepNode.changeRelation = float.Parse(changeRelationValue.value);
             });
 
+            // Какой нпс идет за игроком
             ObjectField changeMoveToPlayerNpc = this.Query<ObjectField>("Npc_Move_Player");
             changeMoveToPlayerNpc.value = (Npc)_node.DialogStepNode.npcChangeMoveToPlayer;
             changeMoveToPlayerNpc.RegisterValueChangedCallback(e =>
@@ -197,6 +249,7 @@ public class NodeViewer : VisualElement
                 }
             );
 
+            // Идешь или нет
             Toggle moveToPlayerToggle = this.Query<Toggle>("Npc_Move_Player_Toggle");
             moveToPlayerToggle.value = _node.DialogStepNode.newStateMoveToPlayer;
             moveToPlayerToggle.RegisterValueChangedCallback(evt =>
@@ -204,6 +257,7 @@ public class NodeViewer : VisualElement
                 _node.DialogStepNode.newStateMoveToPlayer = moveToPlayerToggle.value;
             });
 
+            // Изменение кармы
             TextField karmaValue = this.Query<TextField>("Change_Karma");
             karmaValue.value = _node.DialogStepNode.changeKarma.ToString();
 
@@ -211,7 +265,8 @@ public class NodeViewer : VisualElement
             {
                 _node.DialogStepNode.changeKarma = float.Parse(karmaValue.value, CultureInfo.InvariantCulture);
             });
-
+            
+            // Изменение рассудка
             TextField sanityValue = this.Query<TextField>("Change_Sanity");
             sanityValue.value = _node.DialogStepNode.changeSanity.ToString();
 

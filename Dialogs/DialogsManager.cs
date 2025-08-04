@@ -25,11 +25,18 @@ public class DialogsManager
             // Перебираем все закрытые choice и записываем их
             foreach (DialogStepNode node in dialog.nodes)
             {
-                if (node.choices > 1) continue;
+                if (node.choices == 1) continue;
                 for (int i = 0; i < node.choices; i++)
                 {
-                    if (node.choiceLock[i])
-                        dialogsTempInfo[dialog].lockedChoices.Add(node, new LockedChoices(node.choiceName[i], node.choiceLock[i]));
+                    try // Из-за позднего добавления выбивает ошибку
+                    {
+                        if (node.choiceLock[i])
+                            dialogsTempInfo[dialog].lockedChoices.Add(node, new LockedChoices(node.choiceName[i], node.choiceLock[i]));
+                    }
+                    catch (System.Exception ex)
+                    {
+
+                    }
                 }
             }
         }
@@ -145,7 +152,7 @@ public class DialogsManager
 
         if (totalStep.dialogChoiceLock != null)
             dialogsTempInfo[totalStep.dialogChoiceLock].FindLockedChoice(totalStep.choiceNameToChange).choiceLock = totalStep.choiceNewState;
-        
+
         if (totalStep.npcChangeRelation != null)
             NpcManager.Instance.npcTempInfo[totalStep.npcChangeRelation].relationshipWithPlayer += totalStep.changeRelation;
 

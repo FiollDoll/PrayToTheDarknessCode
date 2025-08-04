@@ -124,8 +124,12 @@ public class DialogUI : DisplayBase, IMenuable
 
         for (int i = 0; i < currentDialogStepNode.choices; i++)
         {
-            if (_dialogsManager.dialogsTempInfo[story].lockedChoices[currentDialogStepNode].choiceLock) continue; // Если выбор заблокирован
-            
+            // Если выбор заблокирован
+            LockedChoices lockedChoices = _dialogsManager.dialogsTempInfo[story].lockedChoices.ContainsKey(currentDialogStepNode)
+            ? _dialogsManager.dialogsTempInfo[story].lockedChoices[currentDialogStepNode] : null;
+
+            if (lockedChoices != null && lockedChoices.choiceName == currentDialogStepNode.choiceName[i] && lockedChoices.choiceLock) continue;
+
             var obj = Instantiate(buttonChoicePrefab, Vector3.zero, new Quaternion(),
                 choicesContainer.transform);
 

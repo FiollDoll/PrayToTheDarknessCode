@@ -39,11 +39,6 @@
     max-width: 600px;
 }
 
-.unity-text-field {
-    width: 100px;
-    max-width: 300px;
-}
-
 Button {
     min-height: 0px;
     max-height: 200px;
