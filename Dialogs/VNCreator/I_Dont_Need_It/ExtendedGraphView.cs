@@ -35,13 +35,13 @@ public class ExtendedGraphView : GraphView
     public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, bool _startNode,
         bool _endNode)
     {
-        return CreateNode(_nodeName, _mousePos, choiceAmount, new string[choiceAmount].ToList(),
-            new string[choiceAmount].ToList(), _startNode,
+        return CreateNode(_nodeName, _mousePos, choiceAmount, new string[choiceAmount].ToList(), new string[choiceAmount].ToList(),
+            new string[choiceAmount].ToList(), new bool[choiceAmount].ToList(), _startNode,
             _endNode, new DialogStepNode());
     }
 
-    public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, List<string> _choicesRu,
-        List<string> _choicesEn, bool _startNode, bool _endNode, DialogStepNode _data)
+    public BaseNode CreateNode(string _nodeName, Vector2 _mousePos, int choiceAmount, List<string> _choicesName, List<string> _choicesRu,
+        List<string> _choicesEn, List<bool> _choicesLock, bool _startNode, bool _endNode, DialogStepNode _data)
     {
         BaseNode _node = new BaseNode(_data, _startNode);
 
@@ -52,8 +52,10 @@ public class ExtendedGraphView : GraphView
         _node.DialogStepNode.startNode = _startNode;
         _node.DialogStepNode.endNode = _endNode;
         _node.DialogStepNode.choices = choiceAmount;
+        _node.DialogStepNode.choiceName = _choicesName;
         _node.DialogStepNode.choiceOptionsRu = _choicesRu;
         _node.DialogStepNode.choiceOptionsEn = _choicesEn;
+        _node.DialogStepNode.choiceLock = _choicesLock;
 
         if (!_startNode)
         {
@@ -71,14 +73,23 @@ public class ExtendedGraphView : GraphView
                     Port _outputPort = CreatePort(_node, Direction.Output, Port.Capacity.Single);
                     _outputPort.portName = "Choice " + (i + 1);
 
-                    //_node.nodeData.choiceOptions.Add(_node.nodeData.choiceOptions[i]);
                     int _idx = i;
+
+                    if (_node.DialogStepNode.choiceName.Count <= i) // Т.к добавлено позже
+                        _node.DialogStepNode.choiceName.Add("");
+
+                    TextField _fieldName = new TextField { value = _node.DialogStepNode.choiceName[i], label="Choice name"};
+                    _fieldName.RegisterValueChangedCallback(e =>
+                        {
+                            _node.DialogStepNode.choiceName[_idx] = _fieldName.value;
+                        }
+                    );
 
                     string _value = _data.choiceOptionsRu.Count == 0
                         ? "Выбор " + (i + 1)
                         : _node.DialogStepNode.choiceOptionsRu[i];
 
-                    TextField _field = new TextField { value = _value };
+                    TextField _field = new TextField { value = _value, label="Ru text"};
                     _field.RegisterValueChangedCallback(e =>
                         {
                             _node.DialogStepNode.choiceOptionsRu[_idx] = _field.value;
@@ -89,15 +100,22 @@ public class ExtendedGraphView : GraphView
                         ? "Choice " + (i + 1)
                         : _node.DialogStepNode.choiceOptionsEn[i];
 
-                    TextField _field1 = new TextField { value = _value };
+                    TextField _field1 = new TextField { value = _value, label="En text"};
                     _field1.RegisterValueChangedCallback(e =>
                         {
                             _node.DialogStepNode.choiceOptionsEn[_idx] = _field1.value;
                         }
                     );
 
+                    if (_node.DialogStepNode.choiceLock.Count <= i) // Т.к добавлено позже
+                        _node.DialogStepNode.choiceLock.Add(false);
+                    Toggle _lockField = new Toggle { value = _node.DialogStepNode.choiceLock[i], label="lock"};
+                    _lockField.RegisterValueChangedCallback(e => {_node.DialogStepNode.choiceLock[_idx] = _lockField.value;});
+
+                    _node.outputContainer.Add(_fieldName);
                     _node.outputContainer.Add(_field);
                     _node.outputContainer.Add(_field1);
+                    _node.outputContainer.Add(_lockField);
                     _node.outputContainer.Add(_outputPort);
                 }
             }

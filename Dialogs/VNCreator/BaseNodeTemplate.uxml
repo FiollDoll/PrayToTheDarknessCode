@@ -19,6 +19,15 @@
             <engine:Foldout text="ChangesOnDialog" name="ChangesOnDialog" value="false">
                 <editor:ObjectField name="Fast_Changes" data-source-type="FastChangesController, Assembly-CSharp" label="Fast changes" type="FastChangesController, Assembly-CSharp" class="sound_selector" style="align-self: center;" />
                 <engine:GroupBox style="justify-content: flex-start; align-self: center; align-items: flex-start; align-content: auto; flex-direction: row; flex-wrap: nowrap;">
+                    <editor:ObjectField name="Dialog_Change_Lock" data-source-type="FastChangesController, Assembly-CSharp" label="DialogChangeLock" type="Dialog, Assembly-CSharp" class="sound_selector" style="align-self: center;" />
+                    <engine:Toggle name="Dialog_Lock_Toggle" />
+                </engine:GroupBox>
+                <engine:GroupBox style="justify-content: flex-start; align-self: center; align-items: flex-start; align-content: auto; flex-direction: row; flex-wrap: nowrap;">
+                    <editor:ObjectField name="Dialog_Change_Choice_Lock" data-source-type="FastChangesController, Assembly-CSharp" label="DialogChangeLock" type="Dialog, Assembly-CSharp" class="sound_selector" style="align-self: center;" />
+                    <engine:TextField placeholder-text="ChoiceName" name="Choice_Name_To_Change" style="min-width: 100px; font-size: 12px;" />
+                    <engine:Toggle name="New_State_Choice_Toggle" />
+                </engine:GroupBox>
+                <engine:GroupBox style="justify-content: flex-start; align-self: center; align-items: flex-start; align-content: auto; flex-direction: row; flex-wrap: nowrap;">
                     <editor:ObjectField label="ChangeRelation" name="Npc_Relation" data-source-type="Npc, Assembly-CSharp" type="Npc, Assembly-CSharp" class="sound_selector" />
                     <engine:TextField value="0" name="Npc_Change_Relation" />
                 </engine:GroupBox>

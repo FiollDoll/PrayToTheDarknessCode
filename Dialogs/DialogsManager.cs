@@ -9,7 +9,7 @@ public class DialogsManager
 
     // Все диалоги
     private readonly Dictionary<string, Dialog> _dialogsDict = new Dictionary<string, Dialog>();
-    private List<string> _dialogsHasRead = new List<string>();
+    public Dictionary<Dialog, DialogTempInfo> dialogsTempInfo = new Dictionary<Dialog, DialogTempInfo>();
 
 
     public List<Npc> NpcInSelectedDialog = new List<Npc>();
@@ -19,7 +19,20 @@ public class DialogsManager
         Instance = this;
         Dialog[] storyObjects = Resources.LoadAll<Dialog>("Dialogs");
         foreach (Dialog dialog in storyObjects)
+        {
             _dialogsDict.TryAdd(dialog.name, dialog);
+            dialogsTempInfo.TryAdd(dialog, new DialogTempInfo());
+            // Перебираем все закрытые choice и записываем их
+            foreach (DialogStepNode node in dialog.nodes)
+            {
+                if (node.choices > 1) continue;
+                for (int i = 0; i < node.choices; i++)
+                {
+                    if (node.choiceLock[i])
+                        dialogsTempInfo[dialog].lockedChoices.Add(node, new LockedChoices(node.choiceName[i], node.choiceLock[i]));
+                }
+            }
+        }
         return Task.CompletedTask;
     }
 
@@ -41,14 +54,14 @@ public class DialogsManager
     {
         Dialog newDialog = GetDialog(nameDialog);
         if (!newDialog) return;
-        if (_dialogsHasRead.Contains(newDialog.name)) return;
+        if (dialogsTempInfo[newDialog].dialogHasRead || dialogsTempInfo[newDialog].dialogLock) return;
 
         DialogUI.story = newDialog;
         DialogUI.currentDialogStepNode = DialogUI.story.GetFirstNode();
         Player.Instance.canMove = DialogUI.currentDialogStepNode.canMove;
         Interactions.Instance.lockInter = !DialogUI.currentDialogStepNode.canInter;
         if (!newDialog.GetFirstNode().moreRead)
-            _dialogsHasRead.Add(newDialog.name);
+            dialogsTempInfo[newDialog].dialogHasRead = true;
 
         await DialogUI.ActivateDialogWindow();
 
@@ -68,8 +81,6 @@ public class DialogsManager
     /// </summary>
     public void DoActionsToClose()
     {
-        //if (_activatedDialog.posAfterEnd)
-        //Player.Instance.transform.localPosition = _activatedDialog.posAfterEnd.position;
         NpcInSelectedDialog = new List<Npc>();
         Player.Instance.canMove = true;
         Player.Instance.virtualCamera.Follow = Player.Instance.transform;
@@ -129,6 +140,12 @@ public class DialogsManager
         PlayerStats.Sanity += totalStep.changeSanity;
         PlayerStats.Karma += totalStep.changeKarma;
 
+        if (totalStep.dialogLock != null)
+            dialogsTempInfo[totalStep.dialogLock].dialogLock = totalStep.changeDialogLock;
+
+        if (totalStep.dialogChoiceLock != null)
+            dialogsTempInfo[totalStep.dialogChoiceLock].FindLockedChoice(totalStep.choiceNameToChange).choiceLock = totalStep.choiceNewState;
+        
         if (totalStep.npcChangeRelation != null)
             NpcManager.Instance.npcTempInfo[totalStep.npcChangeRelation].relationshipWithPlayer += totalStep.changeRelation;
 

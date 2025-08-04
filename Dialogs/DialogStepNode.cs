@@ -9,10 +9,15 @@ public class DialogStepNode
     public string guid;
     public bool startNode;
     public bool endNode;
+    public Rect nodePosition;
+
+    /// Choices
     public int choices = 1;
+    public List<string> choiceName;
     public List<string> choiceOptionsRu;
     public List<string> choiceOptionsEn;
-    public Rect nodePosition;
+    public List<bool> choiceLock;
+
 
     // Dialog step settings
     public Enums.DialogStyle styleOfDialog;
@@ -27,12 +32,17 @@ public class DialogStepNode
     public AudioClip stepSpeech;
     public float delayAfterNext;
     public float mainPanelStartDelay;
-    
+
     // Changes
     public FastChangesController fastChanges;
     public Npc npcChangeRelation, npcChangeMoveToPlayer;
     public float changeRelation, changeKarma, changeSanity;
-    public bool newStateMoveToPlayer;
+    public bool newStateMoveToPlayer, changeDialogLock;
+    
+    public Dialog dialogLock;
+    public Dialog dialogChoiceLock;
+    public string choiceNameToChange;
+    public bool choiceNewState;
 
     public DialogStepNode()
     {

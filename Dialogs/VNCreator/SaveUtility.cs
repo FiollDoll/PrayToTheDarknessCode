@@ -29,8 +29,10 @@ public class SaveUtility
                     startNode = _node.DialogStepNode.startNode,
                     endNode = _node.DialogStepNode.endNode,
                     choices = _node.DialogStepNode.choices,
+                    choiceName = _node.DialogStepNode.choiceName,
                     choiceOptionsRu = _node.DialogStepNode.choiceOptionsRu,
                     choiceOptionsEn = _node.DialogStepNode.choiceOptionsEn,
+                    choiceLock = _node.DialogStepNode.choiceLock,
                     moreRead = _node.DialogStepNode.moreRead,
                     canMove = _node.DialogStepNode.canMove,
                     canInter = _node.DialogStepNode.canInter,
@@ -76,8 +78,8 @@ public class SaveUtility
     {
         foreach (DialogStepNode _data in _story.nodes)
         {
-            BaseNode _tempNode = _graph.CreateNode("", _data.nodePosition.position, _data.choices,
-                _data.choiceOptionsRu, _data.choiceOptionsEn, _data.startNode, _data.endNode, _data);
+            BaseNode _tempNode = _graph.CreateNode("", _data.nodePosition.position, _data.choices, _data.choiceName,
+                _data.choiceOptionsRu, _data.choiceOptionsEn, _data.choiceLock, _data.startNode, _data.endNode, _data);
             _graph.AddElement(_tempNode);
         }
 
@@ -90,7 +92,7 @@ public class SaveUtility
 
         for (int i = 0; i < _nodes.Count; i++)
         {
-            int _outputIdx = 2;
+            int _outputIdx = 4;
             List<Link> _links = _story.links.Where(x => x.guid == _nodes[i].DialogStepNode.guid).ToList();
             for (int j = 0; j < _links.Count; j++)
             {
@@ -98,7 +100,7 @@ public class SaveUtility
                 BaseNode _target = _nodes.First(x => x.DialogStepNode.guid == targetGuid);
                 LinkNodes(_nodes[i].outputContainer[_links.Count > 1 ? _outputIdx : 0].Q<Port>(),
                     (Port)_target.inputContainer[0], _graph);
-                _outputIdx += 3; // Эта хуйня учитывает текстовые филды
+                _outputIdx += 5; // Эта хуйня учитывает текстовые филды
             }
         }
     }

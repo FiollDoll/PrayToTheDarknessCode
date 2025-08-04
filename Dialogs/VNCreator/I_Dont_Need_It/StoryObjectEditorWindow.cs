@@ -31,6 +31,12 @@ public class StoryObjectEditorWindow : EditorWindow
                 () => _graphView.GenerateNode("", _mousePosition, 2, false, false));
             menu.AddItem(new GUIContent("Add Node (3 Choices)"), false,
                 () => _graphView.GenerateNode("", _mousePosition, 3, false, false));
+            menu.AddItem(new GUIContent("Add Node (4 Choices)"), false,
+                () => _graphView.GenerateNode("", _mousePosition, 4, false, false));
+            menu.AddItem(new GUIContent("Add Node (5 Choices)"), false,
+                () => _graphView.GenerateNode("", _mousePosition, 5, false, false));
+            menu.AddItem(new GUIContent("Add Node (6 Choices)"), false,
+                () => _graphView.GenerateNode("", _mousePosition, 6, false, false));
             menu.AddItem(new GUIContent("Add Node (Start)"), false,
                 () => _graphView.GenerateNode("", _mousePosition, 1, true, false));
             menu.AddItem(new GUIContent("Add Node (End)"), false,
