@@ -125,10 +125,7 @@ public class DialogUI : DisplayBase, IMenuable
         for (int i = 0; i < currentDialogStepNode.choices; i++)
         {
             // Если выбор заблокирован
-            LockedChoices lockedChoices = _dialogsManager.dialogsTempInfo[story].lockedChoices.ContainsKey(currentDialogStepNode)
-            ? _dialogsManager.dialogsTempInfo[story].lockedChoices[currentDialogStepNode] : null;
-
-            if (lockedChoices != null && lockedChoices.choiceName == currentDialogStepNode.choiceName[i] && lockedChoices.choiceLock) continue;
+            if (_dialogsManager.dialogsTempInfo[story].ChoiceLocked(story, currentDialogStepNode.choiceName[i])) continue;
 
             var obj = Instantiate(buttonChoicePrefab, Vector3.zero, new Quaternion(),
                 choicesContainer.transform);
@@ -198,7 +195,7 @@ public class DialogUI : DisplayBase, IMenuable
     /// <summary>
     /// Закрытие окна диалога
     /// </summary>
-    public async void CLoseDialogWindow()
+    public async void CloseDialogWindow()
     {
         Interactions.Instance.lockInter = false;
 

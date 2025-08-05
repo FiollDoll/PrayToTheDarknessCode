@@ -28,9 +28,7 @@ public class DisplayBase : MonoBehaviour
                 loadList.Add(currentDialogStepNode.guid);
             }
             else
-            {
                 currentDialogStepNode = story.GetCurrentNode(loadList[loadList.Count - 1]);
-            }
         }
     }
 
@@ -44,15 +42,6 @@ public class DisplayBase : MonoBehaviour
         }
     }
 
-    protected virtual void Previous()
-    {
-        loadList.RemoveAt(loadList.Count - 1);
-        currentDialogStepNode = story.GetCurrentNode(loadList[loadList.Count - 1]);
-        lastNode = currentDialogStepNode.endNode;
-    }
-
-    protected void Save()
-    {
-        GameSaveManager.Save(loadList);
-    }
+    protected void Save() => GameSaveManager.Save(loadList);
+    
 }

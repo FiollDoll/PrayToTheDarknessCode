@@ -20,23 +20,19 @@ public class DialogsManager
         Dialog[] storyObjects = Resources.LoadAll<Dialog>("Dialogs");
         foreach (Dialog dialog in storyObjects)
         {
-            _dialogsDict.TryAdd(dialog.name, dialog);
-            dialogsTempInfo.TryAdd(dialog, new DialogTempInfo());
-            // Перебираем все закрытые choice и записываем их
+            _dialogsDict.Add(dialog.name, dialog);
+            dialogsTempInfo.Add(dialog, new DialogTempInfo());
+            // Записываем choice
             foreach (DialogStepNode node in dialog.nodes)
             {
-                if (node.choices == 1) continue;
-                for (int i = 0; i < node.choices; i++)
+                try
                 {
-                    try // Из-за позднего добавления выбивает ошибку
-                    {
-                        if (node.choiceLock[i])
-                            dialogsTempInfo[dialog].lockedChoices.Add(node, new LockedChoices(node.choiceName[i], node.choiceLock[i]));
-                    }
-                    catch (System.Exception ex)
-                    {
-
-                    }
+                    if (node.choices == 1) continue;
+                    dialogsTempInfo[dialog].AddChoicesForNode(node);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.Log(ex);
                 }
             }
         }
@@ -46,29 +42,32 @@ public class DialogsManager
     /// <summary>
     /// Поиск диалога
     /// </summary>
-    private Dialog GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
+    public Dialog GetDialog(string nameDialog) => _dialogsDict.GetValueOrDefault(nameDialog);
 
     /// <summary>
     /// Проверка - пора ли активировать выборы и есть ли они вообще?
     /// </summary>
     public bool CanChoice() => DialogUI.currentDialogStepNode.choices > 1;
 
-    /// <summary>
-    ///  Активирует новый диалог
-    /// </summary>
-    /// <param name="nameDialog">Название диалога</param>
-    public async Task ActivateDialog(string nameDialog) // Старт диалога
+    public async Task ActivateDialog(string nameDialog)
     {
         Dialog newDialog = GetDialog(nameDialog);
-        if (!newDialog) return;
-        if (dialogsTempInfo[newDialog].dialogHasRead || dialogsTempInfo[newDialog].dialogLock) return;
+        if (newDialog)
+            await InitializeDialog(newDialog);
+    }
 
-        DialogUI.story = newDialog;
+    public async Task ActivateDialog(Dialog dialog) => await InitializeDialog(dialog);
+
+    private async Task InitializeDialog(Dialog dialog)
+    {
+        if (dialogsTempInfo[dialog].dialogHasRead || dialogsTempInfo[dialog].dialogLock) return;
+
+        DialogUI.story = dialog;
         DialogUI.currentDialogStepNode = DialogUI.story.GetFirstNode();
         Player.Instance.canMove = DialogUI.currentDialogStepNode.canMove;
         Interactions.Instance.lockInter = !DialogUI.currentDialogStepNode.canInter;
-        if (!newDialog.GetFirstNode().moreRead)
-            dialogsTempInfo[newDialog].dialogHasRead = true;
+        if (!dialog.GetFirstNode().moreRead)
+            dialogsTempInfo[dialog].dialogHasRead = true;
 
         await DialogUI.ActivateDialogWindow();
 
@@ -81,7 +80,7 @@ public class DialogsManager
     /// <summary>
     /// Закрытие диалога
     /// </summary>
-    public void DialogCLose() => DialogUI.CLoseDialogWindow();
+    public void DialogCLose() => DialogUI.CloseDialogWindow();
 
     /// <summary>
     /// Выполнить действия для закрытия диалога
@@ -151,7 +150,7 @@ public class DialogsManager
             dialogsTempInfo[totalStep.dialogLock].dialogLock = totalStep.changeDialogLock;
 
         if (totalStep.dialogChoiceLock != null)
-            dialogsTempInfo[totalStep.dialogChoiceLock].FindLockedChoice(totalStep.choiceNameToChange).choiceLock = totalStep.choiceNewState;
+            dialogsTempInfo[totalStep.dialogChoiceLock].FindLockedChoice(totalStep.dialogChoiceLock, totalStep.choiceNameToChange).choiceLock = totalStep.choiceNewState;
 
         if (totalStep.npcChangeRelation != null)
             NpcManager.Instance.npcTempInfo[totalStep.npcChangeRelation].relationshipWithPlayer += totalStep.changeRelation;

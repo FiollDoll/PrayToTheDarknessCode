@@ -20,6 +20,11 @@ public class DevConsole : MonoBehaviour
         presetsMenu.SetActive(true);
     }
 
+    public void SkipDialog()
+    {
+        DialogsManager.Instance.DialogCLose();
+    }
+
     public async void ChangeLocation(string locationName) =>
         await ManageLocation.Instance.ActivateLocation(locationName);
 
@@ -65,7 +70,7 @@ public class DevConsole : MonoBehaviour
         {
             if (DialogUI.Instance.story)
                 dialogText.text = "Dialog: " + DialogUI.Instance.story.name + "\n" +
-                                  "Node id: " + DialogUI.Instance.currentDialogStepNode.guid + "\n" +
+                                  "Dialog mode: " + DialogUI.Instance.story.GetFirstNode().styleOfDialog.ToString() + "\n" +
                                   "Talker: " + DialogUI.Instance.currentDialogStepNode.character.nameInWorld + "\n" +
                                   "Mood: " + DialogUI.Instance.currentDialogStepNode.mood;
             else
@@ -80,9 +85,8 @@ public class DevConsole : MonoBehaviour
             else
                 locationText.text = "";
 
-            playerText.text = "Style: " + Player.Instance.SelectedStyle + "\n" +
-                              "CanMove: " + Player.Instance.canMove + "\n" +
-                              "CanMoveZ: " + !Player.Instance.blockMoveZ + "\n" +
+            playerText.text = "Style: " + Player.Instance.SelectedStyle + "Person: " + Player.Instance.selectedPerson.npcEntity.nameOfNpc.Text +"\n" +
+                              "CanMove: " + Player.Instance.canMove + "| Z " + !Player.Instance.blockMoveZ + "\n" +
                               "Position: " + Player.Instance.transform.position + "\n";
         }
 
