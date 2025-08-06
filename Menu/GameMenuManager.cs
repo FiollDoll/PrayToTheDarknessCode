@@ -50,7 +50,7 @@ public class GameMenuManager
     /// <summary>
     /// Активирует временное затемнение
     /// </summary>
-    public async void NoVisionForTime(float duration, Task actionAfterFade = null, Task actionAfterEnd = null)
+    public async Task NoVisionForTime(float duration, Task actionAfterFade = null, Task actionAfterEnd = null)
     {
         await ChangeAlpha(_noViewPanel, 1f);
         await Task.Delay(10);
@@ -60,6 +60,7 @@ public class GameMenuManager
         await Task.Delay(Mathf.RoundToInt(duration * 1000));
 
         await ChangeAlpha(_noViewPanel, 0f);
+
         if (actionAfterEnd != null)
             await actionAfterEnd;
     }
@@ -68,7 +69,7 @@ public class GameMenuManager
 
     public async Task ChangeAlpha(Graphic graphic, float alphaValue, float speed = 1f)
     {
-        float step = 0.05f * Mathf.Sign(alphaValue - graphic.color.a);
+        float step = 0.1f * Mathf.Sign(alphaValue - graphic.color.a);
         float targetAlpha = Mathf.Clamp(alphaValue, 0f, 1f);
 
         while (!Mathf.Approximately(graphic.color.a, targetAlpha))

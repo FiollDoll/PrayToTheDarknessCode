@@ -21,7 +21,7 @@ public class DialogStepNode
 
     // Dialog step settings
     public Enums.DialogStyle styleOfDialog;
-    public bool moreRead, canMove, canInter, darkAfterEnd;
+    public bool moreRead, canMove, canInter, darkAfterEnd, thisDialogLock;
 
     public Npc character;
     public Enums.IconMood mood;

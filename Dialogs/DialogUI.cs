@@ -77,14 +77,6 @@ public class DialogUI : DisplayBase, IMenuable
         dialogMenu.SetActive(true);
         dialogMenu.GetComponent<RectTransform>().localScale = Vector3.zero;
 
-        await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.mainPanelStartDelay * 1000));
-
-        for (float i = 0; i < 1.1f; i += 0.1f) // Плавно поднимаем
-        {
-            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
-            await Task.Delay(10);
-        }
-
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
             switch (currentDialogStepNode.styleOfDialog)
@@ -96,7 +88,7 @@ public class DialogUI : DisplayBase, IMenuable
                     break;
                 case Enums.DialogStyle.BigPicture:
                     _selectedTextDialog = textDialogBigPicture;
-                    GameMenuManager.Instance.NoVisionForTime(1.2f, BigPictureActivate());
+                    GameMenuManager.Instance.NoVisionForTime(1f, BigPictureActivate());
                     break;
                 case Enums.DialogStyle.SubMain:
                     _selectedTextDialog = textDialogSub;
@@ -106,6 +98,19 @@ public class DialogUI : DisplayBase, IMenuable
         }
         else
             choiceMenu.SetActive(true);
+
+        if (currentDialogStepNode.styleOfDialog != Enums.DialogStyle.BigPicture) // Не для больших картинок
+        {
+            for (float i = 0; i < 1.1f; i += 0.1f) // Плавно поднимаем
+            {
+                dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
+                await Task.Delay(10);
+            }
+        }
+        else
+            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+
+        await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.mainPanelStartDelay * 1000));
     }
 
     // Сучий костыль
@@ -200,7 +205,7 @@ public class DialogUI : DisplayBase, IMenuable
         Interactions.Instance.lockInter = false;
 
         if (story.GetFirstNode().styleOfDialog == Enums.DialogStyle.BigPicture)
-            GameMenuManager.Instance.NoVisionForTime(1.5f, DoActionsToClose());
+            GameMenuManager.Instance.NoVisionForTime(1f, DoActionsToClose());
         else if (story.GetFirstNode().darkAfterEnd)
             GameMenuManager.Instance.NoVisionForTime(1.2f, DoActionsToClose());
         else
@@ -209,11 +214,20 @@ public class DialogUI : DisplayBase, IMenuable
 
     private async Task DoActionsToClose()
     {
-        for (float i = 1; i > 0f; i -= 0.1f) // Плавно поднимаем
+        if (story.GetFirstNode().styleOfDialog != Enums.DialogStyle.BigPicture) // Не для больших картинок
         {
-            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
+            for (float i = 1; i > 0f; i -= 0.1f) // Плавно поднимаем
+            {
+                dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
+                await Task.Delay(10);
+            }
+        }
+        else
+        {
+            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(0, 0, 1);
             await Task.Delay(10);
         }
+
         dialogMenu.SetActive(false);
         mainMenu.SetActive(false);
         subDialogMenu.SetActive(false);

@@ -26,6 +26,7 @@ public class SaveUtility
                     character = _node.DialogStepNode.character,
                     dialogTextRu = _node.DialogStepNode.dialogTextRu,
                     dialogTextEn = _node.DialogStepNode.dialogTextEn,
+                    thisDialogLock = _node.DialogStepNode.thisDialogLock,
                     startNode = _node.DialogStepNode.startNode,
                     endNode = _node.DialogStepNode.endNode,
                     choices = _node.DialogStepNode.choices,

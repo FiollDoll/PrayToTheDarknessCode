@@ -9,7 +9,7 @@ public class DialogTempInfo
 
     public LockedChoices FindLockedChoice(Dialog dialog, string choiceName)
     {
-        // Перебираем все ноды диалога и ищем тот самый choiceName
+        // Перебираем все ноды диалога
         foreach (DialogStepNode node in dialog.nodes)
         {
             if (node.choices == 1) continue;

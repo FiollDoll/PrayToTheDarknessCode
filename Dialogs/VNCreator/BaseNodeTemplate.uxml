@@ -9,10 +9,11 @@
             <engine:Foldout text="DialogSettings" name="Dialog_Settings" enabled="true" style="visibility: visible; display: flex;">
                 <engine:DropdownField label="Style Dialog" name="Style_Dialogs" />
                 <engine:GroupBox style="flex-direction: row; flex-wrap: wrap; align-content: flex-start; justify-content: center; align-items: flex-start; align-self: auto; flex-shrink: 0; flex-grow: 0;">
-                    <engine:Toggle label="MoreRead" name="More_Read" style="width: 100px; white-space: normal; -unity-text-align: upper-left; align-items: auto; flex-direction: column; flex-wrap: wrap-reverse;" />
-                    <engine:Toggle label="CanMove" name="Can_Move" style="width: 100px; justify-content: flex-start; align-items: auto; flex-direction: column; flex-wrap: wrap-reverse;" />
-                    <engine:Toggle label="CanInter" name="Can_Inter" style="width: 100px; flex-direction: column; flex-wrap: wrap;" />
-                    <engine:Toggle label="DarkAfterEnd" name="Dark_End" style="width: 100px; flex-direction: column; flex-wrap: wrap;" />
+                    <engine:Toggle label="MoreRead" name="More_Read" style="width: 80px; white-space: normal; -unity-text-align: upper-left; align-items: auto; flex-direction: column; flex-wrap: wrap-reverse;" />
+                    <engine:Toggle label="CanMove" name="Can_Move" style="width: 80px; justify-content: flex-start; align-items: auto; flex-direction: column; flex-wrap: wrap-reverse;" />
+                    <engine:Toggle label="CanInter" name="Can_Inter" style="width: 80px; flex-direction: column; flex-wrap: wrap;" />
+                    <engine:Toggle label="DarkAfterEnd" name="Dark_End" style="width: 80px; flex-direction: column; flex-wrap: wrap;" />
+                    <engine:Toggle label="dialogLock" name="Dialog_Lock" style="width: 80px; flex-direction: column; flex-wrap: wrap;" />
                 </engine:GroupBox>
                 <engine:TextField label="mainPanelStartDelay" value="0" name="MainPanelStartDelay" style="width: 200px;" />
             </engine:Foldout>

@@ -22,13 +22,14 @@ public class FastChangesController : ScriptableObject
 
     [Header("-Npc")]
     public ChangeTempInfoNpc[] changeTempInfoNpc = new ChangeTempInfoNpc[0];
+    public TeleportNpc[] teleportNpc = new TeleportNpc[0];
+    public MoveToPlayer[] changeMoveToPlayer = new MoveToPlayer[0];
 
     [Header("-ChangeAnything")] public AudioClip setMusic;
     public List<Item> addItem;
     public List<Note> addNote;
     public Npc[] addFamiliar = new Npc[0];
     public ChangeVisual[] changeVisuals = new ChangeVisual[0];
-    public MoveToPlayer[] changeMoveToPlayer = new MoveToPlayer[0];
 
     public Task ActivateChanges() => SetChanges();
 
@@ -55,6 +56,7 @@ public class FastChangesController : ScriptableObject
         // Разные изменения
         await AddFamiliar();
         await ChangeNpcTemp();
+        await ChangeNpcPosition();
         await ChangeVisuals();
         await ChangeMoveToPlayer();
 
@@ -113,6 +115,24 @@ public class FastChangesController : ScriptableObject
         }
     }
 
+    private async Task ChangeNpcPosition()
+    {
+        foreach (TeleportNpc tp in teleportNpc)
+        {
+            try
+            {
+                Transform target = GameObject.Find(tp.teleportName)?.transform;
+                if (target != null && tp.npc.IHumanable is NpcController npcController)
+                    npcController.gameObject.transform.position = target.position;
+
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("Npc teleport error");
+            }
+        }
+    }
+
     private async Task ChangeNpcTemp()
     {
         foreach (ChangeTempInfoNpc changer in changeTempInfoNpc)
@@ -166,6 +186,13 @@ public class FastChangesController : ScriptableObject
             }
         }
     }
+}
+
+[System.Serializable]
+public class TeleportNpc
+{
+    public Npc npc;
+    public string teleportName;
 }
 
 [System.Serializable]

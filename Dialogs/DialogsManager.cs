@@ -22,6 +22,10 @@ public class DialogsManager
         {
             _dialogsDict.Add(dialog.name, dialog);
             dialogsTempInfo.Add(dialog, new DialogTempInfo());
+            
+            if (dialog.GetFirstNode().thisDialogLock)
+                dialogsTempInfo[dialog].dialogLock = true;
+
             // Записываем choice
             foreach (DialogStepNode node in dialog.nodes)
             {
@@ -60,7 +64,8 @@ public class DialogsManager
 
     private async Task InitializeDialog(Dialog dialog)
     {
-        if (dialogsTempInfo[dialog].dialogHasRead || dialogsTempInfo[dialog].dialogLock) return;
+        if (dialogsTempInfo[dialog].dialogHasRead || dialogsTempInfo[dialog].dialogLock) return; // Запрет
+        if (DialogUI.story != null) DialogCLose(); // Если какой-то диалог открыт
 
         DialogUI.story = dialog;
         DialogUI.currentDialogStepNode = DialogUI.story.GetFirstNode();

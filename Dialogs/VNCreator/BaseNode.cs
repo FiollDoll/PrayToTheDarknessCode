@@ -81,6 +81,13 @@ public class NodeViewer : VisualElement
                     _node.DialogStepNode.darkAfterEnd = darkAfterEndToggle.value;
                 });
 
+                Toggle thisDialogLockToggle = this.Query<Toggle>("Dialog_Lock");
+                thisDialogLockToggle.value = _node.DialogStepNode.thisDialogLock;
+                thisDialogLockToggle.RegisterValueChangedCallback(evt =>
+                {
+                    _node.DialogStepNode.thisDialogLock = thisDialogLockToggle.value;
+                });
+
                 TextField mainPanelDelayTextField = this.Query<TextField>("MainPanelStartDelay");
                 mainPanelDelayTextField.value = _node.DialogStepNode.mainPanelStartDelay.ToString();
 
