@@ -25,6 +25,10 @@ public class FastChangesController : ScriptableObject
     public TeleportNpc[] teleportNpc = new TeleportNpc[0];
     public MoveToPlayer[] changeMoveToPlayer = new MoveToPlayer[0];
 
+    [Header("-Dialogs")]
+    public DialogLock[] dialogLocks = new DialogLock[0];
+    public ChoiceLock[] choiceLocks = new ChoiceLock[0];
+
     [Header("-ChangeAnything")] public AudioClip setMusic;
     public List<Item> addItem;
     public List<Note> addNote;
@@ -53,12 +57,18 @@ public class FastChangesController : ScriptableObject
         await AddItems();
         await AddNotes();
 
-        // Разные изменения
-        await AddFamiliar();
+        // Диалоги
+        await ChangeLockDialogs();
+        await ChangeLockChoices();
+
+        // Npc
         await ChangeNpcTemp();
         await ChangeNpcPosition();
-        await ChangeVisuals();
         await ChangeMoveToPlayer();
+
+        // Разные изменения
+        await AddFamiliar();
+        await ChangeVisuals();
 
         if (moveToLocation)
             await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
@@ -186,6 +196,36 @@ public class FastChangesController : ScriptableObject
             }
         }
     }
+
+    private async Task ChangeLockDialogs()
+    {
+        foreach (DialogLock dl in dialogLocks)
+        {
+            try
+            {
+                DialogsManager.Instance.dialogsTempInfo[dl.dialog].dialogLock = dl.newState;
+            }
+            catch (System.Exception)
+            {
+                Debug.Log("ChangeLockDialog error");
+            }
+        }
+    }
+
+    private async Task ChangeLockChoices()
+    {
+        foreach (ChoiceLock cl in choiceLocks)
+        {
+            try
+            {
+                DialogsManager.Instance.dialogsTempInfo[cl.dialog].FindLockedChoice(cl.dialog, cl.choiceName).choiceLock = cl.newState;
+            }
+            catch (System.Exception)
+            {
+                Debug.Log("ChangeLockChoices error");
+            }
+        }
+    }
 }
 
 [System.Serializable]
@@ -214,5 +254,20 @@ public class ChangeVisual
 public class MoveToPlayer
 {
     public Npc npc;
+    public bool newState;
+}
+
+[System.Serializable]
+public class DialogLock
+{
+    public Dialog dialog;
+    public bool newState;
+}
+
+[System.Serializable]
+public class ChoiceLock
+{
+    public Dialog dialog;
+    public string choiceName;
     public bool newState;
 }

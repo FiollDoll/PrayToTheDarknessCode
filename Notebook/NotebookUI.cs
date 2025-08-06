@@ -134,6 +134,18 @@ public class NotebookUI : MonoBehaviour
         }
     }
 
+    public void CloseReadNote()
+    {
+        pageReadNote.gameObject.SetActive(false);
+        pageNotes.SetActive(true);
+    }
+
+    public void CloseReadHuman()
+    {
+        pageReadHuman.gameObject.SetActive(false);
+        pageNpc.SetActive(true);
+    }
+
     public void CloseNotes()
     {
         pageNotes.SetActive(false);

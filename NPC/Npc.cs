@@ -37,9 +37,7 @@ public class Npc : ScriptableObject
 
     public NpcStyle GetNpcStyle(string styleName) => _stylesDict.GetValueOrDefault(styleName);
 
-    public Sprite GetStyleIcon() => _stylesDict["Standard"].styleIcon.ReturnIcon(Enums.IconMood.Standard);
-
-    public Sprite GetStyleIcon(Enums.IconMood iconMood)
+    public Sprite GetStyleIcon(Enums.IconMood iconMood = Enums.IconMood.Standard)
     {
         if (IHumanable != null && IHumanable.SelectedStyle != "")
             return _stylesDict[IHumanable.SelectedStyle].styleIcon.ReturnIcon(iconMood);

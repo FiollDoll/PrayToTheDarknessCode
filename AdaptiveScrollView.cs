@@ -16,7 +16,7 @@ public class AdaptiveScrollView : MonoBehaviour
         foreach (RectTransform child in content)
             totalHeight += child.sizeDelta.y;
 
-        content.sizeDelta = new Vector2(content.sizeDelta.x, totalHeight / 1.65f);
+        content.sizeDelta = new Vector2(content.sizeDelta.x, totalHeight + 10f);
         return Task.CompletedTask;
     }
 }

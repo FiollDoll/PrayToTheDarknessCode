@@ -141,6 +141,7 @@ public class DialogUI : DisplayBase, IMenuable
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(() => { ActivateChoiceStep(num); });
             obj.transform.localPosition = Vector3.zero;
+            await Task.Delay(100);
         }
 
         await adaptiveScrollViewChoice.UpdateContentSize();
