@@ -37,7 +37,10 @@ public class Interactions : MonoBehaviour
         try
         {
             if (!lockInter && EnteredInteractions.Count >= slot + 1 && context.action.WasPerformedThisFrame())
+            {
                 EnteredInteractions[slot].DoInteraction();
+                PlayerStats.Hunger += 0.001f + (PlayerStats.Addiction * 0.001f);
+            }
         }
         catch (System.Exception ex)
         {

@@ -5,8 +5,10 @@ using UnityEngine;
 public class NpcManager
 {
     public static NpcManager Instance { get; private set; }
+    [Header("Npc")]
     public Npc[] AllNpc;
     public Dictionary<Npc, NpcTempInfo> npcTempInfo = new Dictionary<Npc, NpcTempInfo>();
+    public Dictionary<Npc, NpcController> npcControllers = new Dictionary<Npc, NpcController>();
 
     public async Task Initialize()
     {
@@ -24,6 +26,8 @@ public class NpcManager
             {
                 npc.IHumanable = obj.GetComponent<IHumanable>();
                 npc.IHumanable.NpcEntity = npc;
+                if (npc.IHumanable is NpcController npcController)
+                    npcControllers.Add(npc, npcController);
                 await npc.IHumanable.Initialize();
             }
             catch (System.Exception e)
@@ -31,6 +35,8 @@ public class NpcManager
                 Debug.Log("npc init " + npc.nameInWorld + " error ");
             }
         }
+
+        GenerateScheduleForAll();
     }
 
     public Npc GetNpcByName(string name)
@@ -85,6 +91,12 @@ public class NpcManager
         }
 
         return "";
+    }
+
+    public void GenerateScheduleForAll()
+    {
+        foreach (NpcController npcController in npcControllers.Values)
+            npcController.GenerateSchedule();
     }
 
     /// <summary>

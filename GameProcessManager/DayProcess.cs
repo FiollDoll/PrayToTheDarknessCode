@@ -32,6 +32,7 @@ public class DayProcess
             {
                 Hour = 0;
                 Day += 1;
+                NpcManager.Instance.GenerateScheduleForAll();
             }
         }
 
@@ -39,7 +40,7 @@ public class DayProcess
         PlayerMenu.Instance.totalDayText.text = StopTime ? "" : Day + new LanguageSetting(" день", " day").Text;
     }
 
-    private async Task MoveTime()
+    private async void MoveTime()
     {
         while (true)
         {

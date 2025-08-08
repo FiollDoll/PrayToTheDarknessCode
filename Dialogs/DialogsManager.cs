@@ -161,10 +161,7 @@ public class DialogsManager
             NpcManager.Instance.npcTempInfo[totalStep.npcChangeRelation].relationshipWithPlayer += totalStep.changeRelation;
 
         if (totalStep.npcChangeMoveToPlayer != null)
-        {
-            if (totalStep.npcChangeMoveToPlayer.IHumanable is NpcController npcController)
-                npcController.moveToPlayer = totalStep.newStateMoveToPlayer;
-        }
+            NpcManager.Instance.npcControllers[totalStep.npcChangeMoveToPlayer].moveToPlayer = totalStep.newStateMoveToPlayer;
 
         totalStep.fastChanges?.ActivateChanges();
 

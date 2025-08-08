@@ -14,6 +14,10 @@ public class Npc : ScriptableObject
     public LanguageSetting nameOfNpc;
     public LanguageSetting specialRelationName;
 
+    [Header("Schedule information")]
+    public ScheduleCase[] requireSchedule = new ScheduleCase[0]; // Объязательные действия
+    public ScheduleCase[] standardSchedule = new ScheduleCase[0]; // Повседневные действия
+
     [Header("Other information")]
     public LanguageSetting profession;
     public LanguageSetting hobby;

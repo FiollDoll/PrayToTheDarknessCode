@@ -36,4 +36,13 @@
         Weak,
         Psiho
     }
+
+    public enum ScheduleAction
+    {
+        Sleep,
+        Chill,
+        Talk,
+        Move,
+        DoSomething
+    }
 }

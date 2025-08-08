@@ -134,8 +134,8 @@ public class FastChangesController : ScriptableObject
             try
             {
                 Transform target = GameObject.Find(tp.teleportName)?.transform;
-                if (target != null && tp.npc.IHumanable is NpcController npcController)
-                    npcController.gameObject.transform.position = target.position;
+                if (target != null)
+                    NpcManager.Instance.npcControllers[tp.npc].gameObject.transform.position = target.position;
 
             }
             catch (System.Exception ex)
@@ -174,8 +174,7 @@ public class FastChangesController : ScriptableObject
         {
             try
             {
-                if (naa.npcToChange.IHumanable is NpcController npcController)
-                    npcController.ActivateAnimatorState(naa.animatorState);
+                NpcManager.Instance.npcControllers[naa.npcToChange].ActivateAnimatorState(naa.animatorState);
             }
             catch (System.Exception ex)
             {
@@ -205,8 +204,7 @@ public class FastChangesController : ScriptableObject
         {
             try
             {
-                if (changer.npc.IHumanable is NpcController npcController)
-                    npcController.moveToPlayer = changer.newState;
+                NpcManager.Instance.npcControllers[changer.npc].moveToPlayer = changer.newState;
             }
             catch (System.Exception ex)
             {

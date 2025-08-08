@@ -13,8 +13,10 @@ public class Bootstrapper : MonoBehaviour
     {
         noViewPanel.GetComponent<UnityEngine.UI.Image>().color = Color.black;
 
+        // Мир
+        await InitializeComponent(new DayProcess().Initialize());
         await InitializeComponent(new ManageLocation().Initialize());
-        await InitializeComponent(new NpcManager().Initialize());
+        // UI + кор механики
         await InitializeComponent(new GameMenuManager().Initialize(
             GameObject.Find("Canvas").GetComponentsInChildren<IMenuable>(), startViewMenu, noViewPanel, nullSprite));
         await InitializeComponent(new QuestsManager().Initialize());
@@ -22,7 +24,11 @@ public class Bootstrapper : MonoBehaviour
         await InitializeComponent(new Inventory().Initialize());
         await InitializeComponent(new CameraManager().Initialize(Camera.main));
         await InitializeComponent(DialogUI.Instance.Initialize()); // 2 в 1
-        await InitializeComponent(new DayProcess().Initialize());
+
+        // НПС
+        await InitializeComponent(new NpcManager().Initialize());
+
+        // Остальное
         await InitializeComponent(new SaveAndLoadManager().Initialize());
         await InitializeComponent(new ChapterManager().Initialize());
 
