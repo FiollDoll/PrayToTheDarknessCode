@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Bootstrapper : MonoBehaviour
 {
-    [SerializeField] private string chapterToLoad; // Начальная загрузка главы
+    [SerializeField] private bool dev;
     [SerializeField] private Sprite nullSprite;
     [SerializeField] private GameObject startViewMenu, noViewPanel;
 
@@ -28,7 +28,11 @@ public class Bootstrapper : MonoBehaviour
 
         GameMenuManager.Instance.DisableNoVision();
 
-        ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName(chapterToLoad));
+        if (!dev)
+            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory")); // Потом сделать от сохранения
+        else
+            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("testChapter"));
+
         Destroy(gameObject); // Самоуничтожение
     }
 

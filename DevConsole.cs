@@ -20,10 +20,11 @@ public class DevConsole : MonoBehaviour
         presetsMenu.SetActive(true);
     }
 
-    public void SkipDialog()
-    {
-        DialogsManager.Instance.DialogCLose();
-    }
+    public void SkipDialog() => DialogsManager.Instance.DialogCLose();
+
+    public void TimeFaster() => Time.timeScale = 10f;
+
+    public void NormalTime() => Time.timeScale = 1;
 
     public async void ChangeLocation(string locationName) =>
         await ManageLocation.Instance.ActivateLocation(locationName);

@@ -11,19 +11,20 @@ public class FastChangesController : ScriptableObject
 
     [Header("-Locations")] public Location moveToLocation;
     public string moveToLocationSpawn;
-    public bool moveWithFade = true;
 
-    [Header("-Locks")] public bool lockAllMenu;
-    public bool changeLockInventory, changeLockHumansPage, changeLockPersonPage;
+    [Header("-DayProcess")] public bool stopTime;
+    public int newHour, newDay;
 
     [Header("-Player")] public float editPlayerSpeed;
     public bool playerCanMove = true, playerCanMoveZ = true;
+    public bool lockPlayerMenu;
     public VolumeProfile newVolumeProfile;
 
     [Header("-Npc")]
     public ChangeTempInfoNpc[] changeTempInfoNpc = new ChangeTempInfoNpc[0];
     public TeleportNpc[] teleportNpc = new TeleportNpc[0];
     public MoveToPlayer[] changeMoveToPlayer = new MoveToPlayer[0];
+    public NpcAnimationActivate[] npcAnimationActivate = new NpcAnimationActivate[0];
 
     [Header("-Dialogs")]
     public DialogLock[] dialogLocks = new DialogLock[0];
@@ -42,16 +43,16 @@ public class FastChangesController : ScriptableObject
         PlayerStats.ChangeSpeed = editPlayerSpeed;
         Player.Instance.canMove = playerCanMove;
         Player.Instance.blockMoveZ = !playerCanMoveZ;
+        PlayerMenu.Instance.playerMenuBlock = lockPlayerMenu;
         CameraManager.Instance.SetVolumeProfile(newVolumeProfile);
         AudioManager.Instance.PlayMusic(setMusic);
 
-        // Если галочка стоит, то меняем значение на противоположное
-        if (changeLockInventory)
-            PlayerMenu.Instance.inventoryCan = !PlayerMenu.Instance.inventoryCan;
-        if (changeLockHumansPage)
-            PlayerMenu.Instance.humansCan = !PlayerMenu.Instance.humansCan;
-        if (changeLockPersonPage)
-            PlayerMenu.Instance.personCan = !PlayerMenu.Instance.personCan;
+        DayProcess.Instance.StopTime = stopTime;
+
+        if (newHour != 0)
+            DayProcess.Instance.Hour = newHour;
+        if (newDay != 0)
+            DayProcess.Instance.Day = newDay;
 
         // Выдаём хуйню
         await AddItems();
@@ -71,12 +72,13 @@ public class FastChangesController : ScriptableObject
         await ChangeVisuals();
 
         if (moveToLocation)
-            await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, moveWithFade);
+            await ManageLocation.Instance.ActivateLocation(moveToLocation.gameName, moveToLocationSpawn, true);
         if (activateDialog)
             await DialogsManager.Instance.ActivateDialog(activateDialog.name);
         if (activateQuest)
             await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
     }
+
 
     private async Task AddFamiliar()
     {
@@ -166,6 +168,22 @@ public class FastChangesController : ScriptableObject
         }
     }
 
+    private async Task ChangeNpcAnimation()
+    {
+        foreach (NpcAnimationActivate naa in npcAnimationActivate)
+        {
+            try
+            {
+                if (naa.npcToChange.IHumanable is NpcController npcController)
+                    npcController.ActivateAnimatorState(naa.animatorState);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log("Change animation error");
+            }
+        }
+    }
+
     private async Task ChangeVisuals()
     {
         foreach (ChangeVisual changer in changeVisuals)
@@ -241,6 +259,13 @@ public class ChangeTempInfoNpc
     public Npc npc;
     public float relationshipChange;
     public bool unlockProfession, unlockHobby, unlockAge, unlockCharacter, unlockHouse;
+}
+
+[System.Serializable]
+public class NpcAnimationActivate
+{
+    public Npc npcToChange;
+    public string animatorState;
 }
 
 [System.Serializable]

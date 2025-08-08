@@ -45,6 +45,8 @@ public class NpcController : MonoBehaviour, IHumanable
     public void ChangeSecondStyle() => ChangeStyle(NpcEntity.styles[1].nameOfStyle);
 #endif
 
+    public void ActivateAnimatorState(string state) => _animator.Play(state);
+
     public void ChangeStyle(string newStyle)
     {
         SelectedStyle = newStyle;

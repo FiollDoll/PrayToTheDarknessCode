@@ -2,11 +2,13 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerMenu : MonoBehaviour, IMenuable
 {
     public static PlayerMenu Instance { get; private set; }
     public GameObject menu => playerMenu;
+    public bool playerMenuBlock;
 
     [Header("Menu")]
     [SerializeField] private GameObject playerMenu;
@@ -17,7 +19,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     [SerializeField] private Image personImage;
     [SerializeField] private Button buttonPersons, buttonInventory, buttonHumans;
     [SerializeField] private Slider hpSlider, hungerSlider, addictionSlider, sanitySlider;
-
+    public TextMeshProUGUI totalDayText, totalTimeText;
     [HideInInspector] public bool personCan, inventoryCan, humansCan;
 
     private bool _isZooming; // Антиспам
@@ -26,7 +28,7 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
     public void OnManagePlayerMenu(InputAction.CallbackContext context)
     {
-        if (context.action.WasPerformedThisFrame())
+        if (context.action.WasPerformedThisFrame() && !playerMenuBlock)
             ManagePlayerMenu();
     }
 

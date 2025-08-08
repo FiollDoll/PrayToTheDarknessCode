@@ -75,7 +75,6 @@ public class DialogUI : DisplayBase, IMenuable
     public async Task ActivateDialogWindow()
     {
         dialogMenu.SetActive(true);
-        dialogMenu.GetComponent<RectTransform>().localScale = Vector3.zero;
 
         if (!_dialogsManager.CanChoice()) // Потом уже управление менюшками
         {
@@ -98,17 +97,6 @@ public class DialogUI : DisplayBase, IMenuable
         }
         else
             choiceMenu.SetActive(true);
-
-        if (currentDialogStepNode.styleOfDialog != Enums.DialogStyle.BigPicture) // Не для больших картинок
-        {
-            for (float i = 0; i < 1.1f; i += 0.1f) // Плавно поднимаем
-            {
-                dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
-                await Task.Delay(10);
-            }
-        }
-        else
-            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 
         await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.mainPanelStartDelay * 1000));
     }
@@ -215,20 +203,6 @@ public class DialogUI : DisplayBase, IMenuable
 
     private async Task DoActionsToClose()
     {
-        if (story.GetFirstNode().styleOfDialog != Enums.DialogStyle.BigPicture) // Не для больших картинок
-        {
-            for (float i = 1; i > 0f; i -= 0.1f) // Плавно поднимаем
-            {
-                dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(i, i, 1);
-                await Task.Delay(10);
-            }
-        }
-        else
-        {
-            dialogMenu.GetComponent<RectTransform>().localScale = new Vector3(0, 0, 1);
-            await Task.Delay(10);
-        }
-
         dialogMenu.SetActive(false);
         mainMenu.SetActive(false);
         subDialogMenu.SetActive(false);
