@@ -87,7 +87,7 @@ public class DialogUI : DisplayBase, IMenuable
                     break;
                 case Enums.DialogStyle.BigPicture:
                     _selectedTextDialog = textDialogBigPicture;
-                    GameMenuManager.Instance.NoVisionForTime(1f, BigPictureActivate());
+                    GameMenuManager.Instance.NoVisionForTime(1f, () => { bigPictureMenu.SetActive(true); });
                     break;
                 case Enums.DialogStyle.SubMain:
                     _selectedTextDialog = textDialogSub;
@@ -100,9 +100,6 @@ public class DialogUI : DisplayBase, IMenuable
 
         await Task.Delay(Mathf.RoundToInt(currentDialogStepNode.mainPanelStartDelay * 1000));
     }
-
-    // Сучий костыль
-    private async Task BigPictureActivate() => bigPictureMenu.SetActive(true);
 
     /// <summary>
     /// Активация + генерация меню с выборами
@@ -194,14 +191,14 @@ public class DialogUI : DisplayBase, IMenuable
         Interactions.Instance.lockInter = false;
 
         if (story.GetFirstNode().styleOfDialog == Enums.DialogStyle.BigPicture)
-            GameMenuManager.Instance.NoVisionForTime(1f, DoActionsToClose());
+            GameMenuManager.Instance.NoVisionForTime(1f, DoActionsToClose);
         else if (story.GetFirstNode().darkAfterEnd)
-            GameMenuManager.Instance.NoVisionForTime(1.2f, DoActionsToClose());
+            GameMenuManager.Instance.NoVisionForTime(1.2f, DoActionsToClose);
         else
-            await DoActionsToClose();
+            DoActionsToClose();
     }
 
-    private async Task DoActionsToClose()
+    private async void DoActionsToClose()
     {
         dialogMenu.SetActive(false);
         mainMenu.SetActive(false);
@@ -212,7 +209,7 @@ public class DialogUI : DisplayBase, IMenuable
 
         _dialogsManager.DoActionsToClose();
 
-        currentDialogStepNode.fastChanges?.ActivateChanges(); // Если есть действие на последней ноде
+        story.GetLastNode().fastChanges?.ActivateChanges(); // Если есть действие на последней ноде
 
         story = null;
         currentDialogStepNode = null;

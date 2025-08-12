@@ -22,8 +22,8 @@ public class MiniGamesManager : MonoBehaviour
         miniGameObj.transform.localPosition = Vector3.zero;
         gameChangesAfterWin = changesAfterWin;
         if (withFade)
-            GameMenuManager.Instance.NoVisionForTime(1.2f, ActivateMenuTask(miniGameObj));
+            GameMenuManager.Instance.NoVisionForTime(1.2f, () => { ActivateMenuTask(miniGameObj); });
     }
 
-    public async Task ActivateMenuTask(GameObject menu) => menu.SetActive(true);
+    public void ActivateMenuTask(GameObject menu) => menu.SetActive(true);
 }

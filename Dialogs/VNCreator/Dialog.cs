@@ -30,6 +30,9 @@ public class Dialog : ScriptableObject
         return null;
     }
 
+    public DialogStepNode GetLastNode() => nodes[nodes.Count - 1];
+    
+
     public DialogStepNode GetCurrentNode(string _currentGuid)
     {
         for (int i = 0; i < nodes.Count; i++)

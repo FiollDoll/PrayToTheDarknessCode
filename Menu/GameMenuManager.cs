@@ -50,19 +50,15 @@ public class GameMenuManager
     /// <summary>
     /// Активирует временное затемнение
     /// </summary>
-    public async Task NoVisionForTime(float duration, Task actionAfterFade = null, Task actionAfterEnd = null)
+    public async Task NoVisionForTime(float duration, System.Action actionAfterFade = null, System.Action actionAfterEnd = null)
     {
         await ChangeAlpha(_noViewPanel, 1f);
-        await Task.Delay(10);
-        if (actionAfterFade != null)
-            await actionAfterFade;
-
+        await Task.Delay(Mathf.RoundToInt(1000));
+        actionAfterFade?.Invoke();
         await Task.Delay(Mathf.RoundToInt(duration * 1000));
-
         await ChangeAlpha(_noViewPanel, 0f);
-
-        if (actionAfterEnd != null)
-            await actionAfterEnd;
+        await Task.Delay(Mathf.RoundToInt(1000));
+        actionAfterEnd?.Invoke();
     }
 
     public async Task DisableNoVision() => await ChangeAlpha(_noViewPanel, 0f);
@@ -72,12 +68,13 @@ public class GameMenuManager
         float step = 0.1f * Mathf.Sign(alphaValue - graphic.color.a);
         float targetAlpha = Mathf.Clamp(alphaValue, 0f, 1f);
 
-        while (!Mathf.Approximately(graphic.color.a, targetAlpha))
+        while (Mathf.Abs(graphic.color.a - targetAlpha) > 0.01f)
         {
             float newAlpha = Mathf.Clamp(graphic.color.a + step, 0f, 1f);
-            graphic.color = new Color(_noViewPanel.color.r, _noViewPanel.color.g, _noViewPanel.color.b, newAlpha);
-            await Task.Delay(Mathf.RoundToInt(1 * speed));
+            graphic.color = new Color(graphic.color.r, graphic.color.g, graphic.color.b, newAlpha);
+            await Task.Delay(Mathf.RoundToInt(10 * speed));
         }
+        graphic.color = new Color(graphic.color.r, graphic.color.g, graphic.color.b, targetAlpha); // Фикс на случай неточности
     }
 
     public async void ViewMenuActivate(string text)
