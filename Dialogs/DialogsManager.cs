@@ -22,7 +22,7 @@ public class DialogsManager
         {
             _dialogsDict.Add(dialog.name, dialog);
             dialogsTempInfo.Add(dialog, new DialogTempInfo());
-            
+
             if (dialog.GetFirstNode().thisDialogLock)
                 dialogsTempInfo[dialog].dialogLock = true;
 
@@ -163,7 +163,8 @@ public class DialogsManager
         if (totalStep.npcChangeMoveToPlayer != null)
             NpcManager.Instance.npcControllers[totalStep.npcChangeMoveToPlayer].moveToPlayer = totalStep.newStateMoveToPlayer;
 
-        totalStep.fastChanges?.ActivateChanges();
+        if (!DialogUI.lastNode) // Если не последняя нода
+            totalStep.fastChanges?.ActivateChanges();
 
         if (totalStep.stepSpeech)
             AudioManager.Instance.PlaySpeech(totalStep.stepSpeech);

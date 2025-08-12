@@ -122,7 +122,7 @@ public class NpcController : MonoBehaviour, IHumanable
 
 #if UNITY_EDITOR
         string n = NpcEntity.nameInWorld + " schedule " + DayProcess.Instance.Day + " day\n";
-        for (int h = 0; h < 25; h++)
+        for (int h = 0; h < 24; h++)
             n += "\n" + h + ":00 | " + scheduleHourDict[h].action.ToString();
         Debug.Log(n);
 #endif

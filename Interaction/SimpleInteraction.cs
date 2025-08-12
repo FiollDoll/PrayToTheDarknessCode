@@ -13,6 +13,8 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
 
     [Header("Preferences")] public FastChangesController changesController;
 
+    public string launchMiniGame;
+    public FastChangesController changesAfterEndMiniGame;
     public string itemNameToUse;
     public string ItemNameUse => itemNameToUse;
 
@@ -37,7 +39,12 @@ public class SimpleInteraction : MonoBehaviour, IInteractable
 
     public async Task DoInteraction()
     {
-        await changesController.ActivateChanges();
+        if (changesController != null)
+            await changesController.ActivateChanges();
+
+        if (launchMiniGame != "")
+            MiniGamesManager.Instance.StartMiniGame(launchMiniGame, changesAfterEndMiniGame);
+
         if (questName != "" && CanInteractByQuest())
             QuestsManager.Instance.NextStep();
         if (DestroyAfterUse)

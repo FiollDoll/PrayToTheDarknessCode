@@ -212,6 +212,8 @@ public class DialogUI : DisplayBase, IMenuable
 
         _dialogsManager.DoActionsToClose();
 
+        currentDialogStepNode.fastChanges?.ActivateChanges(); // Если есть действие на последней ноде
+
         story = null;
         currentDialogStepNode = null;
         lastNode = false;

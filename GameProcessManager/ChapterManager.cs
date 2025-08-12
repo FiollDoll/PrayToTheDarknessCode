@@ -20,16 +20,16 @@ public class ChapterManager
 
     public Chapter GetChapterByName(string name) => chaptersDict.GetValueOrDefault(name);
 
-    public void StartLoadChapter(Chapter chapter)
+    public async Task StartLoadChapter(Chapter chapter)
     {
         _selectedChapter = chapter;
         if (chapter)
-            LoadChapter(chapter);
+            await LoadChapter(chapter);
         else
             Debug.Log("Chapter don`t find");
     }
 
-    private async void LoadChapter(Chapter chapter)
+    private async Task LoadChapter(Chapter chapter)
     {
         GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName);
         await _selectedChapter.changesController?.ActivateChanges();

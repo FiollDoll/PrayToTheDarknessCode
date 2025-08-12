@@ -8,6 +8,7 @@ public class FastChangesController : ScriptableObject
 {
     public Dialog activateDialog;
     public Quest activateQuest;
+    public Chapter activateChapter;
 
     [Header("-Locations")] public Location moveToLocation;
     public string moveToLocationSpawn;
@@ -77,6 +78,8 @@ public class FastChangesController : ScriptableObject
             await DialogsManager.Instance.ActivateDialog(activateDialog.name);
         if (activateQuest)
             await QuestsManager.Instance.ActivateQuest(activateQuest.questName);
+        if (activateChapter)
+            await ChapterManager.Instance.StartLoadChapter(activateChapter);
     }
 
 

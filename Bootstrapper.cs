@@ -35,9 +35,9 @@ public class Bootstrapper : MonoBehaviour
         GameMenuManager.Instance.DisableNoVision();
 
         if (!dev)
-            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory")); // Потом сделать от сохранения
+            await ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("prehistory")); // Потом сделать от сохранения
         else
-            ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("testChapter"));
+            await ChapterManager.Instance.StartLoadChapter(ChapterManager.Instance.GetChapterByName("testChapter"));
 
         Destroy(gameObject); // Самоуничтожение
     }
