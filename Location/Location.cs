@@ -78,9 +78,26 @@ public class Location : ScriptableObject
     /// <summary>
     /// Возвращает Transform спавна по имени
     /// </summary>
-    /// <param name="spawnName"></param>
-    /// <returns></returns>
     public Transform GetSpawn(string spawnName) => _spawnsDict.GetValueOrDefault(spawnName).spawn;
+
+    /// <summary>
+    /// Возвращаем Transform  по локации
+    /// </summary>
+    public Transform GetSpawn(Location location)
+    {
+        foreach (IInteractable interactable in LocationInteractableObjects.Values)
+        {
+            if (interactable is LocationInteraction interact)
+            {
+                if (location.gameName == interact.locationName)
+                {
+                    if (interact.spawnName == "") return null;
+                    return location.GetSpawn(interact.spawnName);
+                }
+            }
+        }
+        return null;
+    }
 }
 
 [System.Serializable]

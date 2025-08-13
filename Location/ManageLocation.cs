@@ -7,8 +7,6 @@ public class ManageLocation
 {
     public static ManageLocation Instance { get; private set; }
     public Location TotalLocation;
-    public List<NpcController> NpcAtTotalLocation = new List<NpcController>();
-
     public readonly Dictionary<string, Location> locationsDict = new Dictionary<string, Location>();
     private GameObject _player;
     private CinemachineConfiner _cinemachineConfiner;
@@ -69,14 +67,10 @@ public class ManageLocation
         Player.Instance.virtualCamera.m_Lens.OrthographicSize =
             CameraManager.Instance.StartCameraSize + TotalLocation.modifCamera;
 
-        NpcAtTotalLocation = new List<NpcController>();
         foreach (Npc totalNpc in NpcManager.Instance.AllNpc)
         {
             if (totalNpc.IHumanable is NpcController npcController)
             {
-                if (npcController.totalLocation == TotalLocation.gameName)
-                    NpcAtTotalLocation.Add(npcController);
-
                 if (npcController.moveToPlayer)
                     npcController.gameObject.transform.position = newPosition;
             }

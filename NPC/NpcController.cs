@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.U2D.Animation;
+using System.Linq;
 
 public class NpcController : MonoBehaviour, IHumanable
 {
@@ -24,7 +25,11 @@ public class NpcController : MonoBehaviour, IHumanable
     [Header("Move To Point Preference")] public bool moveToPoint;
     public bool waitPlayerAndMove;
     private Transform point;
+    private Transform totalPoint;
+    private Transform totalSpawn;
     private List<Location> pointWay = new List<Location>();
+
+    private int totalWay;
     private string locationOfPointName;
     private Location locationPointTarget;
     private List<Location> locationTemp = new List<Location>();
@@ -134,67 +139,101 @@ public class NpcController : MonoBehaviour, IHumanable
         }
         catch (System.Exception ex)
         {
-            Debug.Log("Schedule generate error " + ex);
+            Debug.LogError("Schedule generate error " + ex);
         }
     }
 
-    private void UpdateHourSchedule()
+    private void UpdateHourSchedule() // Обновляем дело
     {
         try
         {
-            if (totalScheduleCase != scheduleHourDict[DayProcess.Instance.Hour]) // Если изменилось
-            {
-                totalScheduleCase = scheduleHourDict[DayProcess.Instance.Hour];
-                if (totalScheduleCase.actionTargetName == "") return;
-                point = GameObject.Find(totalScheduleCase.actionTargetName).transform;
-                locationOfPointName = totalScheduleCase.actionTargetLocation;
-                locationPointTarget = ManageLocation.Instance.GetLocation(locationOfPointName);
-                // Состовляем путь до точки
-                // Npc location - point location
-                // Начальная точка
-                Location currentWayLocation = ManageLocation.Instance.GetLocation(totalLocation);
-                List<Location> locationsToMove = currentWayLocation.GetAllGatesLocations();
+            if (totalScheduleCase == scheduleHourDict[DayProcess.Instance.Hour]) return; // Скипаем, если не изменилось
 
-                foreach (Location locationMove in locationsToMove)
-                {
-                    locationTemp = new List<Location>();
-                    locationsToMove = locationMove.GetAllGatesLocations();
-                    if (CheckGate(currentWayLocation, locationsToMove))
-                    {
-                        locationTemp.Add(currentWayLocation); // Начальную точку просто так добавить
-                        locationTemp.Reverse(); // Переворачиваем
-                        // Вывод на всякий случай
-                        string test = NpcEntity.nameInWorld + " way: ";
-                        foreach (Location loc in locationTemp)
-                            test += loc.gameName + " -> ";
+            totalScheduleCase = scheduleHourDict[DayProcess.Instance.Hour];
 
-                        Debug.Log(test);
-                        pointWay = locationTemp;
-                        locationTemp = new List<Location>();
-                        break;
-                    }
-                }
-            }
+            point = GameObject.Find(totalScheduleCase.actionTargetName).transform;
+            locationOfPointName = totalScheduleCase.actionTargetLocation;
+            locationPointTarget = ManageLocation.Instance.GetLocation(locationOfPointName);
+
+            Location currentLocation = ManageLocation.Instance.GetLocation(totalLocation);
+
+            FindPathToTarget(currentLocation);
         }
         catch (System.Exception ex)
         {
-            Debug.Log("Npc " + NpcEntity.nameInWorld + " " + DayProcess.Instance.Hour + ":" + DayProcess.Instance.Minute + " error: " + ex);
+            Debug.LogError($"Npc {NpcEntity?.nameInWorld} {DayProcess.Instance.Hour}:{DayProcess.Instance.Minute} error: {ex}");
         }
     }
 
-    private bool CheckGate(Location currentLocation, List<Location> locationsToMove)
+    private void FindPathToTarget(Location currentLocation)
     {
-        foreach (Location locationMove in locationsToMove)
+        var visitedLocations = new HashSet<Location>();
+        var path = new List<Location>();
+
+        if (FindPath(currentLocation, locationPointTarget, visitedLocations, path))
         {
-            if (locationMove == currentLocation) continue;
-            locationTemp.Add(locationMove);
-            if (locationMove == locationPointTarget)
-                return true;
-                
-            locationsToMove = locationMove.GetAllGatesLocations();
-            return CheckGate(locationMove, locationsToMove);
+#if UNITY_EDITOR
+            string pathLog = $"{NpcEntity.nameInWorld} way: {string.Join(" -> ", path.Select(l => l.gameName))}";
+            Debug.Log(pathLog);
+#endif
+
+            pointWay = path;
+            totalWay = 1; // Чтобы не с той локи, где начало
+            moveToPoint = true;
+            GenerateTotalPoint();
         }
+    }
+
+    private bool FindPath(Location current, Location target, HashSet<Location> visited, List<Location> path)
+    {
+        if (current == target)
+        {
+            path.Add(current);
+            return true;
+        }
+
+        if (visited.Contains(current)) return false;
+        visited.Add(current);
+
+        foreach (var neighbor in current.GetAllGatesLocations())
+        {
+            if (neighbor == null || neighbor == current) continue;
+
+            if (FindPath(neighbor, target, visited, path))
+            {
+                path.Insert(0, current);
+                return true;
+            }
+        }
+
         return false;
+    }
+
+    private void GenerateTotalPoint()
+    {
+        if (pointWay == null || totalWay >= pointWay.Count) return;
+
+        Location currentLoc = ManageLocation.Instance.GetLocation(totalLocation);
+        if (currentLoc == null) return;
+
+        Location nextLoc = pointWay[totalWay];
+
+        foreach (var interaction in currentLoc.LocationInteractableObjects.Values)
+        {
+            if (interaction is LocationInteraction locationInteraction &&
+                ManageLocation.Instance.GetLocation(locationInteraction.locationName) == nextLoc)
+            {
+                totalPoint = locationInteraction.transform;
+                totalSpawn = currentLoc.GetSpawn(nextLoc);
+                return;
+            }
+        }
+    }
+
+    private void MoveToLocation(string locationName, Transform spawn = null)
+    {
+        transform.position = spawn ? spawn.position : ManageLocation.Instance.GetLocation(locationName).spawns[0].spawn.position;
+        totalLocation = locationName;
     }
 
     private void FixedUpdate() // Movement
@@ -211,16 +250,19 @@ public class NpcController : MonoBehaviour, IHumanable
             switch (collider.gameObject.tag)
             {
                 case "floorChange" when totalLocation != locationOfPointName && moveToPoint: // Если на другой этаж
-                    ManageLocation.Instance.NpcAtTotalLocation.Remove(this);
-                    transform.position = ManageLocation.Instance.GetLocation(locationOfPointName).spawns[0].spawn.position;
-                    totalLocation = locationOfPointName;
-                    ManageLocation.Instance.NpcAtTotalLocation.Add(this);
+                    MoveToLocation(locationOfPointName);
                     break;
                 case "Player": // Если рядом с игроком
                     _playerInCollider = true;
                     break;
                 default: // Другое хз
                     {
+                        if (totalPoint != null && totalPoint.gameObject == collider.gameObject)
+                        {
+                            MoveToLocation(pointWay[totalWay].gameName, totalSpawn);
+                            totalWay++;
+                            GenerateTotalPoint();
+                        }
                         if (point != null && collider.gameObject.name == point.gameObject.name)
                             moveToPoint = false;
                         break;
@@ -234,9 +276,7 @@ public class NpcController : MonoBehaviour, IHumanable
         else if (moveToPoint) // Двигаемся к точке
         {
             if (!waitPlayerAndMove || (waitPlayerAndMove && _playerInCollider))
-            {
-                MoveTo(locationOfPointName == totalLocation ? point : ManageLocation.Instance.GetLocation(totalLocation).transformOfStairs);
-            }
+                MoveTo(locationOfPointName == totalLocation ? point : totalPoint);
             else
                 _animator?.SetBool("walk", false);
         }

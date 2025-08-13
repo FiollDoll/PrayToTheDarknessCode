@@ -104,7 +104,7 @@ public class NpcManager
     /// </summary>
     public void MoveTo(Transform target, float speed, Transform pos, GameObject model, Animator animator)
     {
-        Vector3 changeTarget = new Vector3(target.position.x, pos.position.y, pos.position.z);
+        Vector3 changeTarget = new Vector3(target.position.x, pos.position.y, target.position.z);
         pos.position = Vector3.MoveTowards(pos.position, changeTarget, speed * Time.deltaTime);
         animator.SetBool("walk", true);
         float toTargetPos = target.position.x - pos.position.x;
