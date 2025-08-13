@@ -45,11 +45,25 @@ public class Location : ScriptableObject
                 }
             }
 
-
             UpdateSpawnsDict();
         }
         else
             Debug.Log("Location obj dont found");
+    }
+
+    /// <summary>
+    /// Получить все локации, на которые можно выйти
+    /// </summary>
+    public List<Location> GetAllGatesLocations()
+    {
+        List<Location> gatesLocations = new List<Location>();
+        foreach (IInteractable interaction in LocationInteractableObjects.Values)
+        {
+            if (interaction is LocationInteraction interact)
+                gatesLocations.Add(ManageLocation.Instance.GetLocation(interact.locationName));
+        }
+
+        return gatesLocations;
     }
 
     /// <summary>

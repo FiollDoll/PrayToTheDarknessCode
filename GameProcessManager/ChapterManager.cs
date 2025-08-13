@@ -31,7 +31,7 @@ public class ChapterManager
 
     private async Task LoadChapter(Chapter chapter)
     {
-        GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName);
+        GameMenuManager.Instance.ViewMenuActivate(chapter.chapterName.Text);
         await _selectedChapter.changesController?.ActivateChanges();
     }
 }

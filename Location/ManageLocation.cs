@@ -9,7 +9,7 @@ public class ManageLocation
     public Location TotalLocation;
     public List<NpcController> NpcAtTotalLocation = new List<NpcController>();
 
-    private readonly Dictionary<string, Location> _locationsDict = new Dictionary<string, Location>();
+    public readonly Dictionary<string, Location> locationsDict = new Dictionary<string, Location>();
     private GameObject _player;
     private CinemachineConfiner _cinemachineConfiner;
 
@@ -20,7 +20,7 @@ public class ManageLocation
         foreach (Location location in locations)
         {
             location.UpdateLocationGameInScene();
-            _locationsDict.TryAdd(location.gameName, location);
+            locationsDict.TryAdd(location.gameName, location);
         }
 
         _player = Player.Instance.gameObject;
@@ -47,7 +47,7 @@ public class ManageLocation
     /// </summary>
     /// <param name="locationName"></param>
     /// <returns></returns>
-    public Location GetLocation(string locationName) => _locationsDict.GetValueOrDefault(locationName);
+    public Location GetLocation(string locationName) => locationsDict.GetValueOrDefault(locationName);
 
     public async Task ActivateLocation(string locationName, string spawn = "", bool fade = true)
     {

@@ -29,7 +29,7 @@ public class LocationInteraction : MonoBehaviour, IInteractable
         if (useLocationName && _location)
             label = _location.name;
     }
-
+    
     public bool CanInteractByQuest()
     {
         if (questName == "")

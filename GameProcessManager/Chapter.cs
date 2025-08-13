@@ -11,7 +11,7 @@ public class Chapter: ScriptableObject
     /// <summary>
     /// Визуальное название
     /// </summary>
-    public string chapterName;
+    public LanguageSetting chapterName;
     
     public FastChangesController changesController;
 }

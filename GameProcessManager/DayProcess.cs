@@ -7,6 +7,8 @@ public class DayProcess
     public int Day = 1;
     public int Hour, Minute;
     public bool StopTime;
+    public System.Action EveryHourAction;
+
 
     public Task Initialize()
     {
@@ -28,6 +30,7 @@ public class DayProcess
         {
             Hour++;
             Minute = 0;
+            EveryHourAction?.Invoke();
             if (Hour == 24)
             {
                 Hour = 0;
