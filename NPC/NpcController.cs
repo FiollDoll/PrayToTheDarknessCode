@@ -25,8 +25,8 @@ public class NpcController : MonoBehaviour, IHumanable
     [Header("Move To Point Preference")] public bool moveToPoint;
     public bool waitPlayerAndMove;
     private Transform point;
-    private Transform totalPoint;
-    private Transform totalSpawn;
+    [SerializeField] private Transform totalPoint;
+    [SerializeField] private Transform totalSpawn;
     private List<Location> pointWay = new List<Location>();
 
     private int totalWay;
@@ -70,8 +70,6 @@ public class NpcController : MonoBehaviour, IHumanable
             if (sr)
                 sr.SetCategoryAndLabel(SelectedStyle, sr.GetLabel());
         }
-
-        _animator?.Play(NpcEntity.GetNpcStyle(SelectedStyle).animatorStyleName);
     }
 
     public void MoveTo(Transform target) => NpcManager.Instance.MoveTo(target, speed, transform, model, _animator);
@@ -126,7 +124,7 @@ public class NpcController : MonoBehaviour, IHumanable
                 scheduleHourDict.TryAdd(h, selectedScheduleCase);
 
                 // Если действие длится больше часа - ставим его на несколько часов
-                for (int i = 1; i < (selectedScheduleCase.durationInMinutes / 30); i++)
+                for (int i = 1; i < (selectedScheduleCase.durationInMinutes / 60); i++)
                     scheduleHourDict.TryAdd(h + i, selectedScheduleCase);
             }
 
@@ -263,8 +261,21 @@ public class NpcController : MonoBehaviour, IHumanable
                             totalWay++;
                             GenerateTotalPoint();
                         }
-                        if (point != null && collider.gameObject.name == point.gameObject.name)
+                        if (point != null && collider.gameObject.name == point.gameObject.name) // Мы дошли до точки
+                        {
                             moveToPoint = false;
+                            model.transform.localScale = new Vector3(1, 1, 1);
+
+                            if (totalScheduleCase.stayOnPoint)
+                                transform.position = new Vector3(point.position.x, transform.position.y, point.position.z);
+                                
+                            if (totalScheduleCase.startAnimationInPoint != "")
+                                _animator.Play(totalScheduleCase.startAnimationInPoint);
+
+                            if (totalScheduleCase.changeStyle != null)
+                                ChangeStyle(totalScheduleCase.changeStyle);
+                            totalScheduleCase.fastChangesController?.ActivateChanges();
+                        }
                         break;
                     }
             }

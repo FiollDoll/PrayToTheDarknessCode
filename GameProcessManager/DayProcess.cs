@@ -14,6 +14,7 @@ public class DayProcess
     {
         Instance = this;
         MoveTime();
+        EveryHourAction?.Invoke();
         return Task.CompletedTask;
     }
 
