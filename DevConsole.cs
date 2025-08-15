@@ -84,7 +84,7 @@ public class DevConsole : MonoBehaviour
             else
                 locationText.text = "";
 
-            playerText.text = "Style: " + Player.Instance.SelectedStyle + "Person: " + Player.Instance.selectedPerson.npcEntity.nameOfNpc.Text +"\n" +
+            playerText.text = "Style: " + Player.Instance.SelectedStyle + "Person: " + Player.Instance.selectedPerson.npcEntity.nameOfNpc.Text + "\n" +
                               "CanMove: " + Player.Instance.canMove + "| Z " + !Player.Instance.blockMoveZ + "\n" +
                               "Position: " + Player.Instance.transform.position + "\n";
         }

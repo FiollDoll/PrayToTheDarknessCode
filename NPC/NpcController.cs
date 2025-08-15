@@ -238,9 +238,9 @@ public class NpcController : MonoBehaviour, IHumanable
 
     private void FixedUpdate() // Movement
     {
-        if (!_animator || !model || DayProcess.Instance.StopTime) return;
+        if (!_animator || !model) return;
 
-        Collider[] colliders = Physics.OverlapSphere(model.transform.position, 5f);
+        Collider[] colliders = Physics.OverlapSphere(model.transform.position, 3.5f);
 
         _playerInCollider = false;
 
@@ -269,7 +269,6 @@ public class NpcController : MonoBehaviour, IHumanable
                     }
             }
         }
-
 
         if (!_playerInCollider && moveToPlayer)
             MoveTo(_playerTransform);

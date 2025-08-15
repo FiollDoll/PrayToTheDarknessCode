@@ -26,7 +26,7 @@ public class DayProcess
         PlayerStats.Hunger += 0.002f + (PlayerStats.Addiction * 0.002f);
         PlayerStats.Addiction += 0.00001f;
 
-        if (Minute == 30)
+        if (Minute == 60)
         {
             Hour++;
             Minute = 0;

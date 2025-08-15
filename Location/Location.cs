@@ -48,7 +48,7 @@ public class Location : ScriptableObject
             UpdateSpawnsDict();
         }
         else
-            Debug.Log("Location obj dont found");
+            Debug.Log($"Location {gameName} obj dont found");
     }
 
     /// <summary>

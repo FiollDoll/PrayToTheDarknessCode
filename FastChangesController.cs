@@ -95,7 +95,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("Pisdec familiar ne dobavilsya");
+                Debug.LogError("Pisdec familiar ne dobavilsya");
             }
         }
     }
@@ -110,7 +110,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("Item add error");
+                Debug.LogError("Item add error");
             }
         }
     }
@@ -125,7 +125,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("Note add error");
+                Debug.LogError("Note add error");
             }
         }
     }
@@ -143,7 +143,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("Npc teleport error");
+                Debug.LogError("Npc teleport error");
             }
         }
     }
@@ -166,7 +166,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("ChangeNpcTemp error");
+                Debug.LogError("ChangeNpcTemp error");
             }
         }
     }
@@ -181,7 +181,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("Change animation error");
+                Debug.LogError("Change animation error");
             }
         }
     }
@@ -196,7 +196,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("VisualChange error");
+                Debug.LogError("VisualChange error");
             }
         }
     }
@@ -211,7 +211,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception ex)
             {
-                Debug.Log("MoveToPlayer error");
+                Debug.LogError("MoveToPlayer error");
             }
         }
     }
@@ -226,7 +226,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception)
             {
-                Debug.Log("ChangeLockDialog error");
+                Debug.LogError("ChangeLockDialog error");
             }
         }
     }
@@ -241,7 +241,7 @@ public class FastChangesController : ScriptableObject
             }
             catch (System.Exception)
             {
-                Debug.Log("ChangeLockChoices error");
+                Debug.LogError("ChangeLockChoices error");
             }
         }
     }

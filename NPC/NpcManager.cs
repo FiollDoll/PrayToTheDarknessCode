@@ -32,7 +32,7 @@ public class NpcManager
             }
             catch (System.Exception e)
             {
-                Debug.Log("npc init " + npc.nameInWorld + " error ");
+                Debug.LogError("npc init " + npc.nameInWorld + " error ");
             }
         }
 

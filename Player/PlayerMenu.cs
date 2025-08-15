@@ -20,7 +20,6 @@ public class PlayerMenu : MonoBehaviour, IMenuable
     [SerializeField] private Button buttonPersons, buttonInventory, buttonHumans;
     [SerializeField] private Slider hpSlider, hungerSlider, addictionSlider, sanitySlider;
     public TextMeshProUGUI totalDayText, totalTimeText;
-    [HideInInspector] public bool personCan, inventoryCan, humansCan;
 
     private bool _isZooming; // Антиспам
 
@@ -85,13 +84,6 @@ public class PlayerMenu : MonoBehaviour, IMenuable
 
         playerMenu.SetActive(true);
         buttonsPage.SetActive(true);
-        // Включаем кнопочки и их текст
-        buttonHumans.interactable = humansCan;
-        buttonHumans.transform.Find("Text").gameObject.SetActive(buttonHumans.interactable);
-        buttonInventory.interactable = inventoryCan;
-        buttonInventory.transform.Find("Text").gameObject.SetActive(buttonInventory.interactable);
-        buttonPersons.interactable = personCan;
-        buttonPersons.transform.Find("Text").gameObject.SetActive(buttonPersons.interactable);
 
         personImage.sprite = Player.Instance.selectedPerson.npcEntity.GetStyleIcon();
     }

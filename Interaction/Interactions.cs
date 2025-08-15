@@ -44,7 +44,7 @@ public class Interactions : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            Debug.Log("Interact button slot " + slot + " error: " + ex);
+            Debug.LogError("Interact button slot " + slot + " error: " + ex);
         }
     }
 
