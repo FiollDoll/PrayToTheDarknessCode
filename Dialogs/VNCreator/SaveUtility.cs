@@ -102,11 +102,18 @@ public class SaveUtility
             List<Link> _links = _story.links.Where(x => x.guid == _nodes[i].DialogStepNode.guid).ToList();
             for (int j = 0; j < _links.Count; j++)
             {
-                string targetGuid = _links[j].targetGuid;
-                BaseNode _target = _nodes.First(x => x.DialogStepNode.guid == targetGuid);
-                LinkNodes(_nodes[i].outputContainer[_links.Count > 1 ? _outputIdx : 0].Q<Port>(),
-                    (Port)_target.inputContainer[0], _graph);
-                _outputIdx += 5; // Эта хуйня учитывает текстовые филды
+                try
+                {
+                    string targetGuid = _links[j].targetGuid;
+                    BaseNode _target = _nodes.First(x => x.DialogStepNode.guid == targetGuid);
+                    LinkNodes(_nodes[i].outputContainer[_links.Count > 1 ? _outputIdx : 0].Q<Port>(),
+                        (Port)_target.inputContainer[0], _graph);
+                    _outputIdx += 5; // Эта хуйня учитывает текстовые филды
+                }
+                catch(System.Exception ex)
+                {
+                    Debug.LogError("Links error: " + ex);
+                }
             }
         }
     }

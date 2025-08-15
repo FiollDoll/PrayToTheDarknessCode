@@ -69,6 +69,20 @@ public class DialogUI : DisplayBase, IMenuable
         }
     }
 
+    public void OnChoiceFirst(InputAction.CallbackContext context) => ChoiceToChoice(0, context);
+    public void OnChoiceSecond(InputAction.CallbackContext context) => ChoiceToChoice(1, context);
+    public void OnChoiceThird(InputAction.CallbackContext context) => ChoiceToChoice(2, context);
+    public void OnChoiceFourth(InputAction.CallbackContext context) => ChoiceToChoice(3, context);
+    public void OnChoiceFifth(InputAction.CallbackContext context) => ChoiceToChoice(4, context);
+
+
+    // Метод специально для управления
+    private void ChoiceToChoice(int num, InputAction.CallbackContext context)
+    {
+        if (context.action.WasPerformedThisFrame() && _dialogsManager.CanChoice() && currentDialogStepNode.choices > num && dialogMenu.activeSelf)
+            ActivateChoiceStep(num);
+    }
+
     /// <summary>
     /// Активация диалоговых меню
     /// </summary>
@@ -112,19 +126,20 @@ public class DialogUI : DisplayBase, IMenuable
         foreach (Transform child in choicesContainer.transform)
             Destroy(child.gameObject);
 
+        int visualCount = 1;
         for (int i = 0; i < currentDialogStepNode.choices; i++)
         {
-            // Если выбор заблокирован
             if (_dialogsManager.dialogsTempInfo[story].ChoiceLocked(story, currentDialogStepNode.choiceName[i])) continue;
 
             var obj = Instantiate(buttonChoicePrefab, Vector3.zero, new Quaternion(),
                 choicesContainer.transform);
 
-            obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text =
+            obj.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = visualCount + ". " +
                 new LanguageSetting(currentDialogStepNode.choiceOptionsRu[i], currentDialogStepNode.choiceOptionsEn[i])
                     .Text;
             int num = i;
             obj.GetComponent<Button>().onClick.AddListener(() => { ActivateChoiceStep(num); });
+            visualCount++;
             obj.transform.localPosition = Vector3.zero;
             await Task.Delay(100);
         }
@@ -137,6 +152,7 @@ public class DialogUI : DisplayBase, IMenuable
     /// </summary>
     private void ActivateChoiceStep(int id)
     {
+        if (_dialogsManager.dialogsTempInfo[story].ChoiceLocked(story, currentDialogStepNode.choiceName[id])) return; // Вдруг
         choiceMenu.SetActive(false);
         _dialogsManager.DialogMoveNext(id);
     }

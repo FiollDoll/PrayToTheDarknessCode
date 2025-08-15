@@ -41,7 +41,10 @@ public class Bootstrapper : MonoBehaviour
 
         // Да просто по приколу
 #if UNITY_EDITOR
-        Debug.Log("Npc count: " + Resources.LoadAll<Npc>("NPC").Length + "\nLocations count: " + Resources.LoadAll<Location>("Locations/").Length + "\nItems count: " + Resources.LoadAll<Item>("Items/").Length);
+        Debug.Log("Npc count: " + Resources.LoadAll<Npc>("NPC").Length + 
+        "\nLocations count: " + Resources.LoadAll<Location>("Locations/").Length + 
+        "\nItems count: " + Resources.LoadAll<Item>("Items/").Length +
+        "\nDialogs count: " + Resources.LoadAll<Dialog>("Dialogs/").Length);
 #endif
 
         Destroy(gameObject); // Самоуничтожение

@@ -15,8 +15,8 @@ public class NpcController : MonoBehaviour, IHumanable
     public Dictionary<int, ScheduleCase> scheduleHourDict = new Dictionary<int, ScheduleCase>();
 
     [Header("Preference")]
-    [SerializeField]
-    private float speed;
+    [SerializeField] private float speed;
+    [SerializeField] private bool timeImmunity;
 
     [SerializeField] private GameObject model;
 
@@ -24,15 +24,16 @@ public class NpcController : MonoBehaviour, IHumanable
 
     [Header("Move To Point Preference")] public bool moveToPoint;
     public bool waitPlayerAndMove;
+
+    // Далее - информация о движении
     private Transform point;
-    [SerializeField] private Transform totalPoint;
-    [SerializeField] private Transform totalSpawn;
+    private Transform totalPoint;
+    private Transform totalSpawn;
     private List<Location> pointWay = new List<Location>();
 
     private int totalWay;
     private string locationOfPointName;
     private Location locationPointTarget;
-    private List<Location> locationTemp = new List<Location>();
 
     private bool _playerInCollider;
     private Transform _playerTransform;
@@ -236,7 +237,7 @@ public class NpcController : MonoBehaviour, IHumanable
 
     private void FixedUpdate() // Movement
     {
-        if (!_animator || !model) return;
+        if (!_animator || !model || (DayProcess.Instance.StopTime && !timeImmunity)) return;
 
         Collider[] colliders = Physics.OverlapSphere(model.transform.position, 3.5f);
 
@@ -268,7 +269,7 @@ public class NpcController : MonoBehaviour, IHumanable
 
                             if (totalScheduleCase.stayOnPoint)
                                 transform.position = new Vector3(point.position.x, transform.position.y, point.position.z);
-                                
+
                             if (totalScheduleCase.startAnimationInPoint != "")
                                 _animator.Play(totalScheduleCase.startAnimationInPoint);
 

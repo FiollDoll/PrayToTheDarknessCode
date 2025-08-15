@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 public class MiniGamesManager : MonoBehaviour
 {
     public static MiniGamesManager Instance { get; private set; }
-    public FastChangesController gameChangesAfterWin;
+    [HideInInspector] public FastChangesController gameChangesAfterWin;
     [SerializeField] private GameObject[] miniGamesPrefabs = new GameObject[0];
     private Dictionary<string, GameObject> miniGamesDict = new Dictionary<string, GameObject>();
 
